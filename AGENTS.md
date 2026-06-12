@@ -9,6 +9,23 @@ This is a solo hackathon project. Optimize for a demo that can be shown
 reliably, not for a complete product. Protect the user's time, the demo path,
 and the ability to roll back.
 
+## Multi-Agent Session Startup
+
+- At the start of each new development conversation, identify your role before
+  editing files: Frontend, App Backend, Arrangement, Integration Manager, or
+  Docs/PM.
+- Read `PLAN.md`, `docs/contracts.md`, `docs/team-split.md`, and the brief for
+  your chosen role before implementing.
+- State your role, owned files/areas, non-owned areas, first milestone, and
+  validation command in the conversation before making changes.
+- If the user did not assign a role, choose the role that matches the requested
+  task. If the task crosses roles, act as Integration Manager and make only the
+  smallest coordination change needed.
+- Do not edit another role's core files unless the user explicitly asks or the
+  change is required to keep shared contracts compiling.
+- If a contract, API, or data model must change, update `docs/contracts.md`
+  first, then update the affected role brief.
+
 ## Required Git Discipline
 
 - Agents are allowed to run `git add` and `git commit` automatically after
