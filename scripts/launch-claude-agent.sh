@@ -49,6 +49,7 @@ fi
     claude -p \
       --permission-mode bypassPermissions \
       --model sonnet \
+      --add-dir "$repo_root/skills" \
       --append-system-prompt "You are a focused implementation agent. Follow repository CLAUDE.md. Commit your work with Chinese commit messages as wentianning. End with a concise final report containing: status, changed files, verification, commit hash, blockers, and next recommendation." \
       "$(cat "$prompt_file")"
     status=$?
@@ -66,4 +67,3 @@ PID: $pid
 Log: $log_file
 Report: $report_file
 EOF
-
