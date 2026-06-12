@@ -1,80 +1,90 @@
-import { fixtureProject } from './fixtures/project'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { EditorProvider, useEditor } from './frontend/contexts/EditorContext';
+import { TransportBar } from './frontend/components/TransportBar';
+import { TrackTimeline } from './frontend/components/TrackTimeline';
+import { InstrumentControllers } from './frontend/components/InstrumentControllers';
+import { AgentPanel } from './frontend/components/AgentPanel';
+import { audioEngine } from './frontend/audio/AudioEngine';
+import { fixtureProject } from './fixtures/project';
+import './App.css';
 
-function App() {
-  const trackCount = fixtureProject.tracks.length
-  const totalSteps = fixtureProject.bars * fixtureProject.beatsPerBar * fixtureProject.subdivision
+function AppContent() {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { setProject, playback } = useEditor();
+
+  useEffect(() => {
+    // Initialize audio engine on mount
+    audioEngine.initialize().then(() => {
+      setIsInitialized(true);
+      // Load fixture project
+      setProject(fixtureProject);
+    });
+
+    return () => {
+      audioEngine.dispose();
+    };
+  }, [setProject]);
+
+  // Handle playback state changes
+  useEffect(() => {
+    if (!playback.isPlaying || !fixtureProject) {
+      audioEngine.stopSequence();
+      return;
+    }
+
+    audioEngine.playProject(fixtureProject, playback.currentStep);
+    audioEngine.setTempo(playback.tempo);
+
+    return () => {
+      audioEngine.stopSequence();
+    };
+  }, [playback.isPlaying, playback.tempo, fixtureProject]);
+
+  if (!isInitialized) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>初始化音频引擎...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>PlayBand AI</h1>
-        <p>音乐游乐场</p>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>🎵 PlayBand AI</h1>
+        <p className="tagline">音乐游乐场</p>
       </header>
 
-      <main className="App-main">
-        <div className="fixture-info">
-          <h2>🎵 演示项目已加载</h2>
-          <div className="stats">
-            <div className="stat">
-              <span className="stat-label">音轨数量:</span>
-              <span className="stat-value">{trackCount}</span>
+      <div className="main-content">
+        <div className="editor-area">
+          <TransportBar />
+
+          <div className="editor-body">
+            <div className="timeline-area">
+              <TrackTimeline project={fixtureProject} />
             </div>
-            <div className="stat">
-              <span className="stat-label">小节:</span>
-              <span className="stat-value">{fixtureProject.bars}</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">总步数:</span>
-              <span className="stat-value">{totalSteps}</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">速度:</span>
-              <span className="stat-value">{fixtureProject.tempo} BPM</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">风格:</span>
-              <span className="stat-value">{fixtureProject.style}</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">情绪:</span>
-              <span className="stat-value">{fixtureProject.mood}</span>
+
+            <div className="instruments-area">
+              <InstrumentControllers />
             </div>
           </div>
-
-          <div className="tracks">
-            <h3>音轨列表</h3>
-            {fixtureProject.tracks.map(track => (
-              <div key={track.id} className="track-item" style={{ borderLeftColor: track.color }}>
-                <div className="track-name">{track.name}</div>
-                <div className="track-details">
-                  类型: {track.kind} |
-                  片段: {track.clips.length} |
-                  静音: {track.muted ? '是' : '否'}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {fixtureProject.lastExplanation && (
-            <div className="explanation">
-              <h3>最近操作说明</h3>
-              <p><strong>{fixtureProject.lastExplanation.summary}</strong></p>
-              <ul>
-                {fixtureProject.lastExplanation.changes.map((change, i) => (
-                  <li key={i}>{change}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
-      </main>
 
-      <footer className="App-footer">
-        <p>✨ 基础脚手架已就绪 - Tone.js 已集成</p>
-      </footer>
+        <div className="agent-area">
+          <AgentPanel />
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+function App() {
+  return (
+    <EditorProvider>
+      <AppContent />
+    </EditorProvider>
+  );
+}
+
+export default App;
