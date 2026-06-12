@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { ArrangementProject, SeedPattern, TrackKind } from '../../contracts';
 import { PlaybackState, UIState } from '../types';
 
@@ -29,6 +29,19 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     showAgentPanel: true
   });
   const [seedPattern, setSeedPattern] = useState<SeedPattern | null>(null);
+
+  useEffect(() => {
+    if (!playback.isPlaying) return;
+
+    const intervalId = window.setInterval(() => {
+      setPlayback(current => ({
+        ...current,
+        currentStep: (current.currentStep + 1) % 128
+      }));
+    }, 125);
+
+    return () => window.clearInterval(intervalId);
+  }, [playback.isPlaying]);
 
   const captureSeed = (trackKind: TrackKind, notes: any[], drumHits: any[]) => {
     if (!project) return;

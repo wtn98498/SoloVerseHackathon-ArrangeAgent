@@ -11,15 +11,11 @@ export function InstrumentControllers() {
   if (!track) return null;
 
   const handlePadPress = (padId: string) => {
-    setActivePads(prev => new Set(prev).add(padId));
-
-    setTimeout(() => {
-      setActivePads(prev => {
-        const next = new Set(prev);
-        next.delete(padId);
-        return next;
-      });
-    }, 200);
+    setActivePads(prev => {
+      const next = new Set(prev);
+      next.add(padId);
+      return next;
+    });
   };
 
   const handleCompleteSeed = () => {

@@ -9,16 +9,11 @@ import { fixtureProject } from './fixtures/project';
 import './App.css';
 
 function AppContent() {
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [audioStatus, setAudioStatus] = useState<'idle' | 'ready' | 'blocked'>('idle');
   const { setProject, playback } = useEditor();
 
   useEffect(() => {
-    // Initialize audio engine on mount
-    audioEngine.initialize().then(() => {
-      setIsInitialized(true);
-      // Load fixture project
-      setProject(fixtureProject);
-    });
+    setProject(fixtureProject);
 
     return () => {
       audioEngine.dispose();
@@ -32,28 +27,35 @@ function AppContent() {
       return;
     }
 
-    audioEngine.playProject(fixtureProject, playback.currentStep);
-    audioEngine.setTempo(playback.tempo);
+    let cancelled = false;
+
+    audioEngine.initialize()
+      .then(() => {
+        if (cancelled) return;
+        setAudioStatus('ready');
+        audioEngine.setTempo(playback.tempo);
+        audioEngine.playProject(fixtureProject, playback.currentStep);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAudioStatus('blocked');
+        }
+      });
 
     return () => {
+      cancelled = true;
       audioEngine.stopSequence();
     };
   }, [playback.isPlaying, playback.tempo, fixtureProject]);
-
-  if (!isInitialized) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>初始化音频引擎...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="app-container">
       <header className="app-header">
         <h1>🎵 PlayBand AI</h1>
         <p className="tagline">音乐游乐场</p>
+        {audioStatus === 'blocked' && (
+          <p className="audio-warning">音频暂未启动，但演示界面仍可继续操作。</p>
+        )}
       </header>
 
       <div className="main-content">

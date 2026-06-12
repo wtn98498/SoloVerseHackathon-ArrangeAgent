@@ -72,3 +72,28 @@ Integration:
   dependency tree. Not fixed with `--force` during the hackathon build because
   that may introduce breaking dependency churn.
 
+## 2026-06-13 06:55 CST - Black-Box QA And Demo Fixes
+
+Initial black-box check found two demo blockers:
+
+- First screen was stuck on `初始化音频引擎...` because `Tone.start()` ran before a
+  user gesture. Fix: render the app immediately and initialize audio only when
+  the user starts playback.
+- Drum pads cleared after 200ms, making `捕获律动` hard to click. Fix: keep pad
+  selections until the seed is captured.
+
+Additional demo-safety fix:
+
+- Agent panel now calls local backend service functions directly instead of
+  fetching `/api/...` routes that do not exist in the Vite-only MVP. This avoids
+  visible network failure during the demo while preserving the shared API shape.
+
+Verification after fixes:
+
+- `npm run typecheck`: passed.
+- `npm run build`: passed.
+- Browser black-box path passed:
+  select Drums -> click pads -> capture rhythm -> complete arrangement -> more
+  energy -> play.
+- Browser console errors during the demo path: none observed.
+

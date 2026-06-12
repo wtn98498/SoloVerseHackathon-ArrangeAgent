@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { ArrangementProject, AgentExplanation } from '../../contracts';
+import { completeArrangementEndpoint, energyEndpoint } from '../../backend';
 
 interface AgentResponse {
   project: ArrangementProject;
@@ -21,20 +22,10 @@ export function AgentPanel() {
     setError(null);
 
     try {
-      const response = await fetch('/api/arrange/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          seed: seedPattern,
-          currentProject: project
-        })
+      const data: AgentResponse = await completeArrangementEndpoint({
+        seed: seedPattern,
+        currentProject: project
       });
-
-      if (!response.ok) {
-        throw new Error('API 请求失败');
-      }
-
-      const data: AgentResponse = await response.json();
       setProject(data.project);
       setLastResponse(data);
     } catch (err) {
@@ -63,20 +54,10 @@ export function AgentPanel() {
     setError(null);
 
     try {
-      const response = await fetch('/api/arrange/energy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          project,
-          direction
-        })
+      const data: AgentResponse = await energyEndpoint({
+        project,
+        direction
       });
-
-      if (!response.ok) {
-        throw new Error('API 请求失败');
-      }
-
-      const data: AgentResponse = await response.json();
       setProject(data.project);
       setLastResponse(data);
     } catch (err) {

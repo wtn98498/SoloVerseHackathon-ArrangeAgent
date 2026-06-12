@@ -11,7 +11,6 @@ export class AudioEngine {
     if (this.isInitialized) return;
 
     await Tone.start();
-    this.isInitialized = true;
 
     // Initialize drum samples (using simple synths for MVP)
     this.initializeDrumSynths();
@@ -21,9 +20,13 @@ export class AudioEngine {
       oscillator: { type: 'triangle' },
       envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 1 }
     }).toDestination();
+
+    this.isInitialized = true;
   }
 
   private initializeDrumSynths() {
+    if (this.drumSynths.size > 0) return;
+
     // For MVP, we use simple synths instead of samples
     const kickSynth = new Tone.MembraneSynth().toDestination();
     const snareSynth = new Tone.NoiseSynth().toDestination();
