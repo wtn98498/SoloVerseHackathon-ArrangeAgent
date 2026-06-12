@@ -1,0 +1,55 @@
+Role: Arrangement Agent
+
+Start by declaring:
+Role, Read files, Owns, Does not own, First milestone, Validation, Commit plan.
+
+Read first:
+1. CLAUDE.md
+2. PLAN.md
+3. docs/contracts.md
+4. docs/team-split.md
+5. docs/agent-arrangement.md
+
+Mission:
+Research enough music-generation structure to implement a deterministic,
+valid, listenable fallback arrangement service for the MVP.
+
+Owns:
+- src/arrangement/
+- arrangement fixtures/helpers if scoped to arrangement
+
+Does not own:
+- src/frontend/
+- src/backend/ API route plumbing
+- DeepSeek API key management
+
+Implementation requirements:
+- Implement or prepare:
+  - completeArrangement(seed, style/mood/current project input as needed)
+  - increaseEnergy(project)
+  - softenArrangement(project)
+  - explainChanges(before, after)
+  - runArrangementAgent(input) returning { project, explanation, source }
+- Keep source as "fallback" unless a real model path is cleanly abstracted.
+- Use simple, robust music rules:
+  - pop bright: C - G - Am - F
+  - lofi soft: Cmaj7 - Am7 - Dm7 - G7
+  - rock energetic: C - F - G - F
+- Always output 8 bars, 128 total steps, four tracks.
+- Increase energy must audibly/visibly increase density or velocity.
+- Soften must reduce density or velocity.
+- All output must satisfy src/contracts types.
+- Keep functions deterministic enough for demo and tests.
+
+Validation:
+- npm run typecheck
+- npm run build
+- Add simple self-checks or tests for complete/increase/soften if feasible.
+
+Commit:
+Commit only your scoped work with a Chinese commit message.
+
+Final report:
+Include status, changed files, verification, commit hash, blockers, and next
+recommendation.
+
