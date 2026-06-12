@@ -119,7 +119,8 @@ PlayBand AI 是一个给普通人玩的 AI 编曲 App。它面向的是“有音
 - 前端：React + TypeScript
 - 音频引擎：Tone.js
 - 样式：CSS modules 或 Tailwind，按脚手架速度决定
-- Agent API：OpenAI / Claude / 赞助商模型 API
+- 底座模型：DeepSeek
+- Agent 编排：单一编曲 Agent + 轻量工具路由
 - 编曲格式：JSON-based pattern model
 
 关键原则：
@@ -127,6 +128,35 @@ PlayBand AI 是一个给普通人玩的 AI 编曲 App。它面向的是“有音
 - 先把 React 浏览器版本做成可用。
 - 主流程跑通后再包 Tauri。
 - 保留浏览器 fallback，避免桌面打包出问题时无法演示。
+- 前后端先分离，通过稳定 API 和共享数据契约对齐。
+- 不上多 Agent；MVP 只做一个单一编曲 Agent。
+- 暂不引入 LangGraph，除非轻量编排明显阻塞开发。
+
+### 开源参考
+
+先参考开源项目的交互和数据结构，不直接 fork 大型 DAW：
+
+- `openDAW`：参考现代 Web DAW 的布局和完整度，但对 MVP 太重。
+- `GridSound DAW`：参考浏览器 DAW 概念，但不直接复用。
+- `drumhaus`：参考 React + Tone.js 鼓机交互。
+- `step-sequencer` / `tonejs-sequencer`：参考 step sequencing 和 Tone.js 调度。
+
+本项目要做的是小型音乐编辑器，不重复造完整 DAW，也不把大型开源项目搬进来。
+
+### 团队协作拆分
+
+假设有三个开发 Agent 并行：
+
+- Frontend Agent：负责 App UI、音乐编辑器、用户输入、Tone.js 播放。
+- App Backend Agent：负责 API、DeepSeek wrapper、校验、fallback、服务编排。
+- Arrangement Agent：负责单一编曲 Agent、工具定义、prompt、规则生成器。
+
+所有人必须以 `docs/contracts.md` 为共享契约。具体分工见：
+
+- `docs/team-split.md`
+- `docs/agent-frontend.md`
+- `docs/agent-backend.md`
+- `docs/agent-arrangement.md`
 
 ### 编曲数据模型
 
