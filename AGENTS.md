@@ -11,10 +11,16 @@ and the ability to roll back.
 
 ## Required Git Discipline
 
+- Agents are allowed to run `git add` and `git commit` automatically after
+  completing a coherent change.
+- Use the shared git author name `wentianning` for commits in this repository.
+- Commit messages must be written in Chinese.
 - After making any code change, create a git commit before finishing the task.
 - Keep each commit focused on the completed change.
-- Use a clear commit message that explains what changed.
+- Use a clear Chinese commit message that explains what changed.
 - Before committing, run the relevant checks or tests when they exist.
+- Commit promptly at every stable checkpoint; do not leave finished work
+  uncommitted while moving on to the next task.
 - If no code was changed, state that no commit is needed.
 
 ## Attempt Limits
