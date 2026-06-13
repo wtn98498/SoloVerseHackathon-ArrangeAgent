@@ -1,6 +1,20 @@
 # PlayBand AI
 
-音乐游乐场 - AI 编曲应用
+音乐游乐场 - AI 编曲应用。
+
+PlayBand AI 面向不会 DAW、但想玩音乐的人：用户先用鼓 pad 或按键玩出一个
+seed，Agent 再把它扩成一段可听、可见的 8 小节乐队 loop。
+
+MVP 采用 lightweight MIDI-like JSON 作为底层编曲数据。界面可以有 MIDI 卷帘味道，
+但本项目不是完整 DAW，也不做完整 MIDI 编辑器。
+
+## 当前方向
+
+- Demo 核心：play seed -> complete arrangement -> increase/soften energy。
+- 底层：`ArrangementProject` / `Track` / `Clip` / `NoteEvent` / `DrumHit`。
+- 视觉参考：two-moons / MoaRoll 的卷帘质感，只借鉴不接入。
+- 不接入：openDAW、GridSound DAW 或其他大型 DAW 子系统。
+- 安全线：没有 `DEEPSEEK_API_KEY` 时仍然走 deterministic fallback。
 
 ## 项目结构
 

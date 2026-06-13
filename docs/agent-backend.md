@@ -14,13 +14,16 @@ The backend serves a lightweight MIDI editor model. It must validate and apply
 structured clip/note edits. It is not enough to trigger audio or return a text
 description of a change.
 
+MVP scope is complete, increase, and soften. Local MIDI edits are optional
+polish and must remain small; do not turn the backend into a full MIDI editor.
+
 ## Scope
 
 Own:
 
 - `/api/arrange/complete`
 - `/api/arrange/energy`
-- Local MIDI edit service for piano-roll style note edits.
+- Local MIDI edit service for minimal piano-roll note edits, if needed.
 - DeepSeek client wrapper.
 - Request validation.
 - Agent response validation.
@@ -136,7 +139,8 @@ Rules:
 - Local fallback works with no API key.
 - DeepSeek call path hidden behind one wrapper.
 - Validation utility shared by both endpoints.
-- MIDI edit service for local piano-roll edits.
+- Minimal MIDI edit service for local piano-roll edits, only if the current UI
+  needs it for the demo.
 - At least one fixture project and one fixture seed.
 
 ## Integration Tests To Perform

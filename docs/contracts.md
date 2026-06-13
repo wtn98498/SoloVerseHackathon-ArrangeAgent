@@ -26,7 +26,10 @@ arrangement.
 - Audio engine: Tone.js.
 - Editing model: lightweight MIDI clips rendered in a piano-roll / clip-lane
   interface. Do not build a full DAW, but every generated result must be real
-  structured note data that can be displayed, edited, transformed, and played.
+  structured note data that can be displayed, transformed, and played.
+- Piano-roll UI is a trust-building view for the selected track or clip, not
+  the product core. It may support small local edits when already implemented,
+  but the MVP must not grow into a full MIDI editor.
 - Piano-roll pitch range: exactly three white-key octaves, `C2` through `B4`.
   Generated, edited, imported, and agent-produced pitched notes outside this
   range must be rejected or repaired before the frontend receives them.
@@ -43,8 +46,12 @@ arrangement.
 Use these projects as reference material only. Do not fork or copy large
 subsystems into the MVP.
 
+- two-moons / MoaRoll: primary reference for the piano-roll look and interaction
+  feel. Borrow visual ideas, keyboard/grid layout, and playhead/scrub behavior.
+  Do not import its MobX store, seconds-based timing model, instrument registry,
+  or MIDI export pipeline.
 - openDAW: useful reference for a modern web DAW layout and ambition, but too
-  large for this MVP.
+  large for this MVP and risky to integrate under hackathon time pressure.
 - GridSound DAW: useful reference for browser DAW concepts, but too large and
   license-sensitive for direct reuse.
 - drumhaus: useful reference for React + Tone.js drum machine interactions.
@@ -201,7 +208,21 @@ Request:
 }
 ```
 
+Response:
+
+```ts
+{
+  project: ArrangementProject;
+  explanation: AgentExplanation;
+  source: "deepseek" | "fallback";
+}
+```
+
 ### Local MIDI edit service
+
+MVP note: local MIDI edits are optional polish. They must stay small and must
+not become a full piano-roll editor. The demo path should still work if this
+service is limited to add/remove/move basics or is hidden behind existing UI.
 
 The frontend may call local TypeScript service functions directly in the
 browser-first MVP:
@@ -230,16 +251,6 @@ Required behavior:
 - Clamp note duration to at least `1`.
 - Clamp velocity to `0..1`.
 - Preserve clip identity so the piano-roll UI can keep selection.
-
-Response:
-
-```ts
-{
-  project: ArrangementProject;
-  explanation: AgentExplanation;
-  source: "deepseek" | "fallback";
-}
-```
 
 ## 6. Validation Rules
 
@@ -314,13 +325,17 @@ Arrangement agent owns:
 - Agent prompt.
 - Tool/action definitions.
 - Deterministic fallback generator.
-- MIDI clip filling and variation rules.
+- Complete, increase, and soften transformations.
 - Output explanations.
 
 No agent should duplicate another agent's core logic. If duplication seems
 tempting, add a shared helper or update this contract.
 
 ## 9. Integration Checkpoints
+
+The first demo only requires complete, increase, and soften. `fill_clip`,
+`variation`, and richer local MIDI edits are post-demo options unless the user
+explicitly asks for them.
 
 Checkpoint 1:
 

@@ -10,6 +10,10 @@ Your job is to make the app feel playable, clear, and demo-safe. The frontend
 should work with backend fallback responses before DeepSeek integration is
 ready.
 
+The piano-roll view is for visual trust and light interaction. Make it concise
+and beautiful, inspired by two-moons / MoaRoll where useful, but do not import
+that codebase or build a full MIDI editor.
+
 ## Scope
 
 Own:
@@ -22,6 +26,7 @@ Own:
 - Rendering `ArrangementProject`.
 - Calling `/api/arrange/complete` and `/api/arrange/energy`.
 - Loading, success, and fallback UI states.
+- Lightweight piano-roll display for the selected track or clip.
 
 Do not own:
 
@@ -50,6 +55,10 @@ Visual style:
 - Nintendo-inspired music toy, not a dense DAW.
 - Big controls, strong feedback, low text density.
 - Use instrument colors from `docs/contracts.md` data when available.
+- MIDI-flavored visuals are welcome, but the central promise is still "play a
+  seed, let the agent arrange it."
+- Do not add dense velocity lanes, multi-select editing, full-keyboard scrolling,
+  or MIDI file workflows in the MVP.
 
 ## API Use
 
@@ -99,4 +108,4 @@ await fetch("/api/arrange/energy", {
 - Trigger complete with a hand-built seed.
 - Trigger increase and verify UI changes.
 - Disconnect API or force fallback and confirm the UI still works.
-
+- Verify the selected-track piano roll respects the `C2..B4` pitch boundary.

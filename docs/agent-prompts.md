@@ -33,6 +33,8 @@ Hard coordination rules:
 - Keep the 8-bar / 128-step timing model.
 - Every completed arrangement must include drums, bass, guitar, and keys.
 - Do not add Chinese/gufeng style, mobile support, accounts, cloud sync, full MIDI editing, or a full piano roll in the MVP.
+- Use two-moons / MoaRoll only as visual and interaction reference for the piano-roll feel. Do not import its MobX store, timing model, instrument registry, or MIDI export pipeline.
+- Treat openDAW and GridSound DAW as high-level references only; do not copy or integrate large DAW subsystems.
 - Do not introduce LangGraph in the MVP unless the user explicitly approves it later.
 - Keep the browser fallback working even if Tauri packaging is added.
 - Prefer small, testable modules over one large file.
@@ -87,6 +89,8 @@ Design requirements:
 - No generic purple-blue AI dashboard look.
 - No dense DAW parameter panels.
 - Do not use visible instructional text to explain every feature; the controls should be obvious.
+- The piano roll should be compact, beautiful, and MIDI-flavored, but it is a trust-building view, not the product core.
+- Do not add full MIDI import/export, velocity lanes, full-keyboard editing, or complex region workflows.
 
 Integration contract:
 - Use the ArrangementProject, SeedPattern, and API response shapes from docs/contracts.md exactly.
@@ -122,6 +126,7 @@ You own:
 - Agent response validation
 - Fallback routing
 - Shared fixture seed and fixture project
+- Minimal local MIDI edit service only if needed by the current UI
 
 You do not own:
 - React UI
@@ -137,6 +142,7 @@ Implementation priorities:
 5. Implement /api/arrange/energy with increase and soften directions.
 6. Add a DeepSeek wrapper behind a single function: callDeepSeekJson<T>(messages).
 7. Route DeepSeek failures, invalid JSON, invalid schema, and timeouts to fallback.
+8. Keep MIDI edit support minimal; do not build DAW-grade editing services.
 
 DeepSeek requirements:
 - Use DEEPSEEK_API_KEY from the environment.
@@ -191,6 +197,11 @@ You own:
 - softenArrangement
 - Plain-language explanations.
 
+Post-demo only unless explicitly requested:
+- fillClip
+- createVariation
+- region-level natural-language edits
+
 You do not own:
 - HTTP route plumbing.
 - DeepSeek API key management.
@@ -201,6 +212,7 @@ Framework decision:
 - Use a custom lightweight orchestrator.
 - Do not use LangGraph in MVP.
 - Internal tools should be plain TypeScript functions unless the user later asks for a framework.
+- Do not add a new plan-engine architecture in the MVP.
 
 Required public shape:
 Implement or prepare a service equivalent to:

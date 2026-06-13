@@ -124,3 +124,6 @@ Before merging any workstream:
 - Does it keep the four required tracks?
 - Does it work without `DEEPSEEK_API_KEY`?
 - Does it keep the user-facing loop under 90 seconds?
+- Does it avoid turning the MVP into a full DAW or full MIDI editor?
+- Does it keep open-source DAW projects as references only, with no large
+  subsystem imports?

@@ -24,10 +24,13 @@ Own:
 - `completeArrangement`
 - `increaseEnergy`
 - `softenArrangement`
+- Plain-language explanations.
+
+Post-demo only unless explicitly requested:
+
 - `fillClip`
 - `createVariation`
-- MIDI edit proposals.
-- Plain-language explanations.
+- Region-level MIDI edit proposals.
 
 Do not own:
 
@@ -44,18 +47,16 @@ Do not use LangGraph in the first build. LangGraph is powerful, but the MVP
 only needs a single agent with three actions. A custom orchestrator is easier
 to debug under hackathon time pressure.
 
-Allowed shape:
+Allowed MVP shape:
 
 ```ts
-type AgentAction = "complete" | "increase" | "soften" | "fill_clip" | "variation";
+type AgentAction = "complete" | "increase" | "soften";
 
 async function runArrangementAgent(input: {
   action: AgentAction;
   seed?: SeedPattern;
   project?: ArrangementProject;
   direction?: "increase" | "soften";
-  targetTrackId?: string;
-  targetClipId?: string;
 }): Promise<{
   project: ArrangementProject;
   explanation: AgentExplanation;
@@ -74,13 +75,14 @@ The agent may use these internal tools:
 - `buildKeysPart(chords, style, mood)`
 - `increaseEnergy(project)`
 - `softenArrangement(project)`
-- `fillClip(project, targetClipId)`
-- `createVariation(project, targetClipId)`
 - `quantizeNotes(project, grid)`
 - `explainChanges(before, after)`
 
 These tools can be plain TypeScript functions. They do not need to be model
 tools in the MVP.
+
+`fillClip` and `createVariation` are post-demo tools. Do not implement them
+until the main 90-second flow is stable.
 
 ## Music Rules
 
@@ -130,8 +132,6 @@ essay output.
 - Agent orchestration function.
 - Energy increase transformer.
 - Soften transformer.
-- MIDI clip fill and variation helpers.
-- Quantization-safe note editing helpers.
 - Explanation generator.
 
 ## Integration Tests To Perform
@@ -140,6 +140,4 @@ essay output.
 - Complete arrangement from keyboard seed.
 - Increase energy modifies drums and note density.
 - Soften reduces density and velocity.
-- Fill a sparse clip with valid MIDI notes.
-- Create a variation without changing track/clip identity.
 - All outputs pass shared validation.
