@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { ArrangementProject, Track, Clip } from '../../contracts';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
@@ -8,10 +8,19 @@ interface TrackTimelineProps {
   project: ArrangementProject;
 }
 
+interface ClipMenu {
+  x: number;
+  y: number;
+  trackId: string;
+  clipId: string;
+}
+
 export function TrackTimeline({ project }: TrackTimelineProps) {
-  const { playback, setPlayback, ui, setUi } = useEditor();
+  const { playback, setPlayback, ui, setUi, setProject } = useEditor();
   const totalSteps = project.bars * project.beatsPerBar * project.subdivision;
   const rulerRef = useRef<HTMLDivElement>(null);
+  const clipClipboard = useRef<Clip | null>(null);
+  const [menu, setMenu] = useState<ClipMenu | null>(null);
 
   const handleTrackSelect = (trackId: string) => {
     setUi({ ...ui, selectedTrackId: trackId });
@@ -30,47 +39,142 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
     setPlayback({ ...playback, currentStep: step });
   };
 
+  /* ── Clip editing (copy / paste / delete) ── */
+  const openClipMenu = (trackId: string, clip: Clip, x: number, y: number) => {
+    handleTrackSelect(trackId); // follow the clip's track in the piano roll
+    setMenu({ x, y, trackId, clipId: clip.id });
+  };
+
+  const findClip = () => {
+    const t = project.tracks.find((tr) => tr.id === menu?.trackId);
+    return t?.clips.find((c) => c.id === menu?.clipId) ?? null;
+  };
+
+  const copyClip = () => {
+    const c = findClip();
+    if (c) clipClipboard.current = c;
+    setMenu(null);
+  };
+
+  const pasteIntoClip = () => {
+    if (!menu) return;
+    const src = clipClipboard.current;
+    if (!src) { setMenu(null); return; }
+    const stamp = Date.now();
+    setProject({
+      ...project,
+      tracks: project.tracks.map((t) =>
+        t.id !== menu.trackId ? t : {
+          ...t,
+          clips: t.clips.map((c) =>
+            c.id !== menu.clipId ? c : {
+              ...c,
+              notes: src.notes.map((n, i) => ({ ...n, id: `note-${stamp}-${i}` })),
+              drumHits: src.drumHits.map((h, i) => ({ ...h, id: `hit-${stamp}-${i}` })),
+            }
+          ),
+        }
+      ),
+    });
+    setMenu(null);
+  };
+
+  const deleteClip = () => {
+    if (!menu) return;
+    setProject({
+      ...project,
+      tracks: project.tracks.map((t) =>
+        t.id !== menu.trackId ? t : { ...t, clips: t.clips.filter((c) => c.id !== menu.clipId) }
+      ),
+    });
+    setMenu(null);
+  };
+
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menu]);
+
   return (
-    <div className="timeline-container" role="region" aria-label="编曲时间线">
-      {/* Bar ruler — also the scrub surface */}
-      <div className="bar-ruler">
-        <div className="bar-ruler-gutter" />
-        <div
-          className="bar-ruler-track scrub-surface"
-          ref={rulerRef}
-          onPointerDown={(e) => {
-            (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-            scrubFromEvent(e.clientX);
-          }}
-          onPointerMove={(e) => {
-            if (e.buttons === 1) scrubFromEvent(e.clientX);
-          }}
-        >
-          {Array.from({ length: project.bars }, (_, i) => (
-            <div key={i} className="bar-ruler-cell">
-              <span className="bar-ruler-label">{i + 1}</span>
-            </div>
+    <>
+      <div className="timeline-container" role="region" aria-label="编曲时间线">
+        {/* Bar ruler — also the scrub surface */}
+        <div className="bar-ruler">
+          <div className="bar-ruler-gutter" />
+          <div
+            className="bar-ruler-track scrub-surface"
+            ref={rulerRef}
+            onPointerDown={(e) => {
+              (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+              scrubFromEvent(e.clientX);
+            }}
+            onPointerMove={(e) => {
+              if (e.buttons === 1) scrubFromEvent(e.clientX);
+            }}
+          >
+            {Array.from({ length: project.bars }, (_, i) => (
+              <div key={i} className="bar-ruler-cell">
+                <span className="bar-ruler-label">{i + 1}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="tracks-container">
+          {project.tracks.map((track) => (
+            <TrackRow
+              key={track.id}
+              track={track}
+              bars={project.bars}
+              totalSteps={totalSteps}
+              isSelected={ui.selectedTrackId === track.id}
+              onSelect={() => handleTrackSelect(track.id)}
+              isPlaying={playback.isPlaying}
+              playheadPct={playheadPct}
+              onClipContext={(clip, x, y) => openClipMenu(track.id, clip, x, y)}
+            />
           ))}
+
+          <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }} />
         </div>
       </div>
 
-      <div className="tracks-container">
-        {project.tracks.map((track) => (
-          <TrackRow
-            key={track.id}
-            track={track}
-            bars={project.bars}
-            totalSteps={totalSteps}
-            isSelected={ui.selectedTrackId === track.id}
-            onSelect={() => handleTrackSelect(track.id)}
-            isPlaying={playback.isPlaying}
-            playheadPct={playheadPct}
+      {/* Right-click context menu (timeline clips) */}
+      {menu && (
+        <>
+          <div
+            className="ctx-backdrop"
+            onClick={() => setMenu(null)}
+            onContextMenu={(e) => { e.preventDefault(); setMenu(null); }}
           />
-        ))}
-
-        <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }} />
-      </div>
-    </div>
+          <div
+            className="ctx-menu"
+            role="menu"
+            style={{
+              left: Math.min(menu.x, window.innerWidth - 200),
+              top: Math.min(menu.y, window.innerHeight - 200),
+            }}
+          >
+            <button className="ctx-item" role="menuitem" onClick={copyClip}>
+              <span className="material-symbols-outlined">content_copy</span>
+              复制片段
+            </button>
+            {clipClipboard.current && (
+              <button className="ctx-item" role="menuitem" onClick={pasteIntoClip}>
+                <span className="material-symbols-outlined">content_paste</span>
+                粘贴到该轨
+              </button>
+            )}
+            <button className="ctx-item danger" role="menuitem" onClick={deleteClip}>
+              <span className="material-symbols-outlined">delete</span>
+              删除片段
+            </button>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
@@ -83,9 +187,10 @@ interface TrackRowProps {
   onSelect: () => void;
   isPlaying: boolean;
   playheadPct: number;
+  onClipContext: (clip: Clip, x: number, y: number) => void;
 }
 
-function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, playheadPct }: TrackRowProps) {
+function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, playheadPct, onClipContext }: TrackRowProps) {
   const theme = INSTRUMENT_THEME[track.kind];
 
   return (
@@ -121,6 +226,7 @@ function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, pl
             clip={clip}
             totalSteps={totalSteps}
             trackKind={track.kind}
+            onClipContext={onClipContext}
           />
         ))}
 
@@ -141,10 +247,12 @@ function MIDIClip({
   clip,
   totalSteps,
   trackKind,
+  onClipContext,
 }: {
   clip: Clip;
   totalSteps: number;
   trackKind: string;
+  onClipContext: (clip: Clip, x: number, y: number) => void;
 }) {
   const leftPct = (clip.barStart / 8) * 100;
   const widthPct = (clip.barLength / 8) * 100;
@@ -170,6 +278,12 @@ function MIDIClip({
   return (
     <div
       className="midi-clip"
+      title="右键：复制 / 粘贴 / 删除"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClipContext(clip, e.clientX, e.clientY);
+      }}
       style={{
         left: `${leftPct}%`,
         width: `${widthPct}%`,
