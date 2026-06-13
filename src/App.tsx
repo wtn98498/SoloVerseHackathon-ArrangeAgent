@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { EditorProvider, useEditor } from './frontend/contexts/EditorContext';
 import { TransportBar } from './frontend/components/TransportBar';
 import { TrackTimeline } from './frontend/components/TrackTimeline';
-import { InstrumentControllers } from './frontend/components/InstrumentControllers';
+import { InstrumentSidebar } from './frontend/components/InstrumentSidebar';
 import { AgentPanel } from './frontend/components/AgentPanel';
 import { audioEngine } from './frontend/audio/AudioEngine';
 import { fixtureProject } from './fixtures/project';
@@ -49,33 +49,35 @@ function AppContent() {
   }, [playback.isPlaying, playback.tempo, fixtureProject]);
 
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1>🎵 PlayBand AI</h1>
-        <p className="tagline">音乐游乐场</p>
-        {audioStatus === 'blocked' && (
-          <p className="audio-warning">音频暂未启动，但演示界面仍可继续操作。</p>
-        )}
+    <div className="app-root">
+      {/* Top Player Bar - Centered */}
+      <header className="player-bar">
+        <div className="player-bar-inner">
+          <TransportBar />
+        </div>
       </header>
 
-      <div className="main-content">
-        <div className="editor-area">
-          <TransportBar />
+      {/* Main 3-column layout */}
+      <div className="main-layout">
+        {/* Left: Instrument Sidebar */}
+        <aside className="sidebar-instruments">
+          <InstrumentSidebar />
+        </aside>
 
-          <div className="editor-body">
-            <div className="timeline-area">
-              <TrackTimeline project={fixtureProject} />
+        {/* Center: Waveform Timeline */}
+        <main className="center-stage">
+          {audioStatus === 'blocked' && (
+            <div className="audio-notice">
+              🔇 音频未启动，界面仍可操作
             </div>
+          )}
+          <TrackTimeline project={fixtureProject} />
+        </main>
 
-            <div className="instruments-area">
-              <InstrumentControllers />
-            </div>
-          </div>
-        </div>
-
-        <div className="agent-area">
+        {/* Right: Agent Assistant */}
+        <aside className="sidebar-agent">
           <AgentPanel />
-        </div>
+        </aside>
       </div>
     </div>
   );

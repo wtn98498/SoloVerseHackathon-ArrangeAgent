@@ -24,15 +24,15 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
   return (
     <div className="timeline-container">
       <div className="timeline-header">
-        <h3>音轨</h3>
+        <h3>编曲</h3>
         <div className="timeline-info">
           <span>{project.bars} 小节</span>
-          <span>•</span>
+          <span>·</span>
           <span>{totalSteps} 步</span>
         </div>
       </div>
 
-      <div className="tracks-container">
+      <div className="tracks-container" style={{ position: 'relative' }}>
         {project.tracks.map((track) => (
           <TrackRow
             key={track.id}
@@ -44,11 +44,15 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
             playheadPosition={getPlayheadPosition()}
           />
         ))}
-      </div>
 
-      {playback.isPlaying && (
-        <div className="playhead-line" style={{ left: `${getPlayheadPosition()}%` }} />
-      )}
+        {/* Global playhead */}
+        {playback.isPlaying && (
+          <div
+            className="playhead-line"
+            style={{ left: `calc(100px + ${getPlayheadPosition()}% * (1 - 100px / 100%))` }}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -67,6 +71,8 @@ function TrackRow({ track, isSelected, onSelect, isPlaying, playheadPosition }: 
     return track.clips.map(clip => {
       const startPercent = (clip.barStart / 8) * 100;
       const widthPercent = (clip.barLength / 8) * 100;
+      const hasNotes = clip.notes.length > 0;
+      const hasDrums = clip.drumHits.length > 0;
 
       return (
         <div
@@ -75,14 +81,15 @@ function TrackRow({ track, isSelected, onSelect, isPlaying, playheadPosition }: 
           style={{
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
-            backgroundColor: `${track.color}40`
+            backgroundColor: `${track.color}30`,
           }}
         >
+          {/* Waveform SVG pattern */}
+          <WaveformSVG color={track.color} density={hasDrums ? 'high' : 'normal'} />
+
           <div className="clip-content">
-            <span className="clip-notes">{clip.notes.length} 音符</span>
-            {clip.drumHits.length > 0 && (
-              <span className="clip-drums"> + {clip.drumHits.length} 鼓点</span>
-            )}
+            {hasNotes && <span className="clip-notes">{clip.notes.length} ♪</span>}
+            {hasDrums && <span className="clip-drums">{clip.drumHits.length} ●</span>}
           </div>
         </div>
       );
@@ -93,24 +100,53 @@ function TrackRow({ track, isSelected, onSelect, isPlaying, playheadPosition }: 
     <div
       className={`track-row ${isSelected ? 'selected' : ''} ${track.muted ? 'muted' : ''}`}
       onClick={onSelect}
-      style={{ borderLeftColor: track.color }}
     >
-      <div className="track-info">
+      <div className="track-info" style={{ borderColor: track.color }}>
         <div className="track-name">{track.name}</div>
         <div className="track-kind">{track.kind}</div>
-        {track.muted && <div className="muted-badge">静音</div>}
+        {track.muted && <div className="muted-badge">MUTE</div>}
       </div>
 
       <div className="track-lane">
         {renderClips()}
+        {isPlaying && (
+          <div
+            className="track-playhead"
+            style={{ left: `${playheadPosition}%` }}
+          />
+        )}
       </div>
-
-      {isPlaying && (
-        <div
-          className="track-playhead"
-          style={{ left: `${playheadPosition}%` }}
-        />
-      )}
     </div>
+  );
+}
+
+/** Inline SVG waveform pattern for clip visualization */
+function WaveformSVG({ color, density }: { color: string; density: 'high' | 'normal' }) {
+  const bars = density === 'high' ? 32 : 20;
+  const heights = Array.from({ length: bars }, (_, i) => {
+    // Pseudo-random waveform heights
+    const seed = (i * 7 + 13) % 17;
+    return 20 + (seed / 17) * 60; // 20% to 80% height
+  });
+
+  return (
+    <svg
+      className="clip-wave"
+      viewBox={`0 0 ${bars * 8} 100`}
+      preserveAspectRatio="none"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.25 }}
+    >
+      {heights.map((h, i) => (
+        <rect
+          key={i}
+          x={i * 8 + 1}
+          y={(100 - h) / 2}
+          width={5}
+          rx={2}
+          height={h}
+          fill={color}
+        />
+      ))}
+    </svg>
   );
 }
