@@ -10,12 +10,17 @@ agent and DeepSeek.
 The backend must make integration boring: stable endpoints, validated responses,
 and deterministic fallback whenever the model fails.
 
+The backend serves a lightweight MIDI editor model. It must validate and apply
+structured clip/note edits. It is not enough to trigger audio or return a text
+description of a change.
+
 ## Scope
 
 Own:
 
 - `/api/arrange/complete`
 - `/api/arrange/energy`
+- Local MIDI edit service for piano-roll style note edits.
 - DeepSeek client wrapper.
 - Request validation.
 - Agent response validation.
@@ -62,6 +67,8 @@ Required behavior:
 - Validate request.
 - Call arrangement service.
 - Validate returned project.
+- Preserve clip metadata (`kind`, `name`, `loop`, `quantize`) so the frontend
+  piano-roll can keep rendering editable clips.
 - Fall back if model call, JSON parsing, or schema validation fails.
 
 ### POST /api/arrange/energy
@@ -82,7 +89,30 @@ Required behavior:
 - Validate request.
 - Apply requested transformation through arrangement service.
 - Validate returned project.
+- Ensure the transformation changes MIDI events, such as velocity, density,
+  note duration, or clip content.
 - Fall back if needed.
+
+### Local MIDI edit service
+
+Input:
+
+- `project: ArrangementProject`
+- `edits: MidiEdit[]`
+
+Output:
+
+- `project: ArrangementProject`
+- `explanation: AgentExplanation`
+- `source: "local"`
+
+Required behavior:
+
+- Apply edits immutably.
+- Clamp step, duration, and velocity.
+- Preserve track and clip identity.
+- Reject unsafe edit results by returning the original project with an
+  explanation.
 
 ## DeepSeek Wrapper
 
@@ -106,6 +136,7 @@ Rules:
 - Local fallback works with no API key.
 - DeepSeek call path hidden behind one wrapper.
 - Validation utility shared by both endpoints.
+- MIDI edit service for local piano-roll edits.
 - At least one fixture project and one fixture seed.
 
 ## Integration Tests To Perform
@@ -114,4 +145,5 @@ Rules:
 - Call energy endpoint with fixture project and no API key.
 - Force malformed model output and verify fallback.
 - Verify returned project always has four tracks.
-
+- Apply add/move/resize/velocity MIDI edits to a fixture clip and verify the
+  project still passes validation.

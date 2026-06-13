@@ -1,17 +1,25 @@
-import { ArrangementProject, SeedPattern, TrackKind, StyleId, MoodId } from '../../contracts';
+import { ArrangementProject, SeedPattern, TrackKind, StyleId, MoodId, ClipKind, QuantizeGrid } from '../../contracts';
 
 const VALID_TRACK_KINDS: TrackKind[] = ['drums', 'bass', 'guitar', 'keys'];
 const VALID_STYLE_IDS: StyleId[] = ['pop', 'lofi', 'rock'];
 const VALID_MOOD_IDS: MoodId[] = ['bright', 'soft', 'energetic'];
 const VALID_DRUMS = ['kick', 'snare', 'hihat', 'clap'];
+const VALID_CLIP_KINDS: ClipKind[] = ['midi', 'drum'];
+const VALID_QUANTIZE: QuantizeGrid[] = [1, 2, 4, 8, 16];
+const VALID_PITCH_RE = /^[A-G][2-4]$/;
 
 const MAX_STEP = 127; // 8 bars * 4 beats * 4 subdivisions
 const MAX_VELOCITY = 1;
 const MIN_VELOCITY = 0;
+const PIANO_ROLL_RANGE = 'C2-B4';
 
 export interface ValidationError {
   path: string;
   message: string;
+}
+
+function isValidPianoRollPitch(pitch: string): boolean {
+  return VALID_PITCH_RE.test(pitch);
 }
 
 export function validateSeedPattern(seed: SeedPattern): ValidationError[] {
@@ -34,6 +42,9 @@ export function validateSeedPattern(seed: SeedPattern): ValidationError[] {
   }
 
   seed.notes.forEach((note, index) => {
+    if (!isValidPianoRollPitch(note.pitch)) {
+      errors.push({ path: `notes[${index}].pitch`, message: `Pitch must stay within ${PIANO_ROLL_RANGE}, got ${note.pitch}` });
+    }
     if (note.step < 0 || note.step > MAX_STEP) {
       errors.push({ path: `notes[${index}].step`, message: `Step must be 0-127, got ${note.step}` });
     }
@@ -122,15 +133,42 @@ export function validateArrangementProject(project: ArrangementProject): Validat
     }
 
     track.clips.forEach((clip, clipIndex) => {
+      if (!clip.id || clip.id.trim() === '') {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].id`, message: 'Clip ID is required' });
+      }
+      if (!clip.name || clip.name.trim() === '') {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].name`, message: 'Clip name is required' });
+      }
+      if (!VALID_CLIP_KINDS.includes(clip.kind)) {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].kind`, message: `Invalid clip kind: ${clip.kind}` });
+      }
+      if (!VALID_QUANTIZE.includes(clip.quantize)) {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].quantize`, message: `Invalid quantize grid: ${clip.quantize}` });
+      }
+      if (typeof clip.loop !== 'boolean') {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].loop`, message: 'Clip loop must be boolean' });
+      }
       if (clip.barStart < 0 || clip.barStart >= 8) {
         errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].barStart`, message: `barStart must be 0-7, got ${clip.barStart}` });
+      }
+      if (clip.barLength < 1) {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].barLength`, message: 'Clip length must be at least 1 bar' });
       }
       if (clip.barStart + clip.barLength > 8) {
         errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].barLength`, message: 'Clip extends beyond 8 bars' });
       }
+      if (track.kind === 'drums' && clip.kind !== 'drum') {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].kind`, message: 'Drum tracks must use drum clips' });
+      }
+      if (track.kind !== 'drums' && clip.kind !== 'midi') {
+        errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].kind`, message: 'Pitched tracks must use midi clips' });
+      }
 
       // Validate notes
       clip.notes.forEach((note, noteIndex) => {
+        if (!isValidPianoRollPitch(note.pitch)) {
+          errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].notes[${noteIndex}].pitch`, message: `Pitch must stay within ${PIANO_ROLL_RANGE}, got ${note.pitch}` });
+        }
         if (note.step < 0 || note.step > MAX_STEP) {
           errors.push({ path: `tracks[${trackIndex}].clips[${clipIndex}].notes[${noteIndex}].step`, message: `Step must be 0-127, got ${note.step}` });
         }

@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import { useEditor } from '../contexts/EditorContext';
-
-/* ── Instrument catalogue ── */
-const INSTRUMENTS = [
-  { kind: 'drums'  as const, icon: '🥁', name: '鼓组', en: 'Drums',  color: '#FF5E5B', soft: '#FFD9D8' },
-  { kind: 'bass'   as const, icon: '🎸', name: '贝斯', en: 'Bass',   color: '#00B4A0', soft: '#C8F5EE' },
-  { kind: 'guitar' as const, icon: '🎵', name: '吉他', en: 'Guitar', color: '#FFBE0B', soft: '#FFF3CC' },
-  { kind: 'keys'   as const, icon: '🎹', name: '键盘', en: 'Keys',   color: '#8338EC', soft: '#E2CCFF' },
-];
+import { INSTRUMENT_ORDER, INSTRUMENT_THEME, instrumentVars } from '../theme';
 
 export function InstrumentSidebar() {
   const { ui, setUi, project, captureSeed } = useEditor();
@@ -48,35 +41,31 @@ export function InstrumentSidebar() {
 
   return (
     <nav className="instrument-sidebar" aria-label="乐器选择">
-      <div className="sidebar-title">乐器</div>
+      <div className="sidebar-title">Instruments · 乐器</div>
 
-      {INSTRUMENTS.map(inst => {
-        const track = project.tracks.find(t => t.kind === inst.kind);
-        const active = selectedTrack?.kind === inst.kind;
+      {INSTRUMENT_ORDER.map(kind => {
+        const theme = INSTRUMENT_THEME[kind];
+        const track = project.tracks.find(t => t.kind === kind);
+        const active = selectedTrack?.kind === kind;
 
         return (
           <div
-            key={inst.kind}
+            key={kind}
             className={`instrument-item ${active ? 'selected' : ''}`}
-            onClick={() => handleSelect(inst.kind)}
+            onClick={() => handleSelect(kind)}
             role="button"
             tabIndex={0}
             aria-pressed={active}
-            aria-label={inst.name}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(inst.kind); }}
+            aria-label={theme.label}
+            style={instrumentVars(theme)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleSelect(kind); }}
           >
-            <div
-              className="instrument-icon"
-              style={{
-                background: active ? inst.soft : 'var(--canvas)',
-                border: active ? `2px solid ${inst.color}` : '2px solid var(--rule-light)',
-              }}
-            >
-              {inst.icon}
+            <div className="instrument-icon">
+              <img src={theme.icon} alt="" draggable={false} />
             </div>
             <div className="instrument-meta">
-              <span className="instrument-name">{inst.name}</span>
-              <span className="instrument-kind">{inst.en}</span>
+              <span className="instrument-name">{theme.label}</span>
+              <span className="instrument-kind">{theme.en}</span>
             </div>
             {track?.muted && <span className="instrument-mute" aria-label="已静音">M</span>}
           </div>
@@ -86,7 +75,7 @@ export function InstrumentSidebar() {
       {/* Pad controller for selected instrument */}
       {selectedTrack && (
         <div className="pad-section">
-          <div className="pad-section-title">{selectedTrack.name} 控制器</div>
+          <div className="pad-section-title">{selectedTrack.name} · 控制器</div>
 
           <PadController
             kind={selectedTrack.kind}
@@ -99,7 +88,8 @@ export function InstrumentSidebar() {
             onClick={handleCapture}
             disabled={activePads.size === 0}
           >
-            🎯 捕获律动
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>my_location</span>
+            捕获律动
           </button>
         </div>
       )}
@@ -116,16 +106,16 @@ interface PadProps {
 function PadController({ kind, onPadPress, activePads }: PadProps & { kind: string }) {
   if (kind === 'drums') return <DrumsPads onPadPress={onPadPress} activePads={activePads} />;
   if (kind === 'keys')  return <KeysPads  onPadPress={onPadPress} activePads={activePads} />;
-  return <SimplePads onPadPress={onPadPress} activePads={activePads} />;
+  return <SimplePads kind={kind} onPadPress={onPadPress} activePads={activePads} />;
 }
 
-/* ── Drums ── */
+/* ── Drums — warm red/orange family, red shadow ── */
 function DrumsPads({ onPadPress, activePads }: PadProps) {
   const pads = [
-    { id: 'kick',  label: 'Kick',  color: '#FF5E5B' },
-    { id: 'snare', label: 'Snare', color: '#E84393' },
-    { id: 'hihat', label: 'HiHat', color: '#FDAA4B' },
-    { id: 'clap',  label: 'Clap',  color: '#FF8A65' },
+    { id: 'kick',  label: 'Kick',  color: '#e60012' },
+    { id: 'snare', label: 'Snare', color: '#ff6a3d' },
+    { id: 'hihat', label: 'HiHat', color: '#ff9f1c' },
+    { id: 'clap',  label: 'Clap',  color: '#ff4d6d' },
   ];
 
   return (
@@ -135,7 +125,7 @@ function DrumsPads({ onPadPress, activePads }: PadProps) {
           key={p.id}
           className={`drum-pad ${activePads.has(p.id) ? 'active' : ''}`}
           onClick={() => onPadPress(p.id)}
-          style={{ backgroundColor: p.color }}
+          style={{ backgroundColor: p.color, ['--cs' as any]: '#930007' }}
           aria-label={p.label}
         >
           {p.label}
@@ -145,17 +135,17 @@ function DrumsPads({ onPadPress, activePads }: PadProps) {
   );
 }
 
-/* ── Keys ── */
+/* ── Keys — blue family, blue shadow ── */
 function KeysPads({ onPadPress, activePads }: PadProps) {
   const pads = [
-    { id: 'C',  label: 'C',  color: '#8338EC' },
-    { id: 'D',  label: 'D',  color: '#9150F0' },
-    { id: 'E',  label: 'E',  color: '#A068F4' },
-    { id: 'F',  label: 'F',  color: '#B080F8' },
-    { id: 'G',  label: 'G',  color: '#8338EC' },
-    { id: 'A',  label: 'A',  color: '#7028D0' },
-    { id: 'B',  label: 'B',  color: '#5C18B4' },
-    { id: 'C2', label: 'C²', color: '#480898' },
+    { id: 'C',  label: 'C',  color: '#37b4ff' },
+    { id: 'D',  label: 'D',  color: '#5cc4ff' },
+    { id: 'E',  label: 'E',  color: '#2aa0f0' },
+    { id: 'F',  label: 'F',  color: '#1b8fd6' },
+    { id: 'G',  label: 'G',  color: '#37b4ff' },
+    { id: 'A',  label: 'A',  color: '#1f7fc0' },
+    { id: 'B',  label: 'B',  color: '#0e6aa8' },
+    { id: 'C2', label: 'C²', color: '#004b70' },
   ];
 
   return (
@@ -165,7 +155,7 @@ function KeysPads({ onPadPress, activePads }: PadProps) {
           key={p.id}
           className={`key-pad ${activePads.has(p.id) ? 'active' : ''}`}
           onClick={() => onPadPress(p.id)}
-          style={{ backgroundColor: p.color }}
+          style={{ backgroundColor: p.color, color: p.id === 'C2' ? '#fff' : '#001e30', ['--cs' as any]: '#004b70' }}
           aria-label={`音符 ${p.label}`}
         >
           {p.label}
@@ -175,23 +165,39 @@ function KeysPads({ onPadPress, activePads }: PadProps) {
   );
 }
 
-/* ── Bass / Guitar ── */
-function SimplePads({ onPadPress, activePads }: PadProps) {
-  const pads = [
-    { id: '1', label: '低',  color: '#00B4A0' },
-    { id: '2', label: '中低', color: '#00A08E' },
-    { id: '3', label: '中高', color: '#008C7C' },
-    { id: '4', label: '高',  color: '#00786A' },
-  ];
+/* ── Bass (green) / Guitar (gold) — matching shadow ── */
+function SimplePads({ kind, onPadPress, activePads }: PadProps & { kind: string }) {
+  const palette =
+    kind === 'guitar'
+      ? {
+          pads: [
+            { id: '1', label: '低',  color: '#ebc300' },
+            { id: '2', label: '中低', color: '#d9ae00' },
+            { id: '3', label: '中高', color: '#a88500' },
+            { id: '4', label: '高',  color: '#554500' },
+          ],
+          shadow: '#554500',
+          dark: '#231b00',
+        }
+      : {
+          pads: [
+            { id: '1', label: '低',  color: '#16c265' },
+            { id: '2', label: '中低', color: '#0fae57' },
+            { id: '3', label: '中高', color: '#0b8a3d' },
+            { id: '4', label: '高',  color: '#0a5c2c' },
+          ],
+          shadow: '#0a5c2c',
+          dark: '#002814',
+        };
 
   return (
     <div className="pad-grid pad-grid-4">
-      {pads.map(p => (
+      {palette.pads.map(p => (
         <button
           key={p.id}
           className={`simple-pad ${activePads.has(p.id) ? 'active' : ''}`}
           onClick={() => onPadPress(p.id)}
-          style={{ backgroundColor: p.color }}
+          style={{ backgroundColor: p.color, color: p.id === '4' ? '#fff' : palette.dark, ['--cs' as any]: palette.shadow }}
           aria-label={p.label}
         >
           {p.label}

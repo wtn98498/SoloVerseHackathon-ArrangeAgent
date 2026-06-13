@@ -1,4 +1,4 @@
-import { ArrangementProject, AgentExplanation } from '../contracts';
+import { ArrangementProject, AgentExplanation, TrackKind } from '../contracts';
 import { ENERGY_INCREASE_MULTIPLIER, SOFTEN_MULTIPLIER } from './music-rules';
 
 // Increase energy by adding more notes and increasing velocity
@@ -94,15 +94,15 @@ export function softenArrangement(project: ArrangementProject): ArrangementProje
         // Remove some hi-hats and claps
         clip.drumHits = clip.drumHits.filter(hit => {
           if (hit.drum === 'hihat' || hit.drum === 'clap') {
-            return Math.random() > 0.3;
+            return hit.step % 16 === 4;
           }
           return true;
         });
       } else if (track.kind === 'guitar' || track.kind === 'keys') {
         // Remove some notes to create space
-        clip.notes = clip.notes.filter((note) => {
+        clip.notes = clip.notes.filter((note, index) => {
           if (note.durationSteps < 4) {
-            return Math.random() > 0.4;
+            return index % 2 === 0;
           }
           return true;
         });
@@ -113,6 +113,64 @@ export function softenArrangement(project: ArrangementProject): ArrangementProje
         });
       }
     });
+  });
+
+  return newProject;
+}
+
+export function fillClip(project: ArrangementProject, targetClipId?: string): ArrangementProject {
+  const newProject = JSON.parse(JSON.stringify(project)) as ArrangementProject;
+  const targets = findTargetClips(newProject, targetClipId);
+
+  targets.forEach(({ trackKind, clip }) => {
+    if (trackKind === 'drums') {
+      const existingSteps = new Set(clip.drumHits.map(hit => `${hit.drum}:${hit.step}`));
+      for (let step = 0; step < 128; step += 8) {
+        if (!existingSteps.has(`kick:${step}`)) {
+          clip.drumHits.push({ id: `fill-kick-${step}`, drum: 'kick', step, velocity: 0.72 });
+        }
+        if (step % 16 === 8 && !existingSteps.has(`snare:${step}`)) {
+          clip.drumHits.push({ id: `fill-snare-${step}`, drum: 'snare', step, velocity: 0.66 });
+        }
+      }
+    } else {
+      const pitch = defaultPitchForTrack(trackKind);
+      const occupied = new Set(clip.notes.map(note => note.step));
+      for (let step = 0; step < 128; step += 16) {
+        if (!occupied.has(step)) {
+          clip.notes.push({
+            id: `fill-${trackKind}-${step}`,
+            pitch,
+            step,
+            durationSteps: trackKind === 'bass' ? 8 : 12,
+            velocity: trackKind === 'keys' ? 0.52 : 0.64,
+          });
+        }
+      }
+    }
+  });
+
+  return newProject;
+}
+
+export function createVariation(project: ArrangementProject, targetClipId?: string): ArrangementProject {
+  const newProject = JSON.parse(JSON.stringify(project)) as ArrangementProject;
+  const targets = findTargetClips(newProject, targetClipId);
+
+  targets.forEach(({ trackKind, clip }) => {
+    if (trackKind === 'drums') {
+      clip.drumHits = clip.drumHits.map(hit => ({
+        ...hit,
+        velocity: Math.min(1, hit.velocity + (hit.step % 16 === 0 ? 0.08 : -0.03)),
+      }));
+      return;
+    }
+
+    clip.notes = clip.notes.map((note, index) => ({
+      ...note,
+      step: Math.min(127, note.step + (index % 2 === 0 ? 2 : 0)),
+      velocity: Math.min(1, Math.max(0, note.velocity + (index % 2 === 0 ? 0.08 : -0.04))),
+    }));
   });
 
   return newProject;
@@ -182,4 +240,16 @@ function countTrackNotes(track: { clips: Array<{ notes: Array<any>; drumHits: Ar
     count += clip.notes.length + clip.drumHits.length;
   });
   return count;
+}
+
+function findTargetClips(project: ArrangementProject, targetClipId?: string) {
+  return project.tracks.flatMap(track => track.clips
+    .filter(clip => !targetClipId || clip.id === targetClipId)
+    .map(clip => ({ trackKind: track.kind, clip })));
+}
+
+function defaultPitchForTrack(trackKind: TrackKind): string {
+  if (trackKind === 'bass') return 'C2';
+  if (trackKind === 'guitar') return 'C3';
+  return 'C4';
 }

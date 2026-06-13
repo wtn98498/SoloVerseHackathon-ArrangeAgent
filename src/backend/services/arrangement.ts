@@ -1,4 +1,5 @@
 import { ArrangementProject, SeedPattern, AgentExplanation } from '../../contracts';
+import { createClip } from '../../contracts/clip';
 import { CompleteArrangeRequest, CompleteArrangeResponse, EnergyArrangeRequest, EnergyArrangeResponse } from '../../contracts/api';
 import { validateSeedPattern, validateArrangementProject } from '../validation/arrangement';
 import { generateFallbackArrangement, generateEnergyTransformation } from '../arrangement/fallback';
@@ -79,8 +80,10 @@ function getSafeFallback(_seed: SeedPattern): CompleteArrangeResponse {
         name: 'Drums',
         color: '#ff6b6b',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-drums',
+          kind: 'drum',
+          name: 'Drums MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [],
@@ -88,7 +91,7 @@ function getSafeFallback(_seed: SeedPattern): CompleteArrangeResponse {
             { id: 'dh-1', drum: 'kick', step: 0, velocity: 0.8 },
             { id: 'dh-2', drum: 'snare', step: 8, velocity: 0.7 },
           ]
-        }]
+        })]
       },
       {
         id: 'track-bass',
@@ -96,15 +99,17 @@ function getSafeFallback(_seed: SeedPattern): CompleteArrangeResponse {
         name: 'Bass',
         color: '#4ecdc4',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-bass',
+          kind: 'midi',
+          name: 'Bass MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [
             { id: 'bn-1', pitch: 'C2', step: 0, durationSteps: 8, velocity: 0.7 }
           ],
           drumHits: []
-        }]
+        })]
       },
       {
         id: 'track-guitar',
@@ -112,15 +117,17 @@ function getSafeFallback(_seed: SeedPattern): CompleteArrangeResponse {
         name: 'Guitar',
         color: '#ffe66d',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-guitar',
+          kind: 'midi',
+          name: 'Guitar MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [
             { id: 'gn-1', pitch: 'C3', step: 0, durationSteps: 16, velocity: 0.6 }
           ],
           drumHits: []
-        }]
+        })]
       },
       {
         id: 'track-keys',
@@ -128,15 +135,17 @@ function getSafeFallback(_seed: SeedPattern): CompleteArrangeResponse {
         name: 'Keys',
         color: '#a8dadc',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-keys',
+          kind: 'midi',
+          name: 'Keys MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [
             { id: 'kn-1', pitch: 'C4', step: 0, durationSteps: 32, velocity: 0.5 }
           ],
           drumHits: []
-        }]
+        })]
       }
     ],
     lastExplanation: undefined

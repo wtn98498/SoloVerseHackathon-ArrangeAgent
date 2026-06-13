@@ -31,6 +31,13 @@ export function TransportBar() {
 
   if (!project) return null;
 
+  // Position readout: bar.beat.sub — purely visual, derived from the fake step clock.
+  const step = playback.currentStep;
+  const bar = Math.floor(step / 16) + 1;
+  const beat = Math.floor((step % 16) / 4) + 1;
+  const sub = (step % 4) + 1;
+  const pos = `${String(bar).padStart(2, '0')}.${beat}.${sub}`;
+
   return (
     <div className="transport-bar" role="toolbar" aria-label="播放控制">
       {/* Play / Stop */}
@@ -41,7 +48,9 @@ export function TransportBar() {
           aria-label={playback.isPlaying ? '停止' : '播放'}
           title={playback.isPlaying ? '停止 (Space)' : '播放 (Space)'}
         >
-          {playback.isPlaying ? '⏸' : '▶'}
+          <span className="material-symbols-outlined" aria-hidden>
+            {playback.isPlaying ? 'stop' : 'play_arrow'}
+          </span>
         </button>
       </div>
 
@@ -58,6 +67,18 @@ export function TransportBar() {
           className="tempo-input"
           aria-label="速度"
         />
+      </div>
+
+      {/* Signature readout */}
+      <div className="tempo-control" title="拍号">
+        <span className="label-cap">SIG</span>
+        <span style={{ color: 'var(--primary)' }}>4/4</span>
+      </div>
+
+      {/* Position readout */}
+      <div className="tempo-control" title="位置">
+        <span className="label-cap">POS</span>
+        <span style={{ color: 'var(--primary)', fontFamily: 'var(--font-sans)' }}>{pos}</span>
       </div>
 
       {/* Style pill */}

@@ -10,6 +10,9 @@ This is not a multi-agent system. For the MVP, the arrangement agent is one
 orchestrator that chooses from a small set of tools and returns structured
 arrangement JSON.
 
+The arrangement agent works on lightweight MIDI clips. The output must be
+editable note/drum-hit data for the piano-roll UI, not one-shot audio triggers.
+
 ## Scope
 
 Own:
@@ -21,6 +24,9 @@ Own:
 - `completeArrangement`
 - `increaseEnergy`
 - `softenArrangement`
+- `fillClip`
+- `createVariation`
+- MIDI edit proposals.
 - Plain-language explanations.
 
 Do not own:
@@ -41,13 +47,15 @@ to debug under hackathon time pressure.
 Allowed shape:
 
 ```ts
-type AgentAction = "complete" | "increase" | "soften";
+type AgentAction = "complete" | "increase" | "soften" | "fill_clip" | "variation";
 
 async function runArrangementAgent(input: {
   action: AgentAction;
   seed?: SeedPattern;
   project?: ArrangementProject;
   direction?: "increase" | "soften";
+  targetTrackId?: string;
+  targetClipId?: string;
 }): Promise<{
   project: ArrangementProject;
   explanation: AgentExplanation;
@@ -66,6 +74,9 @@ The agent may use these internal tools:
 - `buildKeysPart(chords, style, mood)`
 - `increaseEnergy(project)`
 - `softenArrangement(project)`
+- `fillClip(project, targetClipId)`
+- `createVariation(project, targetClipId)`
+- `quantizeNotes(project, grid)`
 - `explainChanges(before, after)`
 
 These tools can be plain TypeScript functions. They do not need to be model
@@ -79,6 +90,12 @@ Keep the musical system small:
 - Moods: `bright`, `soft`, `energetic`.
 - Default key: C major if seed is unclear.
 - Length: 8 bars.
+- Clip model: one or more editable MIDI clips per track.
+- Default MVP clip: one 8-bar clip per track.
+- Drum clips use `drumHits`; pitched clips use `notes`.
+- Pitched notes must stay inside the three-octave MVP piano roll: `C2` through
+  `B4`. Keep bass around octave 2, guitar around octave 3, and keys around
+  octaves 3-4. Never generate `C5+` in the demo path.
 - Drums: clear downbeat and backbeat.
 - Bass: follow root notes and simple passing notes.
 - Guitar: strums or short riffs, not complex realism.
@@ -96,7 +113,9 @@ Prompt must tell DeepSeek:
 
 - Return JSON only.
 - Use the shared `ArrangementProject` shape.
+- Preserve and emit clip metadata: `kind`, `name`, `loop`, `quantize`.
 - Keep all steps in `0..127`.
+- Keep note durations at least `1`.
 - Keep velocity in `0..1`.
 - Always include drums, bass, guitar, and keys.
 - Include a short explanation with `summary` and `changes`.
@@ -111,6 +130,8 @@ essay output.
 - Agent orchestration function.
 - Energy increase transformer.
 - Soften transformer.
+- MIDI clip fill and variation helpers.
+- Quantization-safe note editing helpers.
 - Explanation generator.
 
 ## Integration Tests To Perform
@@ -119,5 +140,6 @@ essay output.
 - Complete arrangement from keyboard seed.
 - Increase energy modifies drums and note density.
 - Soften reduces density and velocity.
+- Fill a sparse clip with valid MIDI notes.
+- Create a variation without changing track/clip identity.
 - All outputs pass shared validation.
-

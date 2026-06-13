@@ -1,5 +1,6 @@
 import { ArrangementProject, NoteEvent, DrumHit, SeedPattern, StyleId, MoodId } from '../contracts';
-import { getChordProgression, getDrumPattern, getRootPitch, BASS_OCTAVE, GUITAR_OCTAVE, KEYS_OCTAVE, BASE_VELOCITIES } from './music-rules';
+import { createClip } from '../contracts/clip';
+import { getChordProgression, getDrumPattern, getRootPitch, BASS_OCTAVE, GUITAR_OCTAVE, BASE_VELOCITIES } from './music-rules';
 
 // Helper function to generate unique IDs
 let idCounter = 0;
@@ -141,8 +142,7 @@ export function generateKeysPart(chords: string[], style: StyleId, mood: MoodId,
     const root = getRootPitch(chord);
     const barStart = chordIndex * 16;
 
-    // Simple chord voicings
-    const chordNotes = [`${root}${KEYS_OCTAVE}`, `${root}${KEYS_OCTAVE + 2}`, `${root}${KEYS_OCTAVE + 4}`];
+    const chordNotes = getTriadVoicing(root);
 
     if (style === 'lofi') {
       // Softer, pads
@@ -170,10 +170,11 @@ export function generateKeysPart(chords: string[], style: StyleId, mood: MoodId,
       });
     } else if (style === 'rock') {
       // More aggressive
+      const rootNote = chordNotes[0];
       [0, 4, 8].forEach(offset => {
         notes.push({
           id: generateId('keys'),
-          pitch: `${root}${KEYS_OCTAVE}`,
+          pitch: rootNote,
           step: barStart + offset,
           durationSteps: 2,
           velocity: Math.min(1, baseVelocity * 0.6)
@@ -183,6 +184,20 @@ export function generateKeysPart(chords: string[], style: StyleId, mood: MoodId,
   });
 
   return notes;
+}
+
+function getTriadVoicing(root: string): string[] {
+  const voicings: Record<string, string[]> = {
+    C: ['C4', 'E4', 'G4'],
+    D: ['D3', 'F3', 'A3'],
+    E: ['E3', 'G3', 'B3'],
+    F: ['F3', 'A3', 'C4'],
+    G: ['G3', 'B3', 'D4'],
+    A: ['A3', 'C4', 'E4'],
+    B: ['B3', 'D4', 'F4'],
+  };
+
+  return voicings[root] ?? voicings.C;
 }
 
 // Main arrangement generator
@@ -209,13 +224,15 @@ export function generateArrangement(
         name: 'Drums',
         color: '#ff6b6b',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId('clip'),
+          kind: 'drum',
+          name: 'Drums MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [],
           drumHits: generateDrumHits(style, mood)
-        }]
+        })]
       },
       {
         id: generateId('track'),
@@ -223,13 +240,15 @@ export function generateArrangement(
         name: 'Bass',
         color: '#4ecdc4',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId('clip'),
+          kind: 'midi',
+          name: 'Bass MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: generateBassline(chords, style, mood),
           drumHits: []
-        }]
+        })]
       },
       {
         id: generateId('track'),
@@ -237,13 +256,15 @@ export function generateArrangement(
         name: 'Guitar',
         color: '#ffe66d',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId('clip'),
+          kind: 'midi',
+          name: 'Guitar MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: generateGuitarPart(chords, style, mood),
           drumHits: []
-        }]
+        })]
       },
       {
         id: generateId('track'),
@@ -251,13 +272,15 @@ export function generateArrangement(
         name: 'Keys',
         color: '#a8dadc',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId('clip'),
+          kind: 'midi',
+          name: 'Keys MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: generateKeysPart(chords, style, mood),
           drumHits: []
-        }]
+        })]
       }
     ]
   };

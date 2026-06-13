@@ -1,6 +1,9 @@
 export type TrackKind = "drums" | "bass" | "guitar" | "keys";
 export type StyleId = "pop" | "lofi" | "rock";
 export type MoodId = "bright" | "soft" | "energetic";
+export type ClipKind = "midi" | "drum";
+export type AgentAction = "complete" | "increase" | "soften" | "fill_clip" | "variation";
+export type QuantizeGrid = 1 | 2 | 4 | 8 | 16;
 
 export interface ArrangementProject {
   id: string;
@@ -12,6 +15,7 @@ export interface ArrangementProject {
   style: StyleId;
   mood: MoodId;
   tracks: Track[];
+  selectedClipId?: string;
   lastExplanation?: AgentExplanation;
 }
 
@@ -26,8 +30,12 @@ export interface Track {
 
 export interface Clip {
   id: string;
+  kind: ClipKind;
+  name: string;
   barStart: number;
   barLength: number;
+  loop: boolean;
+  quantize: QuantizeGrid;
   notes: NoteEvent[];
   drumHits: DrumHit[];
 }
@@ -38,6 +46,7 @@ export interface NoteEvent {
   step: number;
   durationSteps: number;
   velocity: number;
+  lane?: number;
 }
 
 export interface DrumHit {
@@ -45,10 +54,12 @@ export interface DrumHit {
   drum: "kick" | "snare" | "hihat" | "clap";
   step: number;
   velocity: number;
+  durationSteps?: number;
 }
 
 export interface SeedPattern {
   sourceTrackKind: TrackKind;
+  sourceClipId?: string;
   capturedAt: string;
   notes: NoteEvent[];
   drumHits: DrumHit[];
@@ -60,4 +71,15 @@ export interface SeedPattern {
 export interface AgentExplanation {
   summary: string;
   changes: string[];
+}
+
+export interface MidiEdit {
+  type: "add_note" | "remove_note" | "move_note" | "resize_note" | "set_velocity";
+  trackId: string;
+  clipId: string;
+  noteId?: string;
+  note?: NoteEvent;
+  step?: number;
+  durationSteps?: number;
+  velocity?: number;
 }

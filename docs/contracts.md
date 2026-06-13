@@ -15,13 +15,21 @@ The MVP is split into three workstreams:
 - Arrangement agent: single music arrangement agent powered by DeepSeek,
   plus deterministic fallback tools.
 
-The product is frontend-led. The user-facing loop must work even when the model
-API fails.
+The product is frontend-led. The core object is a lightweight MIDI-like
+arrangement, not one-shot button audio. Buttons and pads are input methods for
+creating clips; the demo value is seeing editable MIDI clips become a fuller
+arrangement.
 
 ## 2. Technology Decisions
 
 - Frontend shell: React + TypeScript first, then Tauri wrapper.
 - Audio engine: Tone.js.
+- Editing model: lightweight MIDI clips rendered in a piano-roll / clip-lane
+  interface. Do not build a full DAW, but every generated result must be real
+  structured note data that can be displayed, edited, transformed, and played.
+- Piano-roll pitch range: exactly three white-key octaves, `C2` through `B4`.
+  Generated, edited, imported, and agent-produced pitched notes outside this
+  range must be rejected or repaired before the frontend receives them.
 - Backend runtime: Node/TypeScript service layer exposed through local HTTP
   routes or Tauri commands. Prefer local HTTP during early development because
   it is easier for all workstreams to test.
@@ -54,6 +62,9 @@ All layers pass arrangement data in this shape.
 export type TrackKind = "drums" | "bass" | "guitar" | "keys";
 export type StyleId = "pop" | "lofi" | "rock";
 export type MoodId = "bright" | "soft" | "energetic";
+export type ClipKind = "midi" | "drum";
+export type AgentAction = "complete" | "increase" | "soften" | "fill_clip" | "variation";
+export type QuantizeGrid = 1 | 2 | 4 | 8 | 16;
 
 export interface ArrangementProject {
   id: string;
@@ -65,6 +76,7 @@ export interface ArrangementProject {
   style: StyleId;
   mood: MoodId;
   tracks: Track[];
+  selectedClipId?: string;
   lastExplanation?: AgentExplanation;
 }
 
@@ -79,8 +91,12 @@ export interface Track {
 
 export interface Clip {
   id: string;
+  kind: ClipKind;
+  name: string;
   barStart: number;
   barLength: number;
+  loop: boolean;
+  quantize: QuantizeGrid;
   notes: NoteEvent[];
   drumHits: DrumHit[];
 }
@@ -91,6 +107,7 @@ export interface NoteEvent {
   step: number;
   durationSteps: number;
   velocity: number;
+  lane?: number;
 }
 
 export interface DrumHit {
@@ -98,10 +115,12 @@ export interface DrumHit {
   drum: "kick" | "snare" | "hihat" | "clap";
   step: number;
   velocity: number;
+  durationSteps?: number;
 }
 
 export interface SeedPattern {
   sourceTrackKind: TrackKind;
+  sourceClipId?: string;
   capturedAt: string;
   notes: NoteEvent[];
   drumHits: DrumHit[];
@@ -114,6 +133,17 @@ export interface AgentExplanation {
   summary: string;
   changes: string[];
 }
+
+export interface MidiEdit {
+  type: "add_note" | "remove_note" | "move_note" | "resize_note" | "set_velocity";
+  trackId: string;
+  clipId: string;
+  noteId?: string;
+  note?: NoteEvent;
+  step?: number;
+  durationSteps?: number;
+  velocity?: number;
+}
 ```
 
 Timing rules:
@@ -124,6 +154,16 @@ Timing rules:
 - Total steps: `8 * 4 * 4 = 128`.
 - `step` is zero-based and must be between `0` and `127`.
 - `velocity` is a float from `0` to `1`.
+- Clips are the user-visible editing units. A track can contain one or more
+  clips, and the MVP may start with one 8-bar clip per track.
+- `Clip.kind` is `drum` for drum-grid clips and `midi` for pitched clips.
+- `NoteEvent` and `DrumHit` are lightweight MIDI events. Agent output must
+  modify these events, not merely trigger audio playback.
+- Pitched `NoteEvent.pitch` values are constrained to `C2..B4` for the MVP
+  piano roll. Do not emit `C5+`, `C1`, chromatic accidentals, or full-keyboard
+  data in the demo path.
+- `quantize` defines the intended editing grid. MVP default is `4`, meaning
+  sixteenth-note steps in the current 128-step timeline.
 
 ## 5. Agent Action API
 
@@ -161,6 +201,36 @@ Request:
 }
 ```
 
+### Local MIDI edit service
+
+The frontend may call local TypeScript service functions directly in the
+browser-first MVP:
+
+```ts
+{
+  project: ArrangementProject;
+  edits: MidiEdit[];
+}
+```
+
+Response:
+
+```ts
+{
+  project: ArrangementProject;
+  explanation: AgentExplanation;
+  source: "local";
+}
+```
+
+Required behavior:
+
+- Apply edits immutably.
+- Clamp steps to `0..127`.
+- Clamp note duration to at least `1`.
+- Clamp velocity to `0..1`.
+- Preserve clip identity so the piano-roll UI can keep selection.
+
 Response:
 
 ```ts
@@ -180,7 +250,13 @@ Reject or repair:
 - Unknown track kind.
 - Unknown style or mood.
 - Notes or hits outside steps `0..127`.
+- Pitched notes outside the three-octave piano-roll range `C2..B4`.
 - Velocity outside `0..1`.
+- Clip start/length outside the 8-bar project.
+- Clip without `kind`, `name`, `loop`, or `quantize`.
+- Notes with duration below `1`.
+- Drum clips containing pitched notes unless intentionally used as a hybrid
+  preview; MVP should keep drum hits in `drumHits`.
 - Missing drum, bass, guitar, or keys track after arrangement completion.
 - Empty arrangement after `complete`.
 
@@ -210,6 +286,9 @@ Prompting rule:
 - Validate the JSON with the shared schema.
 - Never let raw model text mutate frontend state.
 - Always preserve a local fallback path.
+- Model output must be interpreted as MIDI edits or a complete
+  `ArrangementProject`. Never accept free-text descriptions as the source of
+  truth for musical state.
 
 ## 8. Ownership Boundaries
 
@@ -235,6 +314,7 @@ Arrangement agent owns:
 - Agent prompt.
 - Tool/action definitions.
 - Deterministic fallback generator.
+- MIDI clip filling and variation rules.
 - Output explanations.
 
 No agent should duplicate another agent's core logic. If duplication seems

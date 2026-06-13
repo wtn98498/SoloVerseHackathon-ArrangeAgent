@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { ArrangementProject, Track, Clip } from '../../contracts';
 import { useEditor } from '../contexts/EditorContext';
+import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 
 interface TrackTimelineProps {
   project: ArrangementProject;
@@ -47,7 +48,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
         ))}
 
         {playheadPct >= 0 && (
-          <div className="playhead-line" style={{ left: `calc(96px + ${playheadPct}% * ((100% - 96px) / 100%))` }} />
+          <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }} />
         )}
       </div>
     </div>
@@ -66,6 +67,8 @@ interface TrackRowProps {
 }
 
 function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, playheadPct }: TrackRowProps) {
+  const theme = INSTRUMENT_THEME[track.kind];
+
   return (
     <div
       className={`track-row ${isSelected ? 'selected' : ''} ${track.muted ? 'muted' : ''}`}
@@ -74,15 +77,16 @@ function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, pl
       tabIndex={0}
       aria-pressed={isSelected}
       aria-label={`${track.name} 音轨`}
+      style={instrumentVars(theme)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(); }}
     >
-      <div className="track-info" style={{ borderColor: track.color, background: `${track.color}12` }}>
+      <div className="track-info">
         <div className="track-name">{track.name}</div>
-        <div className="track-kind">{track.kind}</div>
+        <div className="track-kind">{theme.en}</div>
         {track.muted && <span className="muted-badge">MUTE</span>}
       </div>
 
-      <div className="track-lane" style={{ background: `${track.color}18` }}>
+      <div className="track-lane">
         {/* Bar grid lines */}
         {Array.from({ length: bars - 1 }, (_, i) => (
           <div
@@ -96,7 +100,6 @@ function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, pl
           <MIDIClip
             key={clip.id}
             clip={clip}
-            trackColor={track.color}
             totalSteps={totalSteps}
             trackKind={track.kind}
           />
@@ -112,17 +115,15 @@ function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, pl
 
 /* ═══════════════════════════════════════
    MIDI Clip – renders note blocks & drum hits
-   GarageBand piano-roll style: colored note
-   rectangles positioned by time (x) and pitch (y)
+   Kinetic Play piano-roll: colored blocks with
+   chunky border + note rectangles by time (x) and pitch (y)
    ═══════════════════════════════════════ */
 function MIDIClip({
   clip,
-  trackColor,
   totalSteps,
   trackKind,
 }: {
   clip: Clip;
-  trackColor: string;
   totalSteps: number;
   trackKind: string;
 }) {
@@ -133,7 +134,6 @@ function MIDIClip({
     const notes = clip.notes.map(n => {
       const xPct = (n.step / totalSteps) * 100;
       const wPct = Math.max((n.durationSteps / totalSteps) * 100, 0.8);
-      // Map pitch to y position – higher pitch = higher on screen
       const yPct = pitchToY(n.pitch);
       return { x: xPct, w: wPct, y: yPct, key: n.id };
     });
@@ -141,7 +141,7 @@ function MIDIClip({
     const drums = clip.drumHits.map(h => {
       const xPct = (h.step / totalSteps) * 100;
       const yPct = drumToY(h.drum);
-      const size = Math.max(3, h.velocity * 6);
+      const size = Math.max(4, h.velocity * 7);
       return { x: xPct, y: yPct, size, key: h.id };
     });
 
@@ -156,7 +156,7 @@ function MIDIClip({
         width: `${widthPct}%`,
       }}
     >
-      {/* Render note blocks for melodic instruments */}
+      {/* Note blocks for melodic instruments */}
       {trackKind !== 'drums' && noteBlocks.map(n => (
         <div
           key={n.key}
@@ -165,12 +165,11 @@ function MIDIClip({
             left: `${n.x}%`,
             width: `${n.w}%`,
             bottom: `${n.y}%`,
-            backgroundColor: trackColor,
           }}
         />
       ))}
 
-      {/* Render drum hit marks */}
+      {/* Drum hit marks */}
       {trackKind === 'drums' && drumMarks.map(d => (
         <div
           key={d.key}
@@ -180,8 +179,7 @@ function MIDIClip({
             bottom: `${d.y}%`,
             width: `${d.size}px`,
             height: `${d.size}px`,
-            backgroundColor: trackColor,
-            borderRadius: '2px',
+            borderRadius: '3px',
           }}
         />
       ))}
@@ -190,16 +188,19 @@ function MIDIClip({
 }
 
 /* ── Pitch → vertical position mapping ── */
-// Returns bottom % (0 = bottom, 100 = top) for piano-roll y placement
 const PITCH_MAP: Record<string, number> = {};
 const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-for (let oct = 1; oct <= 6; oct++) {
+const MIN_PIANO_OCTAVE = 2;
+const MAX_PIANO_OCTAVE = 4;
+const PIANO_LANE_COUNT = (MAX_PIANO_OCTAVE - MIN_PIANO_OCTAVE + 1) * NOTES.length;
+
+for (let oct = MIN_PIANO_OCTAVE; oct <= MAX_PIANO_OCTAVE; oct++) {
   NOTES.forEach((note, i) => {
-    PITCH_MAP[`${note}${oct}`] = 10 + ((oct - 1) * 7 + i) * 6;
+    const lane = (oct - MIN_PIANO_OCTAVE) * NOTES.length + i;
+    PITCH_MAP[`${note}${oct}`] = 8 + (lane / Math.max(1, PIANO_LANE_COUNT - 1)) * 78;
   });
 }
-// Aliases
-PITCH_MAP['C²'] = PITCH_MAP['C5'] ?? 70;
+PITCH_MAP['C²'] = PITCH_MAP['C4'] ?? 78;
 
 function pitchToY(pitch: string): number {
   return Math.min(85, PITCH_MAP[pitch] ?? 40);

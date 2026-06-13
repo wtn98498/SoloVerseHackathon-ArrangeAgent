@@ -1,4 +1,5 @@
 import { ArrangementProject, SeedPattern, AgentExplanation, DrumHit, NoteEvent } from '../../contracts';
+import { createClip } from '../../contracts/clip';
 
 let idCounter = 0;
 
@@ -24,13 +25,15 @@ export function generateFallbackArrangement(seed: SeedPattern): { project: Arran
         name: 'Drums',
         color: '#ff6b6b',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId(),
+          kind: 'drum',
+          name: 'Drums MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [],
           drumHits: generateBasicDrums(seed.mood)
-        }]
+        })]
       },
       // Bass track
       {
@@ -39,13 +42,15 @@ export function generateFallbackArrangement(seed: SeedPattern): { project: Arran
         name: 'Bass',
         color: '#4ecdc4',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId(),
+          kind: 'midi',
+          name: 'Bass MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: generateBassLine(seed.mood, seed.style),
           drumHits: []
-        }]
+        })]
       },
       // Guitar track
       {
@@ -54,13 +59,15 @@ export function generateFallbackArrangement(seed: SeedPattern): { project: Arran
         name: 'Guitar',
         color: '#ffe66d',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId(),
+          kind: 'midi',
+          name: 'Guitar MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: generateGuitarLine(seed.mood, seed.style),
           drumHits: []
-        }]
+        })]
       },
       // Keys track
       {
@@ -69,13 +76,15 @@ export function generateFallbackArrangement(seed: SeedPattern): { project: Arran
         name: 'Keys',
         color: '#a8dadc',
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: generateId(),
+          kind: 'midi',
+          name: 'Keys MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: generateKeysLine(seed.mood, seed.style),
           drumHits: []
-        }]
+        })]
       }
     ],
     lastExplanation: undefined

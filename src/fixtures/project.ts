@@ -1,4 +1,5 @@
 import { ArrangementProject } from '../contracts';
+import { createClip } from '../contracts/clip';
 
 export const fixtureProject: ArrangementProject = {
   id: 'fixture-001',
@@ -16,10 +17,10 @@ export const fixtureProject: ArrangementProject = {
       name: 'Drums',
       color: '#ff6b6b',
       muted: false,
-      clips: [{
+      clips: [createClip({
         id: 'clip-drums',
-        barStart: 0,
-        barLength: 8,
+        kind: 'drum',
+        name: 'Drums MIDI Clip',
         notes: [],
         drumHits: [
           { id: 'dh-1', drum: 'kick', step: 0, velocity: 0.8 },
@@ -55,7 +56,7 @@ export const fixtureProject: ArrangementProject = {
           { id: 'dh-31', drum: 'hihat', step: 116, velocity: 0.5 },
           { id: 'dh-32', drum: 'hihat', step: 124, velocity: 0.5 },
         ]
-      }]
+        })]
     },
     {
       id: 'track-bass',
@@ -63,10 +64,10 @@ export const fixtureProject: ArrangementProject = {
       name: 'Bass',
       color: '#4ecdc4',
       muted: false,
-      clips: [{
+      clips: [createClip({
         id: 'clip-bass',
-        barStart: 0,
-        barLength: 8,
+        kind: 'midi',
+        name: 'Bass MIDI Clip',
         notes: [
           { id: 'bn-1', pitch: 'C2', step: 0, durationSteps: 8, velocity: 0.7 },
           { id: 'bn-2', pitch: 'C2', step: 16, durationSteps: 8, velocity: 0.7 },
@@ -78,7 +79,7 @@ export const fixtureProject: ArrangementProject = {
           { id: 'bn-8', pitch: 'F2', step: 112, durationSteps: 8, velocity: 0.7 },
         ],
         drumHits: []
-      }]
+        })]
     },
     {
       id: 'track-guitar',
@@ -86,10 +87,10 @@ export const fixtureProject: ArrangementProject = {
       name: 'Guitar',
       color: '#ffe66d',
       muted: false,
-      clips: [{
+      clips: [createClip({
         id: 'clip-guitar',
-        barStart: 0,
-        barLength: 8,
+        kind: 'midi',
+        name: 'Guitar MIDI Clip',
         notes: [
           { id: 'gn-1', pitch: 'C3', step: 0, durationSteps: 16, velocity: 0.6 },
           { id: 'gn-2', pitch: 'E3', step: 16, durationSteps: 16, velocity: 0.6 },
@@ -101,7 +102,7 @@ export const fixtureProject: ArrangementProject = {
           { id: 'gn-8', pitch: 'G3', step: 112, durationSteps: 16, velocity: 0.6 },
         ],
         drumHits: []
-      }]
+        })]
     },
     {
       id: 'track-keys',
@@ -109,10 +110,10 @@ export const fixtureProject: ArrangementProject = {
       name: 'Keys',
       color: '#a8dadc',
       muted: false,
-      clips: [{
+      clips: [createClip({
         id: 'clip-keys',
-        barStart: 0,
-        barLength: 8,
+        kind: 'midi',
+        name: 'Keys MIDI Clip',
         notes: [
           { id: 'kn-1', pitch: 'C4', step: 0, durationSteps: 32, velocity: 0.5 },
           { id: 'kn-2', pitch: 'E4', step: 32, durationSteps: 32, velocity: 0.5 },
@@ -120,7 +121,7 @@ export const fixtureProject: ArrangementProject = {
           { id: 'kn-4', pitch: 'C4', step: 96, durationSteps: 32, velocity: 0.5 },
         ],
         drumHits: []
-      }]
+        })]
     }
   ],
   lastExplanation: {

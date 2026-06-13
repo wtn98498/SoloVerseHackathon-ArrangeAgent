@@ -4,9 +4,10 @@ export {
   completeArrangement,
   increaseEnergyAction,
   softenArrangementAction,
+  fillClipAction,
+  createVariationAction,
   type AgentInput,
   type AgentOutput,
-  type AgentAction
 } from './agent';
 
 // Core generators
@@ -23,6 +24,8 @@ export {
 export {
   increaseEnergy,
   softenArrangement,
+  fillClip,
+  createVariation,
   explainChanges
 } from './transformers';
 

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { ArrangementProject, AgentExplanation } from '../../contracts';
+import { createClip } from '../../contracts/clip';
 import { completeArrangementEndpoint, energyEndpoint } from '../../backend';
+import { INSTRUMENT_THEME } from '../theme';
 
 interface AgentResponse {
   project: ArrangementProject;
@@ -20,6 +22,7 @@ export function AgentPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [lastResponse, setLastResponse] = useState<AgentResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
 
   const handleComplete = async () => {
     if (!seedPattern || !project) return;
@@ -78,11 +81,25 @@ export function AgentPanel() {
     }
   };
 
+  // Quick natural-language intent routing so the chat input always does something useful.
+  const handleSendDraft = () => {
+    if (!draft.trim()) return;
+    const text = draft.trim();
+    setDraft('');
+    if (/柔|soft|轻|缓/.test(text)) return handleEnergy('soften');
+    if (/能|劲|燃|energy|炸|猛|强/.test(text)) return handleEnergy('increase');
+    if (/补全|完整|complete|生成|编/.test(text)) return handleComplete();
+    return handleEnergy('increase');
+  };
+
   return (
     <div className="agent-panel" role="complementary" aria-label="AI 编曲助手">
       {/* Header */}
       <div className="agent-header">
-        <h3>AI 助手</h3>
+        <h3>
+          <span className="material-symbols-outlined" aria-hidden>auto_awesome</span>
+          AI 助手
+        </h3>
         {lastResponse && (
           <span className={`source-badge ${lastResponse.source}`}>
             {lastResponse.source === 'deepseek' ? 'AI' : '本地方案'}
@@ -98,7 +115,8 @@ export function AgentPanel() {
           disabled={!seedPattern || isLoading}
           aria-label="补全编曲"
         >
-          {isLoading ? '处理中…' : '✨ 补全编曲'}
+          <span className="material-symbols-outlined" aria-hidden>auto_awesome</span>
+          {isLoading ? '处理中…' : '补全编曲'}
         </button>
 
         <button
@@ -107,7 +125,8 @@ export function AgentPanel() {
           disabled={!project || isLoading}
           aria-label="更有能量"
         >
-          {isLoading ? '处理中…' : '🔥 更有能量'}
+          <span className="material-symbols-outlined" aria-hidden>bolt</span>
+          {isLoading ? '处理中…' : '更有能量'}
         </button>
 
         <button
@@ -116,7 +135,8 @@ export function AgentPanel() {
           disabled={!project || isLoading}
           aria-label="更柔和"
         >
-          {isLoading ? '处理中…' : '🌊 更柔和'}
+          <span className="material-symbols-outlined" aria-hidden>waves</span>
+          {isLoading ? '处理中…' : '更柔和'}
         </button>
       </div>
 
@@ -127,10 +147,13 @@ export function AgentPanel() {
         </div>
       )}
 
-      {/* Explanation */}
+      {/* Explanation bubble */}
       {lastResponse && (
         <div className="agent-explanation">
-          <h4>最近操作</h4>
+          <h4>
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden>smart_toy</span>
+            最近操作
+          </h4>
           <p className="explanation-summary">{lastResponse.explanation.summary}</p>
           <ul className="explanation-changes">
             {lastResponse.explanation.changes.map((change, i) => (
@@ -159,6 +182,25 @@ export function AgentPanel() {
           </span>
         </div>
       </div>
+
+      {/* Chat-style input */}
+      <div className="agent-input">
+        <input
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSendDraft(); }}
+          placeholder="试试 “更有能量” 或 “更柔和”…"
+          aria-label="向 AI 发送指令"
+        />
+        <button className="send-btn" onClick={handleSendDraft} aria-label="发送">
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden>send</span>
+        </button>
+      </div>
+      <div className="agent-online">
+        <span className="dot" />
+        在线 · Agent 就绪
+      </div>
     </div>
   );
 }
@@ -179,10 +221,12 @@ function generateFallbackComplete(seed: any): ArrangementProject {
         id: 'track-drums',
         kind: 'drums',
         name: 'Drums',
-        color: '#FF5E5B',
+        color: INSTRUMENT_THEME.drums.color,
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-drums',
+          kind: 'drum',
+          name: 'Drums MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [],
@@ -192,16 +236,18 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             step: i * 8,
             velocity: 0.7,
           })),
-        }],
+        })],
       },
       {
         id: 'track-bass',
         kind: 'bass',
         name: 'Bass',
-        color: '#00B4A0',
+        color: INSTRUMENT_THEME.bass.color,
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-bass',
+          kind: 'midi',
+          name: 'Bass MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [
@@ -211,16 +257,18 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             { id: 'bn-4', pitch: 'F2', step: 96, durationSteps: 16, velocity: 0.7 },
           ],
           drumHits: [],
-        }],
+        })],
       },
       {
         id: 'track-guitar',
         kind: 'guitar',
         name: 'Guitar',
-        color: '#FFBE0B',
+        color: INSTRUMENT_THEME.guitar.color,
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-guitar',
+          kind: 'midi',
+          name: 'Guitar MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [
@@ -230,16 +278,18 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             { id: 'gn-4', pitch: 'C3', step: 96, durationSteps: 32, velocity: 0.6 },
           ],
           drumHits: [],
-        }],
+        })],
       },
       {
         id: 'track-keys',
         kind: 'keys',
         name: 'Keys',
-        color: '#8338EC',
+        color: INSTRUMENT_THEME.keys.color,
         muted: false,
-        clips: [{
+        clips: [createClip({
           id: 'clip-keys',
+          kind: 'midi',
+          name: 'Keys MIDI Clip',
           barStart: 0,
           barLength: 8,
           notes: [
@@ -247,7 +297,7 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             { id: 'kn-2', pitch: 'G4', step: 64, durationSteps: 64, velocity: 0.5 },
           ],
           drumHits: [],
-        }],
+        })],
       },
     ],
     lastExplanation: {

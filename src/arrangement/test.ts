@@ -9,7 +9,8 @@ import {
   increaseEnergyAction,
   softenArrangementAction
 } from './index';
-import { SeedPattern } from '../contracts';
+import { ArrangementProject, SeedPattern } from '../contracts';
+import { validateArrangementProject } from '../backend/validation/arrangement';
 
 // Helper function to calculate average energy
 function calculateEnergy(project: any): number {
@@ -65,6 +66,22 @@ function validateProject(project: any, label: string): boolean {
   return true;
 }
 
+function assertPitchesInThreeOctaves(project: ArrangementProject, label: string): boolean {
+  const invalidPitches = project.tracks.flatMap(track => track.clips.flatMap(clip =>
+    clip.notes
+      .filter(note => !/^[A-G][2-4]$/.test(note.pitch))
+      .map(note => `${track.kind}:${note.pitch}`)
+  ));
+
+  if (invalidPitches.length > 0) {
+    console.error(`❌ ${label} has notes outside C2-B4: ${invalidPitches.join(', ')}`);
+    return false;
+  }
+
+  console.log(`✅ ${label} stays within C2-B4`);
+  return true;
+}
+
 // Run basic tests
 export async function runBasicTests() {
   console.log('🚀 Running Basic Arrangement Tests');
@@ -81,6 +98,9 @@ export async function runBasicTests() {
     for (const [style, mood] of styles) {
       const project = generateArrangement({}, style as any, mood as any);
       if (!validateProject(project, `${style}-${mood} arrangement`)) {
+        return false;
+      }
+      if (!assertPitchesInThreeOctaves(project, `${style}-${mood} arrangement`)) {
         return false;
       }
     }
@@ -104,6 +124,34 @@ export async function runBasicTests() {
     if (!validateProject(completeResult.project, 'Complete arrangement')) {
       return false;
     }
+
+    if (!assertPitchesInThreeOctaves(completeResult.project, 'Complete arrangement')) {
+      return false;
+    }
+
+    // Test 2b: Reject pitches outside the MVP piano-roll range
+    console.log('\n🧪 TEST 2b: Reject out-of-range piano-roll notes');
+    const invalidProject: ArrangementProject = JSON.parse(JSON.stringify(completeResult.project));
+    const pitchedTrack = invalidProject.tracks.find(track => track.kind !== 'drums');
+    const pitchedClip = pitchedTrack?.clips[0];
+    if (!pitchedClip) {
+      console.error('❌ Missing pitched clip for validation test');
+      return false;
+    }
+    pitchedClip.notes.push({
+      id: 'invalid-high-note',
+      pitch: 'C5',
+      step: 0,
+      durationSteps: 4,
+      velocity: 0.7,
+    });
+
+    const validationErrors = validateArrangementProject(invalidProject);
+    if (!validationErrors.some(error => error.path.endsWith('.pitch'))) {
+      console.error('❌ Out-of-range note pitch was not rejected');
+      return false;
+    }
+    console.log('✅ Out-of-range note pitch rejected');
 
     // Test 3: Increase energy
     console.log('\n🧪 TEST 3: Increase energy');

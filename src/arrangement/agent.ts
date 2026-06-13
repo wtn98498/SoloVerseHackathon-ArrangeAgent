@@ -1,14 +1,14 @@
-import { ArrangementProject, SeedPattern, AgentExplanation } from '../contracts';
+import { AgentAction, ArrangementProject, SeedPattern, AgentExplanation } from '../contracts';
 import { generateArrangement } from './generators';
-import { increaseEnergy, softenArrangement, explainChanges } from './transformers';
-
-export type AgentAction = 'complete' | 'increase' | 'soften';
+import { createVariation, fillClip, increaseEnergy, softenArrangement, explainChanges } from './transformers';
 
 export interface AgentInput {
   action: AgentAction;
   seed?: Partial<SeedPattern>;
   project?: ArrangementProject;
   direction?: 'increase' | 'soften';
+  targetTrackId?: string;
+  targetClipId?: string;
 }
 
 export interface AgentOutput {
@@ -70,6 +70,33 @@ export async function runArrangementAgent(input: AgentInput): Promise<AgentOutpu
       break;
     }
 
+    case 'fill_clip': {
+      if (!input.project) {
+        throw new Error('Project required for fill_clip action');
+      }
+
+      const beforeProject = JSON.parse(JSON.stringify(input.project));
+      project = fillClip(input.project, input.targetClipId);
+      explanation = {
+        summary: '已补全 MIDI 片段',
+        changes: explainChanges(beforeProject, project).changes,
+      };
+      break;
+    }
+
+    case 'variation': {
+      if (!input.project) {
+        throw new Error('Project required for variation action');
+      }
+
+      project = createVariation(input.project, input.targetClipId);
+      explanation = {
+        summary: '已生成 MIDI 变奏',
+        changes: ['保留原始 clip 结构', '微调音符位置和力度', '保持 8 小节可编辑 MIDI 数据'],
+      };
+      break;
+    }
+
     default:
       throw new Error(`Unknown action: ${input.action}`);
   }
@@ -113,5 +140,21 @@ export async function softenArrangementAction(project: ArrangementProject): Prom
   return runArrangementAgent({
     action: 'soften',
     project
+  });
+}
+
+export async function fillClipAction(project: ArrangementProject, targetClipId?: string): Promise<AgentOutput> {
+  return runArrangementAgent({
+    action: 'fill_clip',
+    project,
+    targetClipId
+  });
+}
+
+export async function createVariationAction(project: ArrangementProject, targetClipId?: string): Promise<AgentOutput> {
+  return runArrangementAgent({
+    action: 'variation',
+    project,
+    targetClipId
   });
 }
