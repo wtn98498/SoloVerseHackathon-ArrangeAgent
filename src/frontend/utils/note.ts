@@ -49,3 +49,17 @@ export function midiOf(pitch: string): number | null {
   const within = NOTE_VALUES[letter] + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
   return (s.octave + 1) * 12 + within;
 }
+
+const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
+const MINOR_INTERVALS = [0, 2, 3, 5, 7, 8, 10];
+
+/** Pitch classes (0–11) of a scale. `root` is a letter like "C", "F#", "Bb". */
+export function scaleSemitones(root: string, type: 'major' | 'minor'): number[] {
+  const letter = root[0]?.toUpperCase();
+  const acc = root[1];
+  let rootSemi = NOTE_VALUES[letter as keyof typeof NOTE_VALUES] ?? 0;
+  if (acc === '#') rootSemi += 1;
+  else if (acc === 'b') rootSemi -= 1;
+  const intervals = type === 'minor' ? MINOR_INTERVALS : MAJOR_INTERVALS;
+  return intervals.map((i) => (((rootSemi + i) % 12) + 12) % 12);
+}

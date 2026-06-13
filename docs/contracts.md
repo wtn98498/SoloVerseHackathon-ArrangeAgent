@@ -72,6 +72,12 @@ export type MoodId = "bright" | "soft" | "energetic";
 export type ClipKind = "midi" | "drum";
 export type AgentAction = "complete" | "increase" | "soften" | "fill_clip" | "variation";
 export type QuantizeGrid = 1 | 2 | 4 | 8 | 16;
+export type ScaleType = "major" | "minor";
+
+export interface ScaleConfig {
+  root: string; // pitch letter, e.g. "C", "F#", "Bb"
+  type: ScaleType;
+}
 
 export interface ArrangementProject {
   id: string;
@@ -82,6 +88,7 @@ export interface ArrangementProject {
   subdivision: 4;
   style: StyleId;
   mood: MoodId;
+  scale?: ScaleConfig;
   tracks: Track[];
   selectedClipId?: string;
   lastExplanation?: AgentExplanation;
@@ -171,6 +178,9 @@ Timing rules:
   data in the demo path.
 - `quantize` defines the intended editing grid. MVP default is `4`, meaning
   sixteenth-note steps in the current 128-step timeline.
+- `scale` is an optional `{ root, type }` hint (`type` is `"major"` | `"minor"`)
+  used only for in-scale row highlighting in the piano roll. It does not affect
+  playback or validation. The frontend defaults to C major when absent.
 
 ## 5. Agent Action API
 

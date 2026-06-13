@@ -4,6 +4,13 @@ export type MoodId = "bright" | "soft" | "energetic";
 export type ClipKind = "midi" | "drum";
 export type AgentAction = "complete" | "increase" | "soften" | "fill_clip" | "variation";
 export type QuantizeGrid = 1 | 2 | 4 | 8 | 16;
+export type ScaleType = 'major' | 'minor';
+
+export interface ScaleConfig {
+  /** Pitch letter, e.g. "C", "F#", "Bb". Drives in-scale row highlighting. */
+  root: string;
+  type: ScaleType;
+}
 
 export interface ArrangementProject {
   id: string;
@@ -14,6 +21,7 @@ export interface ArrangementProject {
   subdivision: 4;
   style: StyleId;
   mood: MoodId;
+  scale?: ScaleConfig;
   tracks: Track[];
   selectedClipId?: string;
   lastExplanation?: AgentExplanation;

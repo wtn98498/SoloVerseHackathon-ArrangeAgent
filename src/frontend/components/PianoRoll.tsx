@@ -1,7 +1,7 @@
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
-import { maxOctaveOf, aliasPitch } from '../utils/note';
+import { maxOctaveOf, aliasPitch, midiOf, scaleSemitones } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
 import type { ArrangementProject, Track, NoteEvent } from '../../contracts';
 
@@ -35,6 +35,10 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
 
   const theme = track ? INSTRUMENT_THEME[track.kind] : INSTRUMENT_THEME.keys;
   const clip = track?.clips[0];
+
+  // In-scale row highlighting (defaults to C major when the project has none).
+  const scale = project.scale ?? { root: 'C', type: 'major' as const };
+  const scaleSemis = scaleSemitones(scale.root, scale.type);
 
   // Dynamic upper octave: at least B4 (matches the old fixed range → zero
   // regression for the C2–G4 fixture); expand by one octave above any higher
@@ -211,16 +215,21 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           {Array.from({ length: 7 }, (_, i) => (
             <div key={i} className="pr-barline" style={{ left: `${((i + 1) / 8) * 100}%` }} />
           ))}
-          {/* Octave C-row shading */}
-          {rowsTopDown.map((p) =>
-            p.label.startsWith('C') && !p.isBlack ? (
+          {/* In-scale row shading (root emphasised) */}
+          {rowsTopDown.map((p) => {
+            const m = midiOf(p.label);
+            if (m == null) return null;
+            const pc = ((m % 12) + 12) % 12;
+            const isRoot = pc === scaleSemis[0];
+            if (!scaleSemis.includes(pc)) return null;
+            return (
               <div
                 key={`shade-${p.label}`}
-                className="pr-row-shade"
+                className={`pr-row-shade ${isRoot ? 'pr-row-shade--root' : ''}`}
                 style={{ bottom: p.row * ROW_H, height: ROW_H }}
               />
-            ) : null
-          )}
+            );
+          })}
 
           {/* Notes */}
           {clip?.notes.map((n) => {

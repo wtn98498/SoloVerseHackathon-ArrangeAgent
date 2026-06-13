@@ -954,7 +954,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  background: rgba(26, 28, 28, 0.03);
+  background: color-mix(in srgb, var(--c, var(--ink)) 6%, transparent);
+}
+.pr-row-shade--root {
+  background: color-mix(in srgb, var(--c, var(--primary-container)) 18%, transparent);
 }
 .pr-barline {
   position: absolute;

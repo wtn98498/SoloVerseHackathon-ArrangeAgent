@@ -10,6 +10,7 @@ export const fixtureProject: ArrangementProject = {
   subdivision: 4,
   style: 'pop',
   mood: 'bright',
+  scale: { root: 'C', type: 'major' },
   tracks: [
     {
       id: 'track-drums',
