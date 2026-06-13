@@ -525,53 +525,78 @@
   margin-top: 2px;
 }
 
-/* Waveform lane */
-.track-lane {
-  position: relative;
-  min-height: 60px;
-  overflow: hidden;
+/* ── Bar ruler ── */
+.bar-ruler {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+  background: var(--surface-raised);
 }
 
-/* Clips – colored blocks with internal waveform */
-.clip {
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  border-radius: var(--radius-xs);
-  overflow: hidden;
+.bar-ruler-gutter {
+  border-right: 1px solid var(--rule-light);
+}
+
+.bar-ruler-track {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.bar-ruler-cell {
   display: flex;
   align-items: center;
-  padding: 0 10px;
-  transition: filter var(--duration-fast) var(--ease-out);
+  justify-content: center;
+  height: 22px;
+  border-right: 1px solid var(--rule-light);
 }
 
-.clip:hover {
-  filter: brightness(1.05);
+.bar-ruler-cell:last-child {
+  border-right: none;
 }
 
-.clip-wave {
+.bar-ruler-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink-tertiary);
+  letter-spacing: 0.5px;
+}
+
+/* ── Track lane ── */
+.track-lane {
+  position: relative;
+  min-height: 72px;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+/* Bar grid lines inside track lane */
+.bar-gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule-light);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Clip – waveform container ── */
+.clip {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Waveform SVG fills the entire clip area */
+.clip-waveform {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.20;
-}
-
-.clip-content {
-  display: flex;
-  gap: 6px;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  color: rgba(0,0,0,0.45);
-  position: relative;
-  z-index: 1;
-  white-space: nowrap;
-}
-
-.clip-notes,
-.clip-drums {
-  font-size: inherit;
-  color: inherit;
 }
 
 /* Playhead */
