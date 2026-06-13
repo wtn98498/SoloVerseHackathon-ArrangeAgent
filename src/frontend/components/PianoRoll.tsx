@@ -1,36 +1,23 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
+import { maxOctaveOf } from '../utils/note';
 import type { ArrangementProject, Track } from '../../contracts';
 
-/* ── Chromatic pitch range shown in the roll (bottom → top = C2 → B4) ── */
+/* ── Chromatic pitch range shown in the roll. Lower bound is fixed at C2 so the
+   fixed-pixel drum lanes never overflow; the upper octave expands dynamically
+   when a clip contains notes above B4, so agent-generated high notes are never
+   clipped. ── */
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const MIN_OCT = 2;
-const MAX_OCT = 4;
 
 interface PitchRow { label: string; isBlack: boolean; row: number; }
-
-// Built bottom→top so row 0 = lowest pitch (C2).
-const PITCH_ROWS: PitchRow[] = [];
-for (let oct = MIN_OCT; oct <= MAX_OCT; oct++) {
-  NOTE_NAMES.forEach((n) => {
-    PITCH_ROWS.push({
-      label: `${n}${oct}`,
-      isBlack: n.includes('#'),
-      row: PITCH_ROWS.length,
-    });
-  });
-}
 
 const ROW_H = 18;
 const TOTAL_STEPS = 128;
 
-function pitchToRow(pitch: string): number {
-  // Accept plain names like "C2","G#3"; alias C² → C5 (top).
-  const aliased = pitch === 'C²' ? 'C5' : pitch;
-  const idx = PITCH_ROWS.findIndex((p) => p.label === aliased);
-  return idx; // -1 if unknown
-}
+// Normalize the legacy alias C² → C5 used in some fixtures / agent output.
+const aliasPitch = (pitch: string) => (pitch === 'C²' ? 'C5' : pitch);
 
 export function PianoRoll({ project }: { project: ArrangementProject }) {
   const { playback, setPlayback, ui } = useEditor();
@@ -42,9 +29,31 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   const theme = track ? INSTRUMENT_THEME[track.kind] : INSTRUMENT_THEME.keys;
   const clip = track?.clips[0];
 
+  // Dynamic upper octave: at least B4 (matches the old fixed range → zero
+  // regression for the C2–G4 fixture); expand by one octave above any higher
+  // note so nothing gets clipped.
+  const maxOct = Math.max(
+    4,
+    maxOctaveOf((clip?.notes ?? []).map((n) => aliasPitch(n.pitch))) + 1
+  );
+
+  // Built bottom→top so row 0 = lowest pitch (C2).
+  const pitchRows = useMemo<PitchRow[]>(() => {
+    const rows: PitchRow[] = [];
+    for (let oct = MIN_OCT; oct <= maxOct; oct++) {
+      NOTE_NAMES.forEach((n) => {
+        rows.push({ label: `${n}${oct}`, isBlack: n.includes('#'), row: rows.length });
+      });
+    }
+    return rows;
+  }, [maxOct]);
+
+  const pitchToRow = (pitch: string) =>
+    pitchRows.findIndex((p) => p.label === aliasPitch(pitch));
+
   // top→bottom render order (highest pitch first)
-  const rowsTopDown = [...PITCH_ROWS].reverse();
-  const gridHeight = PITCH_ROWS.length * ROW_H;
+  const rowsTopDown = [...pitchRows].reverse();
+  const gridHeight = pitchRows.length * ROW_H;
 
   // Click / drag the grid to scrub the playhead position.
   const scrubFromEvent = (clientX: number) => {
