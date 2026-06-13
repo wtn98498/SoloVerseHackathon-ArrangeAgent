@@ -128,7 +128,7 @@
   font-size: var(--text-xl);
   font-weight: 800;
   text-align: center;
-  background: var(--surface-container);
+  background: var(--surface-lowest);
   color: var(--primary);
   font-family: var(--font-sans);
   -moz-appearance: textfield;
@@ -152,7 +152,7 @@
   border-radius: var(--r-sm);
   font-size: var(--text-xl);
   font-weight: 800;
-  background: var(--surface-container);
+  background: var(--surface-lowest);
   color: var(--primary);
   font-family: var(--font-sans);
 }
