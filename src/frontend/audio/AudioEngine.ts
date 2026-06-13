@@ -78,6 +78,12 @@ export class AudioEngine {
       this.onStepCb?.(step);
     }, Array.from({ length: totalSteps }, (_, i) => i), stepDuration);
 
+    // Tone.start() only resumes the AudioContext; the Transport must actually
+    // be running for a Tone.Sequence to advance — without it playback is silent.
+    if (Tone.Transport.state !== 'started') {
+      Tone.Transport.start();
+    }
+
     this.sequencer.start(0, currentStep);
   }
 
