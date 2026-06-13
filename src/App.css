@@ -440,6 +440,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  /* positioning context for the absolute loop-region band (spans ruler + lanes) */
+  position: relative;
 }
 
 .timeline-header {
@@ -986,7 +988,9 @@
 /* Vertical keyboard legend */
 .piano-keys {
   flex-shrink: 0;
-  width: 76px;
+  /* Match the timeline's 104px track-name gutter so the piano-roll playhead
+     aligns vertically with the timeline playhead (same time → same x). */
+  width: 104px;
   background: var(--surface-container);
   border-right: 3px solid var(--rule-soft);
   display: flex;

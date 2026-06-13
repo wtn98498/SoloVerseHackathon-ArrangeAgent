@@ -146,6 +146,14 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
   return (
     <>
       <div className="timeline-container" role="region" aria-label="编曲时间线">
+        {/* Loop region highlight — one continuous band spanning ruler + lanes */}
+        {loopRegion && (
+          <div
+            className="loop-band"
+            style={{ left: laneLeft(loopRegion.start), width: laneWidth(loopRegion.start, loopRegion.end) }}
+          />
+        )}
+
         {/* Bar ruler — drag to select the loop region; click to scrub */}
         <div className="bar-ruler">
           <div className="bar-ruler-gutter" />
@@ -156,12 +164,6 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
             onPointerMove={onRulerPointerMove}
             onPointerUp={onRulerPointerUp}
           >
-            {loopRegion && (
-              <div
-                className="loop-band-ruler"
-                style={{ left: `${loopRegion.start / (totalSteps - 1) * 100}%`, width: `${(loopRegion.end - loopRegion.start + 1) / totalSteps * 100}%` }}
-              />
-            )}
             {Array.from({ length: project.bars }, (_, i) => (
               <div key={i} className="bar-ruler-cell">
                 <span className="bar-ruler-label">{i + 1}</span>
@@ -171,13 +173,6 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
         </div>
 
         <div className="tracks-container">
-          {/* Loop region highlight */}
-          {loopRegion && (
-            <div
-              className="loop-band"
-              style={{ left: laneLeft(loopRegion.start), width: laneWidth(loopRegion.start, loopRegion.end) }}
-            />
-          )}
 
           {project.tracks.map((track) => (
             <TrackRow
