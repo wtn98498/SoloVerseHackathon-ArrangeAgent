@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { ArrangementProject, SeedPattern, TrackKind } from '../../contracts';
 import { PlaybackState, UIState } from '../types';
 
@@ -30,18 +30,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   });
   const [seedPattern, setSeedPattern] = useState<SeedPattern | null>(null);
 
-  useEffect(() => {
-    if (!playback.isPlaying) return;
-
-    const intervalId = window.setInterval(() => {
-      setPlayback(current => ({
-        ...current,
-        currentStep: (current.currentStep + 1) % 128
-      }));
-    }, 125);
-
-    return () => window.clearInterval(intervalId);
-  }, [playback.isPlaying]);
+  // NOTE: the playhead position (playback.currentStep) is now driven by the
+  // audio clock via AudioEngine.setOnStep() wired in App.tsx, so the UI
+  // playhead stays in sync with sound at any tempo. Scrub handlers
+  // (PianoRoll / TrackTimeline) still write currentStep directly when idle.
 
   const captureSeed = (trackKind: TrackKind, notes: any[], drumHits: any[]) => {
     if (!project) return;

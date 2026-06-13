@@ -6,6 +6,9 @@ export class AudioEngine {
   private sequencer: Tone.Sequence | null = null;
   private drumSynths: Map<string, Tone.Player> = new Map();
   private synth: Tone.PolySynth | null = null;
+  // Step callback fired from the Tone.Sequence loop so the UI playhead is driven
+  // by the *same* audio clock (single source of truth for playback position).
+  private onStepCb?: (step: number) => void;
 
   async initialize() {
     if (this.isInitialized) return;
@@ -70,6 +73,9 @@ export class AudioEngine {
           });
         });
       });
+
+      // Drive the UI playhead from this audio-clock step.
+      this.onStepCb?.(step);
     }, Array.from({ length: totalSteps }, (_, i) => i), stepDuration);
 
     this.sequencer.start(0, currentStep);
@@ -111,6 +117,11 @@ export class AudioEngine {
 
   setTempo(tempo: number) {
     Tone.Transport.bpm.value = tempo;
+  }
+
+  /** Subscribe to per-step position updates from the audio clock. */
+  setOnStep(cb?: (step: number) => void) {
+    this.onStepCb = cb;
   }
 
   dispose() {

@@ -11,7 +11,7 @@ import './App.css';
 
 function AppContent() {
   const [audioStatus, setAudioStatus] = useState<'idle' | 'ready' | 'blocked'>('idle');
-  const { project, setProject, ui, setUi, playback } = useEditor();
+  const { project, setProject, ui, setUi, playback, setPlayback } = useEditor();
 
   // Render & play from the live context project; fall back to the fixture
   // before the first effect runs (project is null on the initial render).
@@ -37,6 +37,13 @@ function AppContent() {
 
     let cancelled = false;
 
+    // Drive the UI playhead from the audio clock so it stays in sync with sound
+    // at any tempo (replaces the old fixed 125ms UI interval that drifted).
+    audioEngine.setOnStep((step) => {
+      if (cancelled) return;
+      setPlayback({ ...playback, currentStep: step });
+    });
+
     audioEngine.initialize()
       .then(() => {
         if (cancelled) return;
@@ -52,6 +59,7 @@ function AppContent() {
 
     return () => {
       cancelled = true;
+      audioEngine.setOnStep(undefined);
       audioEngine.stopSequence();
     };
   }, [playback.isPlaying, playback.tempo, activeProject]);
