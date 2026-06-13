@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "hackathon-handbook": {
+      "name": "hackathon-handbook",
+      "version": "1.0.0",
+      "source": "redskill",
+      "install_dir": "/Users/scala/Documents/soloverseAgent/skills/hackathon-handbook",
+      "installed_at": "1781292199406",
+      "sha256": "571afef9a2527dd67f28d46f26a625e4234ed09c3667bf0f6923ac17dbcc8006"
+    }
+  }
+}
