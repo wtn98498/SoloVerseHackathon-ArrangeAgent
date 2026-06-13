@@ -9,6 +9,12 @@ interface AgentResponse {
   source: 'deepseek' | 'fallback';
 }
 
+const STYLE_LABELS: Record<string, string> = {
+  pop: 'Pop',
+  lofi: 'Lo-fi',
+  rock: 'Rock',
+};
+
 export function AgentPanel() {
   const { project, setProject, seedPattern } = useEditor();
   const [isLoading, setIsLoading] = useState(false);
@@ -17,28 +23,26 @@ export function AgentPanel() {
 
   const handleComplete = async () => {
     if (!seedPattern || !project) return;
-
     setIsLoading(true);
     setError(null);
 
     try {
       const data: AgentResponse = await completeArrangementEndpoint({
         seed: seedPattern,
-        currentProject: project
+        currentProject: project,
       });
       setProject(data.project);
       setLastResponse(data);
-    } catch (err) {
-      setError('无法连接到服务器，使用本地备用方案');
-      // Fallback to local mock
+    } catch {
+      setError('无法连接服务器，已使用本地备用方案');
       const fallbackProject = generateFallbackComplete(seedPattern);
       const fallbackResponse: AgentResponse = {
         project: fallbackProject,
         explanation: {
           summary: '已使用本地备用编曲方案',
-          changes: ['基于你的输入生成了完整编曲', '添加了鼓点、贝斯、吉他和键盘轨道']
+          changes: ['基于你的输入生成了完整编曲', '添加了鼓点、贝斯、吉他和键盘轨道'],
         },
-        source: 'fallback'
+        source: 'fallback',
       };
       setProject(fallbackResponse.project);
       setLastResponse(fallbackResponse);
@@ -49,27 +53,23 @@ export function AgentPanel() {
 
   const handleEnergy = async (direction: 'increase' | 'soften') => {
     if (!project) return;
-
     setIsLoading(true);
     setError(null);
 
     try {
-      const data: AgentResponse = await energyEndpoint({
-        project,
-        direction
-      });
+      const data: AgentResponse = await energyEndpoint({ project, direction });
       setProject(data.project);
       setLastResponse(data);
-    } catch (err) {
-      setError('无法连接到服务器，使用本地备用方案');
+    } catch {
+      setError('无法连接服务器，已使用本地备用方案');
       const fallbackProject = generateFallbackEnergy(project, direction);
       const fallbackResponse: AgentResponse = {
         project: fallbackProject,
         explanation: {
           summary: direction === 'increase' ? '已增加能量' : '已柔和化',
-          changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量']
+          changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
         },
-        source: 'fallback'
+        source: 'fallback',
       };
       setProject(fallbackResponse.project);
       setLastResponse(fallbackResponse);
@@ -79,51 +79,58 @@ export function AgentPanel() {
   };
 
   return (
-    <div className="agent-panel">
+    <div className="agent-panel" role="complementary" aria-label="AI 编曲助手">
+      {/* Header */}
       <div className="agent-header">
-        <h3>🎵 AI 编曲助手</h3>
+        <h3>AI 助手</h3>
         {lastResponse && (
-          <div className={`source-badge ${lastResponse.source}`}>
-            {lastResponse.source === 'deepseek' ? 'AI 生成' : '本地方案'}
-          </div>
+          <span className={`source-badge ${lastResponse.source}`}>
+            {lastResponse.source === 'deepseek' ? 'AI' : '本地方案'}
+          </span>
         )}
       </div>
 
+      {/* Action buttons */}
       <div className="agent-actions">
         <button
           className="agent-action-button complete"
           onClick={handleComplete}
           disabled={!seedPattern || isLoading}
+          aria-label="补全编曲"
         >
-          {isLoading ? '处理中...' : '✨ 补全编曲'}
+          {isLoading ? '处理中…' : '✨ 补全编曲'}
         </button>
 
         <button
           className="agent-action-button energy"
           onClick={() => handleEnergy('increase')}
           disabled={!project || isLoading}
+          aria-label="更有能量"
         >
-          {isLoading ? '处理中...' : '🔥 更有能量'}
+          {isLoading ? '处理中…' : '🔥 更有能量'}
         </button>
 
         <button
           className="agent-action-button soften"
           onClick={() => handleEnergy('soften')}
           disabled={!project || isLoading}
+          aria-label="更柔和"
         >
-          {isLoading ? '处理中...' : '🌊 更柔和'}
+          {isLoading ? '处理中…' : '🌊 更柔和'}
         </button>
       </div>
 
+      {/* Error */}
       {error && (
-        <div className="agent-warning">
-          ⚠️ {error}
+        <div className="agent-warning" role="alert">
+          {error}
         </div>
       )}
 
+      {/* Explanation */}
       {lastResponse && (
         <div className="agent-explanation">
-          <h4>最近操作说明</h4>
+          <h4>最近操作</h4>
           <p className="explanation-summary">{lastResponse.explanation.summary}</p>
           <ul className="explanation-changes">
             {lastResponse.explanation.changes.map((change, i) => (
@@ -133,25 +140,30 @@ export function AgentPanel() {
         </div>
       )}
 
+      {/* Status footer */}
       <div className="agent-status">
         <div className="status-item">
-          <span className="status-label">当前状态:</span>
-          <span className="status-value">{project ? '就绪' : '等待输入'}</span>
+          <span className="status-label">状态</span>
+          <span className="status-value">
+            {project ? (isLoading ? '生成中' : '就绪') : '等待输入'}
+          </span>
         </div>
         <div className="status-item">
-          <span className="status-label">速度:</span>
-          <span className="status-value">{project?.tempo || 120} BPM</span>
+          <span className="status-label">速度</span>
+          <span className="status-value">{project?.tempo ?? 120} BPM</span>
         </div>
         <div className="status-item">
-          <span className="status-label">风格:</span>
-          <span className="status-value">{project?.style || '-'}</span>
+          <span className="status-label">风格</span>
+          <span className="status-value">
+            {project ? (STYLE_LABELS[project.style] ?? project.style) : '–'}
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
-// Fallback generators for demo safety
+/* ── Fallback generators for demo safety ── */
 function generateFallbackComplete(seed: any): ArrangementProject {
   return {
     id: `project-${Date.now()}`,
@@ -167,7 +179,7 @@ function generateFallbackComplete(seed: any): ArrangementProject {
         id: 'track-drums',
         kind: 'drums',
         name: 'Drums',
-        color: '#ff6b6b',
+        color: '#FF5E5B',
         muted: false,
         clips: [{
           id: 'clip-drums',
@@ -178,15 +190,15 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             id: `dh-${i}`,
             drum: ['kick', 'snare', 'hihat', 'clap'][i % 4] as any,
             step: i * 8,
-            velocity: 0.7
-          }))
-        }]
+            velocity: 0.7,
+          })),
+        }],
       },
       {
         id: 'track-bass',
         kind: 'bass',
         name: 'Bass',
-        color: '#4ecdc4',
+        color: '#00B4A0',
         muted: false,
         clips: [{
           id: 'clip-bass',
@@ -196,16 +208,16 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             { id: 'bn-1', pitch: 'C2', step: 0, durationSteps: 16, velocity: 0.7 },
             { id: 'bn-2', pitch: 'G2', step: 32, durationSteps: 16, velocity: 0.7 },
             { id: 'bn-3', pitch: 'A2', step: 64, durationSteps: 16, velocity: 0.7 },
-            { id: 'bn-4', pitch: 'F2', step: 96, durationSteps: 16, velocity: 0.7 }
+            { id: 'bn-4', pitch: 'F2', step: 96, durationSteps: 16, velocity: 0.7 },
           ],
-          drumHits: []
-        }]
+          drumHits: [],
+        }],
       },
       {
         id: 'track-guitar',
         kind: 'guitar',
         name: 'Guitar',
-        color: '#ffe66d',
+        color: '#FFBE0B',
         muted: false,
         clips: [{
           id: 'clip-guitar',
@@ -215,16 +227,16 @@ function generateFallbackComplete(seed: any): ArrangementProject {
             { id: 'gn-1', pitch: 'C3', step: 0, durationSteps: 32, velocity: 0.6 },
             { id: 'gn-2', pitch: 'E3', step: 32, durationSteps: 32, velocity: 0.6 },
             { id: 'gn-3', pitch: 'G3', step: 64, durationSteps: 32, velocity: 0.6 },
-            { id: 'gn-4', pitch: 'C3', step: 96, durationSteps: 32, velocity: 0.6 }
+            { id: 'gn-4', pitch: 'C3', step: 96, durationSteps: 32, velocity: 0.6 },
           ],
-          drumHits: []
-        }]
+          drumHits: [],
+        }],
       },
       {
         id: 'track-keys',
         kind: 'keys',
         name: 'Keys',
-        color: '#a8dadc',
+        color: '#8338EC',
         muted: false,
         clips: [{
           id: 'clip-keys',
@@ -232,31 +244,30 @@ function generateFallbackComplete(seed: any): ArrangementProject {
           barLength: 8,
           notes: [
             { id: 'kn-1', pitch: 'C4', step: 0, durationSteps: 64, velocity: 0.5 },
-            { id: 'kn-2', pitch: 'G4', step: 64, durationSteps: 64, velocity: 0.5 }
+            { id: 'kn-2', pitch: 'G4', step: 64, durationSteps: 64, velocity: 0.5 },
           ],
-          drumHits: []
-        }]
-      }
+          drumHits: [],
+        }],
+      },
     ],
     lastExplanation: {
       summary: '已使用本地备用编曲方案',
-      changes: ['基于你的输入生成了完整编曲', '添加了鼓点、贝斯、吉他和键盘轨道']
-    }
+      changes: ['基于你的输入生成了完整编曲', '添加了鼓点、贝斯、吉他和键盘轨道'],
+    },
   };
 }
 
-function generateFallbackEnergy(project: ArrangementProject, direction: 'increase' | 'soften'): ArrangementProject {
-  const tempoAdjustment = direction === 'increase' ? 10 : -10;
-  const newTempo = Math.max(60, Math.min(200, project.tempo + tempoAdjustment));
-
+function generateFallbackEnergy(
+  project: ArrangementProject,
+  direction: 'increase' | 'soften'
+): ArrangementProject {
+  const delta = direction === 'increase' ? 10 : -10;
   return {
     ...project,
-    tempo: newTempo,
+    tempo: Math.max(60, Math.min(200, project.tempo + delta)),
     lastExplanation: {
       summary: direction === 'increase' ? '已增加能量' : '已柔和化',
-      changes: [
-        direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'
-      ]
-    }
+      changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
+    },
   };
 }

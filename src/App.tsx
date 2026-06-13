@@ -50,31 +50,31 @@ function AppContent() {
 
   return (
     <div className="app-root">
-      {/* Top Player Bar - Centered */}
+      {/* Transport – top, centered */}
       <header className="player-bar">
         <div className="player-bar-inner">
           <TransportBar />
         </div>
       </header>
 
-      {/* Main 3-column layout */}
+      {/* Three-column layout */}
       <div className="main-layout">
-        {/* Left: Instrument Sidebar */}
+        {/* Left: Instruments */}
         <aside className="sidebar-instruments">
           <InstrumentSidebar />
         </aside>
 
-        {/* Center: Waveform Timeline */}
+        {/* Center: Arrangement canvas */}
         <main className="center-stage">
           {audioStatus === 'blocked' && (
             <div className="audio-notice">
-              🔇 音频未启动，界面仍可操作
+              音频暂未启动，界面仍可继续操作
             </div>
           )}
           <TrackTimeline project={fixtureProject} />
         </main>
 
-        {/* Right: Agent Assistant */}
+        {/* Right: AI Copilot */}
         <aside className="sidebar-agent">
           <AgentPanel />
         </aside>
