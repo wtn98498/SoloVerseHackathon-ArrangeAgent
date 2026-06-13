@@ -1,17 +1,5 @@
 import { useEditor } from '../contexts/EditorContext';
 
-const STYLE_LABELS: Record<string, string> = {
-  pop: 'Pop',
-  lofi: 'Lo-fi',
-  rock: 'Rock',
-};
-
-const MOOD_LABELS: Record<string, string> = {
-  bright: '明亮',
-  soft: '柔和',
-  energetic: '活力',
-};
-
 export function TransportBar() {
   const { project, playback, setPlayback } = useEditor();
 
@@ -31,7 +19,7 @@ export function TransportBar() {
 
   if (!project) return null;
 
-  // Position readout: bar.beat.sub — purely visual, derived from the fake step clock.
+  // Position readout: bar.beat.sub — derived from the current step.
   const step = playback.currentStep;
   const bar = Math.floor(step / 16) + 1;
   const beat = Math.floor((step % 16) / 4) + 1;
@@ -56,7 +44,7 @@ export function TransportBar() {
 
       {/* BPM */}
       <div className="tempo-control">
-        <label htmlFor="tempo-input">BPM</label>
+        <label htmlFor="tempo-input" className="label-cap">BPM</label>
         <input
           id="tempo-input"
           type="number"
@@ -69,32 +57,16 @@ export function TransportBar() {
         />
       </div>
 
-      {/* Signature readout */}
+      {/* Signature readout — same size as BPM */}
       <div className="tempo-control" title="拍号">
         <span className="label-cap">SIG</span>
-        <span style={{ color: 'var(--primary)' }}>4/4</span>
+        <span className="transport-value">4/4</span>
       </div>
 
-      {/* Position readout */}
+      {/* Position readout — same size as BPM */}
       <div className="tempo-control" title="位置">
         <span className="label-cap">POS</span>
-        <span style={{ color: 'var(--primary)', fontFamily: 'var(--font-sans)' }}>{pos}</span>
-      </div>
-
-      {/* Style pill */}
-      <div className="style-badge">
-        <span className="style-label">风格</span>
-        <span className="style-value">
-          {STYLE_LABELS[project.style] ?? project.style}
-        </span>
-      </div>
-
-      {/* Mood pill */}
-      <div className="mood-badge">
-        <span className="mood-label">情绪</span>
-        <span className="mood-value">
-          {MOOD_LABELS[project.mood] ?? project.mood}
-        </span>
+        <span className="transport-value">{pos}</span>
       </div>
     </div>
   );

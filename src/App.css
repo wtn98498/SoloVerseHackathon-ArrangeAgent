@@ -140,6 +140,23 @@
 }
 .tempo-input:focus { outline: none; border-color: var(--primary); }
 
+/* Read-only transport readouts (SIG / POS) — sized to match the BPM input */
+.transport-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 76px;
+  padding: 4px 8px;
+  border: 2px solid var(--rule-soft);
+  border-radius: var(--r-sm);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  background: var(--surface-container);
+  color: var(--primary);
+  font-family: var(--font-sans);
+}
+
 .style-value,
 .mood-value {
   color: var(--primary);
