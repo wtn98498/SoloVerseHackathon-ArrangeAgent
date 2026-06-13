@@ -73,8 +73,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
       {/* Toolbar */}
       <div className="piano-roll-toolbar">
         <div className="piano-roll-tabs">
-          <button className="piano-roll-tab active">Piano Roll</button>
-          <button className="piano-roll-tab">Score</button>
+          <span className="piano-roll-tab active">Piano Roll</span>
         </div>
         <div className="piano-roll-meta">
           <span className="label-cap">轨道</span>
