@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useEffect } from 'react';
+import { useRef, useMemo, useState, useEffect, type PointerEvent as ReactPointerEvent } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { maxOctaveOf, aliasPitch, midiOf, scaleSemitones } from '../utils/note';
@@ -25,7 +25,7 @@ interface CtxMenu {
 }
 
 export function PianoRoll({ project }: { project: ArrangementProject }) {
-  const { playback, setPlayback, ui, setProject } = useEditor();
+  const { playback, ui, setProject } = useEditor();
   const gridRef = useRef<HTMLDivElement>(null);
   const clipboard = useRef<NoteEvent[]>([]);
   const [menu, setMenu] = useState<CtxMenu | null>(null);
@@ -74,11 +74,6 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     return Math.round(ratio * (TOTAL_STEPS - 1));
   };
 
-  // Click / drag the grid to scrub the playhead position.
-  const scrubFromEvent = (clientX: number) => {
-    setPlayback({ ...playback, currentStep: stepFromX(clientX) });
-  };
-
   const playheadPct = (playback.currentStep / (TOTAL_STEPS - 1)) * 100;
 
   /* ── Click a beat segment to audition its notes + drums ── */
@@ -93,6 +88,24 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
       .filter((h) => h.step >= from && h.step < to)
       .map((h) => h.drum);
     audioEngine.auditionStep(pitches, drums);
+  };
+
+  /* ── Click an empty cell to add a note (pitch from the row, step from x) ── */
+  const addNoteAtEvent = (e: ReactPointerEvent) => {
+    if (!track || !gridRef.current) return;
+    const rect = gridRef.current.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    if (y < 14) return; // ignore the top audition rail
+    const step = stepFromX(e.clientX);
+    const rowIdx = pitchRows.length - 1 - Math.floor(y / ROW_H);
+    if (rowIdx < 0 || rowIdx >= pitchRows.length) return;
+    const snapped = Math.min(TOTAL_STEPS - 1, Math.round(step / 2) * 2); // snap to 1/16
+    const pitch = pitchRows[rowIdx].label;
+    updateClipNotes((notes) => [
+      ...notes,
+      { id: `note-${Date.now()}`, pitch, step: snapped, durationSteps: 4, velocity: 0.7 },
+    ]);
+    audioEngine.auditionNote(pitch);
   };
 
   /* ── Note editing (copy / paste / delete) — mutates the selected clip ── */
@@ -186,11 +199,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           style={{ height: gridHeight }}
           onPointerDown={(e) => {
             if (e.button !== 0) return; // leave right-click to the context menu
-            (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-            scrubFromEvent(e.clientX);
-          }}
-          onPointerMove={(e) => {
-            if (e.buttons === 1) scrubFromEvent(e.clientX);
+            addNoteAtEvent(e);
           }}
           onContextMenu={(e) => {
             e.preventDefault();
