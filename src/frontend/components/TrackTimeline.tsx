@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { ArrangementProject, Track, Clip } from '../../contracts';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
@@ -8,23 +8,43 @@ interface TrackTimelineProps {
 }
 
 export function TrackTimeline({ project }: TrackTimelineProps) {
-  const { playback, ui, setUi } = useEditor();
+  const { playback, setPlayback, ui, setUi } = useEditor();
   const totalSteps = project.bars * project.beatsPerBar * project.subdivision;
+  const rulerRef = useRef<HTMLDivElement>(null);
 
   const handleTrackSelect = (trackId: string) => {
     setUi({ ...ui, selectedTrackId: trackId });
   };
 
-  const playheadPct = playback.isPlaying
-    ? (playback.currentStep / totalSteps) * 100
-    : -1;
+  // Playhead is always present (常驻); currentStep persists when paused.
+  const playheadPct = (playback.currentStep / (totalSteps - 1)) * 100;
+
+  // Click / drag the ruler to scrub the playhead position (可调节).
+  const scrubFromEvent = (clientX: number) => {
+    const el = rulerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const step = Math.round(ratio * (totalSteps - 1));
+    setPlayback({ ...playback, currentStep: step });
+  };
 
   return (
     <div className="timeline-container" role="region" aria-label="编曲时间线">
-      {/* Bar ruler */}
+      {/* Bar ruler — also the scrub surface */}
       <div className="bar-ruler">
         <div className="bar-ruler-gutter" />
-        <div className="bar-ruler-track">
+        <div
+          className="bar-ruler-track scrub-surface"
+          ref={rulerRef}
+          onPointerDown={(e) => {
+            (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+            scrubFromEvent(e.clientX);
+          }}
+          onPointerMove={(e) => {
+            if (e.buttons === 1) scrubFromEvent(e.clientX);
+          }}
+        >
           {Array.from({ length: project.bars }, (_, i) => (
             <div key={i} className="bar-ruler-cell">
               <span className="bar-ruler-label">{i + 1}</span>
@@ -47,9 +67,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
           />
         ))}
 
-        {playheadPct >= 0 && (
-          <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }} />
-        )}
+        <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }} />
       </div>
     </div>
   );

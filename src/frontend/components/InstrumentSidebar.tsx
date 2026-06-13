@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_ORDER, INSTRUMENT_THEME, instrumentVars } from '../theme';
+import { AddInstrumentModal } from './AddInstrumentModal';
 
 export function InstrumentSidebar() {
   const { ui, setUi, project, captureSeed } = useEditor();
   const [activePads, setActivePads] = useState<Set<string>>(new Set());
+  const [showAdd, setShowAdd] = useState(false);
 
   if (!project) return null;
 
@@ -93,6 +95,13 @@ export function InstrumentSidebar() {
           </button>
         </div>
       )}
+
+      <button className="add-track-btn" onClick={() => setShowAdd(true)}>
+        <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden>add</span>
+        添加乐器
+      </button>
+
+      <AddInstrumentModal open={showAdd} onClose={() => setShowAdd(false)} />
     </nav>
   );
 }
