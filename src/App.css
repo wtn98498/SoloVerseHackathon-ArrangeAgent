@@ -1008,6 +1008,59 @@
 /* Ruler scrub affordance */
 .scrub-surface { cursor: ew-resize; }
 
+/* Right-click context menu (piano roll notes) */
+.ctx-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+}
+.ctx-menu {
+  position: fixed;
+  z-index: 200;
+  min-width: 168px;
+  background: var(--surface-lowest);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-md);
+  box-shadow: 6px 6px 0 0 var(--ink);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: ctx-pop var(--dur) var(--ease-bounce);
+  transform-origin: top left;
+}
+@keyframes ctx-pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+.ctx-item .material-symbols-outlined { font-size: 18px; color: var(--ink-tertiary); }
+.ctx-item:hover { background: var(--primary); color: var(--on-primary); }
+.ctx-item:hover .material-symbols-outlined { color: var(--on-primary); }
+.ctx-item.danger { color: var(--primary); }
+.ctx-item.danger:hover { background: var(--primary-container); color: var(--on-primary-container); }
+.ctx-hint {
+  padding: 9px 12px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-tertiary);
+}
+
 /* ═══════════════════════════════════════════════════════
    8. ADD-INSTRUMENT MODAL
    ═══════════════════════════════════════════════════════ */

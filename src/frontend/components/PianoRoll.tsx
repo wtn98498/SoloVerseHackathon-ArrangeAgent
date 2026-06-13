@@ -1,9 +1,9 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { maxOctaveOf } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
-import type { ArrangementProject, Track } from '../../contracts';
+import type { ArrangementProject, Track, NoteEvent } from '../../contracts';
 
 /* ── Chromatic pitch range shown in the roll. Lower bound is fixed at C2 so the
    fixed-pixel drum lanes never overflow; the upper octave expands dynamically
@@ -20,9 +20,18 @@ const TOTAL_STEPS = 128;
 // Normalize the legacy alias C² → C5 used in some fixtures / agent output.
 const aliasPitch = (pitch: string) => (pitch === 'C²' ? 'C5' : pitch);
 
+interface CtxMenu {
+  x: number;
+  y: number;
+  noteId: string | null; // null → opened on empty grid (paste only)
+  step: number;
+}
+
 export function PianoRoll({ project }: { project: ArrangementProject }) {
-  const { playback, setPlayback, ui } = useEditor();
+  const { playback, setPlayback, ui, setProject } = useEditor();
   const gridRef = useRef<HTMLDivElement>(null);
+  const clipboard = useRef<NoteEvent[]>([]);
+  const [menu, setMenu] = useState<CtxMenu | null>(null);
 
   const track: Track | undefined =
     project.tracks.find((t) => t.id === ui.selectedTrackId) ?? project.tracks[0];
@@ -56,17 +65,67 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   const rowsTopDown = [...pitchRows].reverse();
   const gridHeight = pitchRows.length * ROW_H;
 
-  // Click / drag the grid to scrub the playhead position.
-  const scrubFromEvent = (clientX: number) => {
+  const stepFromX = (clientX: number) => {
     const el = gridRef.current;
-    if (!el) return;
+    if (!el) return 0;
     const rect = el.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    const step = Math.round(ratio * (TOTAL_STEPS - 1));
-    setPlayback({ ...playback, currentStep: step });
+    return Math.round(ratio * (TOTAL_STEPS - 1));
+  };
+
+  // Click / drag the grid to scrub the playhead position.
+  const scrubFromEvent = (clientX: number) => {
+    setPlayback({ ...playback, currentStep: stepFromX(clientX) });
   };
 
   const playheadPct = (playback.currentStep / (TOTAL_STEPS - 1)) * 100;
+
+  /* ── Note editing (copy / paste / delete) — mutates the selected clip ── */
+  const updateClipNotes = (fn: (notes: NoteEvent[]) => NoteEvent[]) => {
+    if (!track) return;
+    setProject({
+      ...project,
+      tracks: project.tracks.map((t) =>
+        t.id === track.id
+          ? { ...t, clips: t.clips.map((c, i) => (i === 0 ? { ...c, notes: fn(c.notes) } : c)) }
+          : t
+      ),
+    });
+  };
+
+  const copyNote = (noteId: string) => {
+    const n = clip?.notes.find((x) => x.id === noteId);
+    if (n) clipboard.current = [n];
+    setMenu(null);
+  };
+
+  const deleteNote = (noteId: string) => {
+    updateClipNotes((notes) => notes.filter((n) => n.id !== noteId));
+    setMenu(null);
+  };
+
+  const pasteAt = (step: number) => {
+    const src = clipboard.current;
+    if (src.length === 0) { setMenu(null); return; }
+    const baseStep = Math.min(...src.map((n) => n.step));
+    updateClipNotes((notes) => [
+      ...notes,
+      ...src.map((n, i) => ({
+        ...n,
+        id: `note-${Date.now()}-${i}`,
+        step: Math.min(TOTAL_STEPS - 1, Math.max(0, step + (n.step - baseStep))),
+      })),
+    ]);
+    setMenu(null);
+  };
+
+  // Close the context menu on Escape.
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menu]);
 
   return (
     <section className="piano-roll" aria-label="钢琴卷帘" style={instrumentVars(theme)}>
@@ -111,11 +170,16 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           ref={gridRef}
           style={{ height: gridHeight }}
           onPointerDown={(e) => {
+            if (e.button !== 0) return; // leave right-click to the context menu
             (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
             scrubFromEvent(e.clientX);
           }}
           onPointerMove={(e) => {
             if (e.buttons === 1) scrubFromEvent(e.clientX);
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            setMenu({ x: e.clientX, y: e.clientY, noteId: null, step: stepFromX(e.clientX) });
           }}
         >
           {/* Bar dividers */}
@@ -143,9 +207,14 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
               <div
                 key={n.id}
                 className="pr-note"
-                title={`${n.pitch} · step ${n.step}（点击试听）`}
+                title={`${n.pitch} · step ${n.step}（左键试听 / 右键菜单）`}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => audioEngine.auditionNote(n.pitch)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMenu({ x: e.clientX, y: e.clientY, noteId: n.id, step: n.step });
+                }}
                 style={{
                   left: `${left}%`,
                   width: `${width}%`,
@@ -177,6 +246,51 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           </div>
         </div>
       </div>
+
+      {/* Right-click context menu */}
+      {menu && (
+        <>
+          <div
+            className="ctx-backdrop"
+            onClick={() => setMenu(null)}
+            onContextMenu={(e) => { e.preventDefault(); setMenu(null); }}
+          />
+          <div
+            className="ctx-menu"
+            role="menu"
+            style={{
+              left: Math.min(menu.x, window.innerWidth - 184),
+              top: Math.min(menu.y, window.innerHeight - 200),
+            }}
+          >
+            {menu.noteId && (
+              <button className="ctx-item" role="menuitem" onClick={() => copyNote(menu.noteId!)}>
+                <span className="material-symbols-outlined">content_copy</span>
+                复制
+              </button>
+            )}
+            {clipboard.current.length > 0 && (
+              <button className="ctx-item" role="menuitem" onClick={() => pasteAt(menu.step)}>
+                <span className="material-symbols-outlined">content_paste</span>
+                粘贴
+              </button>
+            )}
+            {menu.noteId && (
+              <button
+                className="ctx-item danger"
+                role="menuitem"
+                onClick={() => deleteNote(menu.noteId!)}
+              >
+                <span className="material-symbols-outlined">delete</span>
+                删除
+              </button>
+            )}
+            {!menu.noteId && clipboard.current.length === 0 && (
+              <span className="ctx-hint">先复制一个音符再粘贴</span>
+            )}
+          </div>
+        </>
+      )}
     </section>
   );
 }
