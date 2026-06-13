@@ -6,14 +6,26 @@ export class AudioEngine {
   private sequencer: Tone.Sequence | null = null;
   private drumSynths: Map<string, Tone.Player> = new Map();
   private synth: Tone.PolySynth | null = null;
+  // Master gain bus — stopping mutes it for a hard cut (no release tail).
+  private master: Tone.Gain | null = null;
   // Step callback fired from the Tone.Sequence loop so the UI playhead is driven
   // by the *same* audio clock (single source of truth for playback position).
   private onStepCb?: (step: number) => void;
+
+  /** Set the master bus gain (hard-cut on stop, restore on play/audition). */
+  private setMasterGain(value: number) {
+    const now = Tone.now();
+    this.master?.gain.cancelScheduledValues(now);
+    this.master?.gain.setValueAtTime(value, now);
+  }
 
   async initialize() {
     if (this.isInitialized) return;
 
     await Tone.start();
+
+    // Master gain bus everything routes through, so stopping can hard-cut.
+    this.master = new Tone.Gain(1).toDestination();
 
     // Initialize drum samples (using simple synths for MVP)
     this.initializeDrumSynths();
@@ -22,7 +34,7 @@ export class AudioEngine {
     this.synth = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: 'triangle' },
       envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 1 }
-    }).toDestination();
+    }).connect(this.master);
 
     this.isInitialized = true;
   }
@@ -31,10 +43,10 @@ export class AudioEngine {
     if (this.drumSynths.size > 0) return;
 
     // For MVP, we use simple synths instead of samples
-    const kickSynth = new Tone.MembraneSynth().toDestination();
-    const snareSynth = new Tone.NoiseSynth().toDestination();
-    const hihatSynth = new Tone.MetalSynth().toDestination();
-    const clapSynth = new Tone.NoiseSynth().toDestination();
+    const kickSynth = new Tone.MembraneSynth().connect(this.master!);
+    const snareSynth = new Tone.NoiseSynth().connect(this.master!);
+    const hihatSynth = new Tone.MetalSynth().connect(this.master!);
+    const clapSynth = new Tone.NoiseSynth().connect(this.master!);
 
     this.drumSynths.set('kick', kickSynth as any);
     this.drumSynths.set('snare', snareSynth as any);
@@ -52,6 +64,9 @@ export class AudioEngine {
     }
 
     this.stopSequence();
+
+    // Restore the master bus (stopSequence mutes it for the hard-cut).
+    this.setMasterGain(1);
 
     const totalSteps = project.bars * project.beatsPerBar * project.subdivision;
     const stepDuration = (60 / project.tempo) / project.subdivision;
@@ -140,6 +155,12 @@ export class AudioEngine {
       this.sequencer.dispose();
       this.sequencer = null;
     }
+
+    // Hard-cut: release sustaining voices and mute the master bus instantly so
+    // stop is immediate (no release tail / fade-out). Bus is restored before
+    // the next play/audition.
+    this.synth?.releaseAll();
+    this.setMasterGain(0);
   }
 
   setTempo(tempo: number) {
@@ -155,12 +176,14 @@ export class AudioEngine {
    * to call from a user gesture (pointerdown). */
   async auditionNote(pitch: string) {
     await this.initialize();
+    this.setMasterGain(1);
     this.synth?.triggerAttackRelease(pitch, '8n');
   }
 
   /** Audition all notes + drums at a moment (click a beat to hear it). */
   async auditionStep(pitches: string[], drums: string[]) {
     await this.initialize();
+    this.setMasterGain(1);
     const time = Tone.now();
     pitches.forEach((p) => this.synth?.triggerAttackRelease(p, '8n', time));
     drums.forEach((d) => this.playDrumHit(d, time));
@@ -176,6 +199,9 @@ export class AudioEngine {
       this.synth.dispose();
       this.synth = null;
     }
+
+    this.master?.dispose();
+    this.master = null;
 
     Tone.Transport.cancel();
     this.isInitialized = false;
