@@ -2,6 +2,7 @@ import { useRef, useMemo } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { maxOctaveOf } from '../utils/note';
+import { audioEngine } from '../audio/AudioEngine';
 import type { ArrangementProject, Track } from '../../contracts';
 
 /* ── Chromatic pitch range shown in the roll. Lower bound is fixed at C2 so the
@@ -94,7 +95,12 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
         {/* Vertical keyboard */}
         <div className="piano-keys" style={{ height: gridHeight }}>
           {rowsTopDown.map((p) => (
-            <div key={p.label} className={`piano-key ${p.isBlack ? 'black' : 'white'}`}>
+            <div
+              key={p.label}
+              className={`piano-key ${p.isBlack ? 'black' : 'white'}`}
+              onPointerDown={() => audioEngine.auditionNote(p.label)}
+              title={`试听 ${p.label}`}
+            >
               <span className="piano-key-label">{p.label}</span>
             </div>
           ))}
@@ -138,7 +144,9 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
               <div
                 key={n.id}
                 className="pr-note"
-                title={`${n.pitch} · step ${n.step}`}
+                title={`${n.pitch} · step ${n.step}（点击试听）`}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => audioEngine.auditionNote(n.pitch)}
                 style={{
                   left: `${left}%`,
                   width: `${width}%`,

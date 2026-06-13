@@ -124,6 +124,13 @@ export class AudioEngine {
     this.onStepCb = cb;
   }
 
+  /** Click-to-hear a single pitch. Ensures the audio context is started; safe
+   * to call from a user gesture (pointerdown). */
+  async auditionNote(pitch: string) {
+    await this.initialize();
+    this.synth?.triggerAttackRelease(pitch, '8n');
+  }
+
   dispose() {
     this.stopSequence();
 
