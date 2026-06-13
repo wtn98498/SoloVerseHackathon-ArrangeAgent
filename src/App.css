@@ -974,6 +974,29 @@
 }
 .pr-note:hover { filter: brightness(1.1); }
 .pr-note:active { transform: scale(1.04); }
+
+/* Beat-audition rail along the top of the grid */
+.pr-audit-rail {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 14px;
+  display: flex;
+  z-index: 3;
+  border-bottom: 1px solid var(--rule-soft);
+  background: color-mix(in srgb, var(--surface-low) 70%, transparent);
+}
+.pr-audit-cell {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-right: 1px solid var(--rule-soft);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--dur) var(--ease-out);
+}
+.pr-audit-cell:hover { background: color-mix(in srgb, var(--c, var(--primary-container)) 22%, transparent); }
+.pr-audit-cell:last-child { border-right: none; }
 .pr-drum {
   position: absolute;
   width: 12px;

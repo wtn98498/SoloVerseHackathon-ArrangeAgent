@@ -131,6 +131,14 @@ export class AudioEngine {
     this.synth?.triggerAttackRelease(pitch, '8n');
   }
 
+  /** Audition all notes + drums at a moment (click a beat to hear it). */
+  async auditionStep(pitches: string[], drums: string[]) {
+    await this.initialize();
+    const time = Tone.now();
+    pitches.forEach((p) => this.synth?.triggerAttackRelease(p, '8n', time));
+    drums.forEach((d) => this.playDrumHit(d, time));
+  }
+
   dispose() {
     this.stopSequence();
 

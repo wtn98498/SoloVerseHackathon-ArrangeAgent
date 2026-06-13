@@ -77,6 +77,20 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
 
   const playheadPct = (playback.currentStep / (TOTAL_STEPS - 1)) * 100;
 
+  /* ── Click a beat segment to audition its notes + drums ── */
+  const STEPS_PER_AUDIT = TOTAL_STEPS / 16; // 8 steps per segment
+  const auditionBeat = (i: number) => {
+    const from = i * STEPS_PER_AUDIT;
+    const to = from + STEPS_PER_AUDIT;
+    const pitches = (clip?.notes ?? [])
+      .filter((n) => n.step >= from && n.step < to)
+      .map((n) => n.pitch);
+    const drums = (clip?.drumHits ?? [])
+      .filter((h) => h.step >= from && h.step < to)
+      .map((h) => h.drum);
+    audioEngine.auditionStep(pitches, drums);
+  };
+
   /* ── Note editing (copy / paste / delete) — mutates the selected clip ── */
   const updateClipNotes = (fn: (notes: NoteEvent[]) => NoteEvent[]) => {
     if (!track) return;
@@ -179,6 +193,20 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
             setMenu({ x: e.clientX, y: e.clientY, noteId: null, step: stepFromX(e.clientX) });
           }}
         >
+          {/* Beat-audition rail — click a segment to hear its notes + drums */}
+          <div className="pr-audit-rail" aria-label="逐段试听">
+            {Array.from({ length: 16 }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                className="pr-audit-cell"
+                title={`试听第 ${i + 1} 段`}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => auditionBeat(i)}
+              />
+            ))}
+          </div>
+
           {/* Bar dividers */}
           {Array.from({ length: 7 }, (_, i) => (
             <div key={i} className="pr-barline" style={{ left: `${((i + 1) / 8) * 100}%` }} />
