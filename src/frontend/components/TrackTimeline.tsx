@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ArrangementProject, Track, Clip, NoteEvent, DrumHit } from '../../contracts';
+import { ArrangementProject, Track, Clip } from '../../contracts';
 import { useEditor } from '../contexts/EditorContext';
 
 interface TrackTimelineProps {
@@ -20,15 +20,6 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
 
   return (
     <div className="timeline-container" role="region" aria-label="编曲时间线">
-      <div className="timeline-header">
-        <h3>编曲</h3>
-        <div className="timeline-info">
-          <span>{project.bars} 小节</span>
-          <span aria-hidden="true">·</span>
-          <span>{totalSteps} 步</span>
-        </div>
-      </div>
-
       {/* Bar ruler */}
       <div className="bar-ruler">
         <div className="bar-ruler-gutter" />
@@ -47,6 +38,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
             key={track.id}
             track={track}
             bars={project.bars}
+            totalSteps={totalSteps}
             isSelected={ui.selectedTrackId === track.id}
             onSelect={() => handleTrackSelect(track.id)}
             isPlaying={playback.isPlaying}
@@ -66,13 +58,14 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
 interface TrackRowProps {
   track: Track;
   bars: number;
+  totalSteps: number;
   isSelected: boolean;
   onSelect: () => void;
   isPlaying: boolean;
   playheadPct: number;
 }
 
-function TrackRow({ track, bars, isSelected, onSelect, isPlaying, playheadPct }: TrackRowProps) {
+function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, playheadPct }: TrackRowProps) {
   return (
     <div
       className={`track-row ${isSelected ? 'selected' : ''} ${track.muted ? 'muted' : ''}`}
@@ -83,13 +76,13 @@ function TrackRow({ track, bars, isSelected, onSelect, isPlaying, playheadPct }:
       aria-label={`${track.name} 音轨`}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(); }}
     >
-      <div className="track-info" style={{ borderColor: track.color }}>
+      <div className="track-info" style={{ borderColor: track.color, background: `${track.color}12` }}>
         <div className="track-name">{track.name}</div>
         <div className="track-kind">{track.kind}</div>
         {track.muted && <span className="muted-badge">MUTE</span>}
       </div>
 
-      <div className="track-lane">
+      <div className="track-lane" style={{ background: `${track.color}18` }}>
         {/* Bar grid lines */}
         {Array.from({ length: bars - 1 }, (_, i) => (
           <div
@@ -100,7 +93,13 @@ function TrackRow({ track, bars, isSelected, onSelect, isPlaying, playheadPct }:
         ))}
 
         {track.clips.map(clip => (
-          <ClipBlock key={clip.id} clip={clip} trackColor={track.color} trackKind={track.kind} />
+          <MIDIClip
+            key={clip.id}
+            clip={clip}
+            trackColor={track.color}
+            totalSteps={totalSteps}
+            trackKind={track.kind}
+          />
         ))}
 
         {isPlaying && playheadPct >= 0 && (
@@ -111,175 +110,107 @@ function TrackRow({ track, bars, isSelected, onSelect, isPlaying, playheadPct }:
   );
 }
 
-/* ── Clip with real waveform ── */
-function ClipBlock({ clip, trackColor, trackKind }: { clip: Clip; trackColor: string; trackKind: string }) {
+/* ═══════════════════════════════════════
+   MIDI Clip – renders note blocks & drum hits
+   GarageBand piano-roll style: colored note
+   rectangles positioned by time (x) and pitch (y)
+   ═══════════════════════════════════════ */
+function MIDIClip({
+  clip,
+  trackColor,
+  totalSteps,
+  trackKind,
+}: {
+  clip: Clip;
+  trackColor: string;
+  totalSteps: number;
+  trackKind: string;
+}) {
   const leftPct = (clip.barStart / 8) * 100;
   const widthPct = (clip.barLength / 8) * 100;
 
+  const { noteBlocks, drumMarks } = useMemo(() => {
+    const notes = clip.notes.map(n => {
+      const xPct = (n.step / totalSteps) * 100;
+      const wPct = Math.max((n.durationSteps / totalSteps) * 100, 0.8);
+      // Map pitch to y position – higher pitch = higher on screen
+      const yPct = pitchToY(n.pitch);
+      return { x: xPct, w: wPct, y: yPct, key: n.id };
+    });
+
+    const drums = clip.drumHits.map(h => {
+      const xPct = (h.step / totalSteps) * 100;
+      const yPct = drumToY(h.drum);
+      const size = Math.max(3, h.velocity * 6);
+      return { x: xPct, y: yPct, size, key: h.id };
+    });
+
+    return { noteBlocks: notes, drumMarks: drums };
+  }, [clip.notes, clip.drumHits, totalSteps]);
+
   return (
     <div
-      className="clip"
+      className="midi-clip"
       style={{
         left: `${leftPct}%`,
         width: `${widthPct}%`,
       }}
     >
-      <WaveformSVG
-        color={trackColor}
-        notes={clip.notes}
-        drumHits={clip.drumHits}
-        barLength={clip.barLength}
-        trackKind={trackKind}
-      />
+      {/* Render note blocks for melodic instruments */}
+      {trackKind !== 'drums' && noteBlocks.map(n => (
+        <div
+          key={n.key}
+          className="note-block"
+          style={{
+            left: `${n.x}%`,
+            width: `${n.w}%`,
+            bottom: `${n.y}%`,
+            backgroundColor: trackColor,
+          }}
+        />
+      ))}
+
+      {/* Render drum hit marks */}
+      {trackKind === 'drums' && drumMarks.map(d => (
+        <div
+          key={d.key}
+          className="drum-mark"
+          style={{
+            left: `calc(${d.x}% - ${d.size / 2}px)`,
+            bottom: `${d.y}%`,
+            width: `${d.size}px`,
+            height: `${d.size}px`,
+            backgroundColor: trackColor,
+            borderRadius: '2px',
+          }}
+        />
+      ))}
     </div>
   );
 }
 
-/* ═══════════════════════════════════════
-   Real Waveform Generator
-   ═══════════════════════════════════════
+/* ── Pitch → vertical position mapping ── */
+// Returns bottom % (0 = bottom, 100 = top) for piano-roll y placement
+const PITCH_MAP: Record<string, number> = {};
+const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+for (let oct = 1; oct <= 6; oct++) {
+  NOTES.forEach((note, i) => {
+    PITCH_MAP[`${note}${oct}`] = 10 + ((oct - 1) * 7 + i) * 6;
+  });
+}
+// Aliases
+PITCH_MAP['C²'] = PITCH_MAP['C5'] ?? 70;
 
-   Generates a realistic audio waveform SVG path from musical event data.
+function pitchToY(pitch: string): number {
+  return Math.min(85, PITCH_MAP[pitch] ?? 40);
+}
 
-   Algorithm:
-   1. Build an amplitude envelope from note/drum events
-   2. Multiply by pseudo-random carrier to simulate high-frequency audio detail
-   3. Render as a filled SVG <path> between upper and lower envelopes
-   4. The result looks like a real oscilloscope / DAW waveform
-*/
-function WaveformSVG({
-  color,
-  notes,
-  drumHits,
-  barLength,
-  trackKind,
-}: {
-  color: string;
-  notes: NoteEvent[];
-  drumHits: DrumHit[];
-  barLength: number;
-  trackKind: string;
-}) {
-  const totalSteps = barLength * 4 * 4; // 16 steps/bar × 4 subdivisions
-
-  // High-res sample count: enough points for a smooth waveform
-  const SAMPLES = 256;
-
-  const pathData = useMemo(() => {
-    // ── Step 1: Amplitude envelope from events ──
-    const envelope = new Float32Array(SAMPLES);
-
-    // Map notes → envelope amplitude
-    for (const n of notes) {
-      const startSample = Math.floor((n.step / totalSteps) * SAMPLES);
-      const endSample = Math.floor(((n.step + n.durationSteps) / totalSteps) * SAMPLES);
-      const attackLen = Math.max(2, Math.floor(SAMPLES * 0.005));
-      const releaseLen = Math.max(3, Math.floor(SAMPLES * 0.015));
-
-      for (let s = startSample; s < endSample && s < SAMPLES; s++) {
-        // Attack ramp up
-        let env = n.velocity;
-        if (s - startSample < attackLen) {
-          env *= (s - startSample) / attackLen;
-        }
-        // Release ramp down at the tail
-        if (endSample - s < releaseLen) {
-          env *= (endSample - s) / releaseLen;
-        }
-        envelope[s] = Math.max(envelope[s], env);
-      }
-    }
-
-    // Map drums → sharp transients
-    for (const h of drumHits) {
-      const center = Math.floor((h.step / totalSteps) * SAMPLES);
-      const decayLen = trackKind === 'drums' ? 8 : 5; // drums ring longer
-      for (let j = 0; j < decayLen; j++) {
-        const idx = center + j;
-        if (idx >= 0 && idx < SAMPLES) {
-          const decay = Math.exp(-j * 0.4) * h.velocity;
-          envelope[idx] = Math.max(envelope[idx], decay);
-        }
-      }
-    }
-
-    // ── Step 2: Pseudo-random carrier for audio texture ──
-    // Deterministic hash so waveform is stable across renders
-    const hash = (i: number) => {
-      let x = Math.sin(i * 127.1 + trackKind.charCodeAt(0) * 311.7) * 43758.5453;
-      return x - Math.floor(x); // 0..1
-    };
-
-    // Carrier frequency varies by instrument type
-    const carrierFreq = trackKind === 'keys' ? 0.45
-      : trackKind === 'drums' ? 0.35
-      : trackKind === 'bass' ? 0.25
-      : 0.3;
-
-    // ── Step 3: Build upper & lower waveform paths ──
-    const mid = 50; // SVG center line (viewBox 0..100)
-    const maxAmp = 42; // max pixels of amplitude
-
-    const upperPoints: string[] = [];
-    const lowerPoints: string[] = [];
-
-    for (let i = 0; i < SAMPLES; i++) {
-      const x = (i / (SAMPLES - 1)) * 1000; // viewBox width 1000
-
-      // Carrier: smooth-ish pseudo-random oscillation
-      const carrier = Math.sin(i * carrierFreq) * 0.5
-        + hash(i) * 0.3
-        + hash(i + 999) * 0.2;
-
-      // Amplitude = envelope × carrier
-      const amp = envelope[i] * carrier;
-      const y = amp * maxAmp;
-
-      // Upper path goes UP from midline, lower goes DOWN (symmetric)
-      upperPoints.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${(mid - y).toFixed(2)}`);
-      lowerPoints.push(`L${x.toFixed(1)},${(mid + y).toFixed(2)}`);
-    }
-
-    // Close the shape: upper path → reverse lower path → close
-    const closedPath = upperPoints.join(' ')
-      + ' '
-      + lowerPoints.reverse().join(' ')
-      + ' Z';
-
-    return closedPath;
-  }, [notes, drumHits, totalSteps, trackKind]);
-
-  const hasEvents = notes.length > 0 || drumHits.length > 0;
-
-  return (
-    <svg
-      className="clip-waveform"
-      viewBox="0 0 1000 100"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      {/* Center line */}
-      <line x1="0" y1="50" x2="1000" y2="50" stroke={color} strokeWidth="0.5" opacity="0.15" />
-
-      {/* Waveform fill */}
-      {hasEvents && (
-        <path
-          d={pathData}
-          fill={color}
-          opacity="0.55"
-        />
-      )}
-
-      {/* Waveform stroke for definition */}
-      {hasEvents && (
-        <path
-          d={pathData}
-          fill="none"
-          stroke={color}
-          strokeWidth="1.5"
-          opacity="0.25"
-        />
-      )}
-    </svg>
-  );
+function drumToY(drum: string): number {
+  switch (drum) {
+    case 'kick':  return 15;
+    case 'snare': return 35;
+    case 'hihat': return 60;
+    case 'clap':  return 80;
+    default:      return 50;
+  }
 }

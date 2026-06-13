@@ -567,7 +567,6 @@
   position: relative;
   min-height: 72px;
   overflow: hidden;
-  background: var(--canvas);
 }
 
 /* Bar grid lines inside track lane */
@@ -576,13 +575,13 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: var(--rule-light);
+  background: rgba(255,255,255,0.12);
   z-index: 1;
   pointer-events: none;
 }
 
-/* ── Clip – waveform container ── */
-.clip {
+/* ── MIDI Clip – contains note blocks ── */
+.midi-clip {
   position: absolute;
   top: 4px;
   bottom: 4px;
@@ -591,12 +590,35 @@
   z-index: 2;
 }
 
-/* Waveform SVG fills the entire clip area */
-.clip-waveform {
+/* ── Note block – GarageBand piano-roll style ── */
+.note-block {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  height: 14%;
+  border-radius: 3px;
+  opacity: 0.9;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.track-row:hover .note-block {
+  opacity: 1;
+}
+
+.track-row.selected .note-block {
+  opacity: 1;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+/* ── Drum hit mark ── */
+.drum-mark {
+  position: absolute;
+  height: 12%;
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.track-row.selected .drum-mark {
+  opacity: 1;
 }
 
 /* Playhead */
