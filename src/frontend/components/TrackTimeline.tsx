@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { ArrangementProject, Track, Clip } from '../../contracts';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
+import { midiOf, aliasPitch } from '../utils/note';
 
 interface TrackTimelineProps {
   project: ArrangementProject;
@@ -205,23 +206,17 @@ function MIDIClip({
   );
 }
 
-/* ── Pitch → vertical position mapping ── */
-const PITCH_MAP: Record<string, number> = {};
-const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const MIN_PIANO_OCTAVE = 2;
-const MAX_PIANO_OCTAVE = 4;
-const PIANO_LANE_COUNT = (MAX_PIANO_OCTAVE - MIN_PIANO_OCTAVE + 1) * NOTES.length;
-
-for (let oct = MIN_PIANO_OCTAVE; oct <= MAX_PIANO_OCTAVE; oct++) {
-  NOTES.forEach((note, i) => {
-    const lane = (oct - MIN_PIANO_OCTAVE) * NOTES.length + i;
-    PITCH_MAP[`${note}${oct}`] = 8 + (lane / Math.max(1, PIANO_LANE_COUNT - 1)) * 78;
-  });
-}
-PITCH_MAP['C²'] = PITCH_MAP['C4'] ?? 78;
+/* ── Pitch → vertical position mapping. Shares the chromatic scale with
+   PianoRoll via utils/note.ts so accidentals map correctly and both roll
+   views speak the same pitch language. Fixed C2–C5 staff. ── */
+const TL_MIN_MIDI = midiOf('C2') ?? 36;
+const TL_MAX_MIDI = midiOf('C5') ?? 72;
 
 function pitchToY(pitch: string): number {
-  return Math.min(85, PITCH_MAP[pitch] ?? 40);
+  const m = midiOf(aliasPitch(pitch));
+  if (m == null) return 40;
+  const ratio = (m - TL_MIN_MIDI) / (TL_MAX_MIDI - TL_MIN_MIDI);
+  return Math.max(4, Math.min(88, 8 + ratio * 78));
 }
 
 function drumToY(drum: string): number {

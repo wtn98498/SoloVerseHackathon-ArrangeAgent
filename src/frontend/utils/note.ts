@@ -36,3 +36,16 @@ export function maxOctaveOf(pitches: string[]): number {
   }
   return max;
 }
+
+/** Normalize the legacy alias C² → C5 used in some fixtures / agent output. */
+export const aliasPitch = (pitch: string) => (pitch === 'C²' ? 'C5' : pitch);
+
+/** MIDI note number for a pitch name (C4 = 60). Returns null on bad input. */
+export function midiOf(pitch: string): number | null {
+  const s = separateNoteStr(pitch);
+  if (!s) return null;
+  const letter = s.name[0];
+  const acc = s.name.length > 1 ? s.name[1] : '';
+  const within = NOTE_VALUES[letter] + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
+  return (s.octave + 1) * 12 + within;
+}

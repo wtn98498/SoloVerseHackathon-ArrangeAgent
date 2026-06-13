@@ -1,7 +1,7 @@
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
-import { maxOctaveOf } from '../utils/note';
+import { maxOctaveOf, aliasPitch } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
 import type { ArrangementProject, Track, NoteEvent } from '../../contracts';
 
@@ -16,9 +16,6 @@ interface PitchRow { label: string; isBlack: boolean; row: number; }
 
 const ROW_H = 18;
 const TOTAL_STEPS = 128;
-
-// Normalize the legacy alias C² → C5 used in some fixtures / agent output.
-const aliasPitch = (pitch: string) => (pitch === 'C²' ? 'C5' : pitch);
 
 interface CtxMenu {
   x: number;
