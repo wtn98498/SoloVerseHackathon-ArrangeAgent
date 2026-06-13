@@ -28,8 +28,19 @@ export function TransportBar() {
 
   return (
     <div className="transport-bar" role="toolbar" aria-label="播放控制">
-      {/* Play / Stop */}
+      {/* Loop toggle */}
       <div className="transport-controls">
+        <button
+          className={`loop-button ${playback.loop ? 'active' : ''}`}
+          onClick={() => setPlayback({ ...playback, loop: !playback.loop })}
+          aria-label={playback.loop ? '关闭循环' : '开启循环'}
+          aria-pressed={playback.loop}
+          title={playback.loop ? '循环：开（再按关闭）' : '循环：关'}
+        >
+          <span className="material-symbols-outlined" aria-hidden>repeat</span>
+        </button>
+
+        {/* Play / Stop */}
         <button
           className={`play-button ${playback.isPlaying ? 'playing' : ''}`}
           onClick={handlePlayStop}

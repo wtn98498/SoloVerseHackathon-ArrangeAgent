@@ -22,6 +22,10 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
   const clipClipboard = useRef<Clip | null>(null);
   const [menu, setMenu] = useState<ClipMenu | null>(null);
 
+  // Live loop-region drag (local only → no engine restart storm while dragging).
+  const [draft, setDraft] = useState<{ start: number; end: number } | null>(null);
+  const loopDrag = useRef<{ startStep: number; moved: boolean } | null>(null);
+
   const handleTrackSelect = (trackId: string) => {
     setUi({ ...ui, selectedTrackId: trackId });
   };
@@ -29,19 +33,56 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
   // Playhead is always present (常驻); currentStep persists when paused.
   const playheadPct = (playback.currentStep / (totalSteps - 1)) * 100;
 
-  // Click / drag the ruler to scrub the playhead position (可调节).
-  const scrubFromEvent = (clientX: number) => {
+  const stepFromRulerX = (clientX: number) => {
     const el = rulerRef.current;
-    if (!el) return;
+    if (!el) return 0;
     const rect = el.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    const step = Math.round(ratio * (totalSteps - 1));
-    setPlayback({ ...playback, currentStep: step });
+    return Math.round(ratio * (totalSteps - 1));
+  };
+
+  // Scrub the playhead (used by the draggable playhead grip).
+  const scrubFromX = (clientX: number) => {
+    setPlayback({ ...playback, currentStep: stepFromRulerX(clientX) });
+  };
+
+  /* ── Ruler drag = select loop region (yellow); plain click = scrub ── */
+  const onRulerPointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    const step = stepFromRulerX(e.clientX);
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    loopDrag.current = { startStep: step, moved: false };
+    setDraft({ start: step, end: step });
+  };
+  const onRulerPointerMove = (e: React.PointerEvent) => {
+    if (e.buttons !== 1 || !loopDrag.current) return;
+    const step = stepFromRulerX(e.clientX);
+    const s = loopDrag.current.startStep;
+    loopDrag.current.moved = true;
+    setDraft({ start: Math.min(s, step), end: Math.max(s, step) });
+  };
+  const onRulerPointerUp = (e: React.PointerEvent) => {
+    const d = loopDrag.current;
+    loopDrag.current = null;
+    if (!d) { setDraft(null); return; }
+    if (!d.moved) {
+      setDraft(null);
+      setPlayback({ ...playback, currentStep: d.startStep });
+      return;
+    }
+    const end = stepFromRulerX(e.clientX);
+    setDraft(null);
+    setPlayback({
+      ...playback,
+      loop: true,
+      loopStart: Math.min(d.startStep, end),
+      loopEnd: Math.max(d.startStep, end),
+    });
   };
 
   /* ── Clip editing (copy / paste / delete) ── */
   const openClipMenu = (trackId: string, clip: Clip, x: number, y: number) => {
-    handleTrackSelect(trackId); // follow the clip's track in the piano roll
+    handleTrackSelect(trackId);
     setMenu({ x, y, trackId, clipId: clip.id });
   };
 
@@ -97,23 +138,30 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [menu]);
 
+  const loopRegion = draft ?? (playback.loop ? { start: playback.loopStart, end: playback.loopEnd } : null);
+  const laneLeft = (step: number) => `calc(104px + ${step}/${totalSteps} * (100% - 104px))`;
+  const laneWidth = (start: number, end: number) =>
+    `calc(${end - start + 1}/${totalSteps} * (100% - 104px))`;
+
   return (
     <>
       <div className="timeline-container" role="region" aria-label="编曲时间线">
-        {/* Bar ruler — also the scrub surface */}
+        {/* Bar ruler — drag to select the loop region; click to scrub */}
         <div className="bar-ruler">
           <div className="bar-ruler-gutter" />
           <div
             className="bar-ruler-track scrub-surface"
             ref={rulerRef}
-            onPointerDown={(e) => {
-              (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-              scrubFromEvent(e.clientX);
-            }}
-            onPointerMove={(e) => {
-              if (e.buttons === 1) scrubFromEvent(e.clientX);
-            }}
+            onPointerDown={onRulerPointerDown}
+            onPointerMove={onRulerPointerMove}
+            onPointerUp={onRulerPointerUp}
           >
+            {loopRegion && (
+              <div
+                className="loop-band-ruler"
+                style={{ left: `${loopRegion.start / (totalSteps - 1) * 100}%`, width: `${(loopRegion.end - loopRegion.start + 1) / totalSteps * 100}%` }}
+              />
+            )}
             {Array.from({ length: project.bars }, (_, i) => (
               <div key={i} className="bar-ruler-cell">
                 <span className="bar-ruler-label">{i + 1}</span>
@@ -123,6 +171,14 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
         </div>
 
         <div className="tracks-container">
+          {/* Loop region highlight */}
+          {loopRegion && (
+            <div
+              className="loop-band"
+              style={{ left: laneLeft(loopRegion.start), width: laneWidth(loopRegion.start, loopRegion.end) }}
+            />
+          )}
+
           {project.tracks.map((track) => (
             <TrackRow
               key={track.id}
@@ -131,13 +187,23 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
               totalSteps={totalSteps}
               isSelected={ui.selectedTrackId === track.id}
               onSelect={() => handleTrackSelect(track.id)}
-              isPlaying={playback.isPlaying}
-              playheadPct={playheadPct}
               onClipContext={(clip, x, y) => openClipMenu(track.id, clip, x, y)}
             />
           ))}
 
-          <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }} />
+          {/* Persistent playhead with a draggable red grip on top */}
+          <div className="playhead-line" style={{ left: `calc(104px + ${playheadPct}% * ((100% - 104px) / 100%))` }}>
+            <div
+              className="playhead-grip"
+              title="拖动定位播放指针"
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                scrubFromX(e.clientX);
+              }}
+              onPointerMove={(e) => { if (e.buttons === 1) scrubFromX(e.clientX); }}
+            />
+          </div>
         </div>
       </div>
 
@@ -185,12 +251,10 @@ interface TrackRowProps {
   totalSteps: number;
   isSelected: boolean;
   onSelect: () => void;
-  isPlaying: boolean;
-  playheadPct: number;
   onClipContext: (clip: Clip, x: number, y: number) => void;
 }
 
-function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, playheadPct, onClipContext }: TrackRowProps) {
+function TrackRow({ track, bars, totalSteps, isSelected, onSelect, onClipContext }: TrackRowProps) {
   const theme = INSTRUMENT_THEME[track.kind];
 
   return (
@@ -229,10 +293,6 @@ function TrackRow({ track, bars, totalSteps, isSelected, onSelect, isPlaying, pl
             onClipContext={onClipContext}
           />
         ))}
-
-        {isPlaying && playheadPct >= 0 && (
-          <div className="track-playhead" style={{ left: `${playheadPct}%` }} />
-        )}
       </div>
     </div>
   );

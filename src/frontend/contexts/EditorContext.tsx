@@ -21,7 +21,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [playback, setPlayback] = useState<PlaybackState>({
     isPlaying: false,
     currentStep: 0,
-    tempo: 120
+    tempo: 120,
+    loop: false,
+    loopStart: 0,
+    loopEnd: 127
   });
   const [ui, setUi] = useState<UIState>({
     selectedTrackId: null,

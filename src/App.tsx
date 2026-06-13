@@ -49,7 +49,11 @@ function AppContent() {
         if (cancelled) return;
         setAudioStatus('ready');
         audioEngine.setTempo(playback.tempo);
-        audioEngine.playProject(activeProject, playback.currentStep);
+        audioEngine.playProject(
+          activeProject,
+          playback.currentStep,
+          playback.loop ? { start: playback.loopStart, end: playback.loopEnd } : null
+        );
       })
       .catch(() => {
         if (!cancelled) {
@@ -62,7 +66,7 @@ function AppContent() {
       audioEngine.setOnStep(undefined);
       audioEngine.stopSequence();
     };
-  }, [playback.isPlaying, playback.tempo, activeProject]);
+  }, [playback.isPlaying, playback.tempo, playback.loop, playback.loopStart, playback.loopEnd, activeProject]);
 
   return (
     <div className="app-root">

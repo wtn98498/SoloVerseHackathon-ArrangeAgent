@@ -42,7 +42,11 @@ export class AudioEngine {
     this.drumSynths.set('clap', clapSynth as any);
   }
 
-  playProject(project: ArrangementProject, currentStep: number) {
+  playProject(
+    project: ArrangementProject,
+    currentStep: number,
+    loopRegion?: { start: number; end: number } | null
+  ) {
     if (!this.isInitialized) {
       this.initialize();
     }
@@ -51,6 +55,23 @@ export class AudioEngine {
 
     const totalSteps = project.bars * project.beatsPerBar * project.subdivision;
     const stepDuration = (60 / project.tempo) / project.subdivision;
+
+    // When a loop region is set, restrict the Tone.Sequence to just those
+    // steps — Tone.Sequence loops its events array natively, so the audio
+    // (and the onStepCb playhead) loop exactly within [start, end] with zero
+    // drift between sound and UI.
+    const region =
+      loopRegion && loopRegion.end > loopRegion.start
+        ? { start: Math.max(0, loopRegion.start), end: Math.min(totalSteps - 1, loopRegion.end) }
+        : null;
+    const events = region
+      ? Array.from({ length: region.end - region.start + 1 }, (_, i) => region.start + i)
+      : Array.from({ length: totalSteps }, (_, i) => i);
+
+    // Clamp the start offset into the region so playback never begins outside it.
+    const startStep = region
+      ? Math.max(region.start, Math.min(region.end, currentStep))
+      : currentStep;
 
     // Create sequence for playback
     this.sequencer = new Tone.Sequence((time, step) => {
@@ -76,7 +97,7 @@ export class AudioEngine {
 
       // Drive the UI playhead from this audio-clock step.
       this.onStepCb?.(step);
-    }, Array.from({ length: totalSteps }, (_, i) => i), stepDuration);
+    }, events, stepDuration);
 
     // Tone.start() only resumes the AudioContext; the Transport must actually
     // be running for a Tone.Sequence to advance — without it playback is silent.
@@ -84,7 +105,7 @@ export class AudioEngine {
       Tone.Transport.start();
     }
 
-    this.sequencer.start(0, currentStep);
+    this.sequencer.start(0, startStep);
   }
 
   private playDrumHit(drum: string, time: number) {
