@@ -65,6 +65,17 @@ interface CtxMenu {
   step: number;
 }
 
+interface CaptureEvent {
+  padId: string;
+  step: number;
+}
+
+interface CaptureSession {
+  track: Track;
+  startedAt: number;
+  events: CaptureEvent[];
+}
+
 export function PianoRoll({ project }: { project: ArrangementProject }) {
   const { playback, ui, setUi, setProject, captureSeed, setOnboardingStep } = useEditor();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -72,7 +83,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   const [menu, setMenu] = useState<CtxMenu | null>(null);
   const [drawing, setDrawing] = useState<{ pitch: string; startStep: number; endStep: number } | null>(null);
   const drawingRef = useRef<{ pitch: string; startStep: number; endStep: number } | null>(null);
-  const [activePads, setActivePads] = useState<Set<string>>(new Set());
+  const [captureSession, setCaptureSession] = useState<CaptureSession | null>(null);
 
   const track: Track | undefined =
     project.tracks.find((t) => t.id === ui.selectedTrackId) ?? project.tracks[0];
@@ -171,31 +182,66 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   };
 
   const drumGridHeight = DRUM_ROWS.length * DRUM_ROW_H;
-  const togglePad = (id: string) =>
-    setActivePads((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const handleCapture = () => {
-    if (!track || activePads.size === 0) return;
+  const openCapture = () => {
+    if (!track) return;
+    setCaptureSession({ track, startedAt: Date.now(), events: [] });
+  };
+  const recordPad = (padId: string) => {
+    if (!captureSession) return;
+    const elapsedSteps = Math.min(31, Math.floor((Date.now() - captureSession.startedAt) / 180));
+    const step = Math.min(TOTAL_STEPS - 1, playback.currentStep + elapsedSteps);
     const events = buildPadCaptureEvents(
-      track.kind,
-      Array.from(activePads),
-      playback.currentStep,
-      `pad-${track.kind}-${Date.now()}`
+      captureSession.track.kind,
+      [padId],
+      step,
+      `live-${captureSession.track.kind}-${Date.now()}`
     );
+    audioEngine.auditionStep(events.notes.map((note) => note.pitch), events.drumHits.map((hit) => hit.drum));
+    setCaptureSession({
+      ...captureSession,
+      events: [...captureSession.events, { padId, step }],
+    });
+  };
+  const buildSessionEvents = () => {
+    if (!captureSession) return { notes: [], drumHits: [] };
+    return captureSession.events.reduce(
+      (acc, event, index) => {
+        const built = buildPadCaptureEvents(
+          captureSession.track.kind,
+          [event.padId],
+          event.step,
+          `capture-${captureSession.track.kind}-${Date.now()}-${index}`
+        );
+        return {
+          notes: [...acc.notes, ...built.notes],
+          drumHits: [...acc.drumHits, ...built.drumHits],
+        };
+      },
+      { notes: [] as NoteEvent[], drumHits: [] as DrumHit[] }
+    );
+  };
+  const auditionCapture = () => {
+    const events = buildSessionEvents();
+    audioEngine.auditionStep(events.notes.map((note) => note.pitch), events.drumHits.map((hit) => hit.drum));
+  };
+  const commitCapture = () => {
+    if (!captureSession || captureSession.events.length === 0) return;
+    const events = buildSessionEvents();
     if (events.notes.length === 0 && events.drumHits.length === 0) return;
 
-    setProject(mergePadCaptureIntoProject(project, track.id, events));
-    captureSeed(track.kind, events.notes, events.drumHits);
+    setProject(mergePadCaptureIntoProject(project, captureSession.track.id, events));
+    captureSeed(captureSession.track.kind, events.notes, events.drumHits);
     audioEngine.auditionStep(events.notes.map((note) => note.pitch), events.drumHits.map((hit) => hit.drum));
-    setActivePads(new Set());
-    if (ui.onboardingStep === 'drums' && track.kind === 'drums') {
+    if (ui.onboardingStep === 'drums' && captureSession.track.kind === 'drums') {
       setUi({ ...ui, selectedTrackId: 'track-keys', selectedInstrument: 'keys', onboardingStep: 'keys' });
-    } else if (ui.onboardingStep === 'keys' && track.kind === 'keys') {
+    } else if (ui.onboardingStep === 'keys' && captureSession.track.kind === 'keys') {
       setOnboardingStep('agent');
     }
+    setCaptureSession(null);
   };
 
   useEffect(() => {
-    setActivePads(new Set());
+    setCaptureSession(null);
   }, [track?.id]);
 
   /* ── Drum grid: click a cell to toggle a hit (drum tracks only) ── */
@@ -300,7 +346,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
         {isDrum ? (
           <>
             <div className="piano-left-rail" style={{ minHeight: drumGridHeight }}>
-              <RollInspector track={track} activePads={activePads} togglePad={togglePad} handleCapture={handleCapture} />
+              <RollInspector track={track} openCapture={openCapture} />
               <div className="drum-labels" style={{ height: drumGridHeight }}>
                 {DRUM_ROWS.map((d) => (
                   <div
@@ -362,7 +408,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
         ) : (
           <>
             <div className="piano-left-rail" style={{ minHeight: gridHeight }}>
-              <RollInspector track={track} activePads={activePads} togglePad={togglePad} handleCapture={handleCapture} />
+              <RollInspector track={track} openCapture={openCapture} />
               <div className="piano-keys" style={{ height: gridHeight }}>
                 {rowsTopDown.map((p) => (
                   <div
@@ -529,25 +575,33 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           </div>
         </>
       )}
+
+      {captureSession && (
+        <CaptureModal
+          session={captureSession}
+          onRecord={recordPad}
+          onAudition={auditionCapture}
+          onCommit={commitCapture}
+          onClose={() => setCaptureSession(null)}
+        />
+      )}
     </section>
   );
 }
 
-function RollInspector({ track, activePads, togglePad, handleCapture }: {
+function RollInspector({ track, openCapture }: {
   track: Track | undefined;
-  activePads: Set<string>;
-  togglePad: (id: string) => void;
-  handleCapture: () => void;
+  openCapture: () => void;
 }) {
   const { ui } = useEditor();
   if (!track) return null;
   const theme = INSTRUMENT_THEME[track.kind];
   const hint =
     ui.onboardingStep === 'drums' && track.kind === 'drums'
-      ? '点 2-3 个鼓，捕获进 MIDI'
+      ? '打开窗口，敲几下鼓'
       : ui.onboardingStep === 'keys' && track.kind === 'keys'
-        ? '点几个音，捕获成旋律'
-        : '点亮 pad，再捕获';
+        ? '打开窗口，弹几个音'
+        : '打开窗口弹一下';
   return (
     <div className="roll-inspector" style={instrumentVars(theme)}>
       <div className="roll-inspector-card">
@@ -560,23 +614,67 @@ function RollInspector({ track, activePads, togglePad, handleCapture }: {
       <div className="roll-inspector-section">
         <span className="label-cap">编配</span>
         {ui.onboardingStep !== 'idle' && <span className="onboarding-mini-hint">{hint}</span>}
-        <div className={`pad-grid ${track.kind === 'keys' ? 'pad-grid-8' : 'pad-grid-4'}`}>
-          {PAD_DEFS[track.kind].map((p) => (
-            <button
-              key={p.id}
-              className={`drum-pad ${activePads.has(p.id) ? 'active' : ''}`}
-              style={{ backgroundColor: p.color, ['--cs' as any]: PAD_SHADOW[track.kind] }}
-              onClick={() => togglePad(p.id)}
-              aria-pressed={activePads.has(p.id)}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-        <button className="capture-seed-btn" onClick={handleCapture} disabled={activePads.size === 0}>
+        <button className="capture-seed-btn" onClick={openCapture}>
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>my_location</span>
           捕获律动
         </button>
+      </div>
+    </div>
+  );
+}
+
+function CaptureModal({ session, onRecord, onAudition, onCommit, onClose }: {
+  session: CaptureSession;
+  onRecord: (padId: string) => void;
+  onAudition: () => void;
+  onCommit: () => void;
+  onClose: () => void;
+}) {
+  const theme = INSTRUMENT_THEME[session.track.kind];
+  const pads = PAD_DEFS[session.track.kind];
+  return (
+    <div className="capture-modal-backdrop">
+      <div className="capture-modal" style={instrumentVars(theme)} role="dialog" aria-label="捕获律动">
+        <div className="capture-modal-head">
+          <div>
+            <span className="label-cap">捕获律动</span>
+            <strong>{session.track.name}</strong>
+          </div>
+          <button className="capture-close" onClick={onClose} aria-label="关闭">
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div className={`capture-play-pad ${session.track.kind === 'keys' ? 'pad-grid-8' : 'pad-grid-4'}`}>
+          {pads.map((pad) => (
+            <button
+              key={pad.id}
+              className="capture-pad"
+              style={{ backgroundColor: pad.color, ['--cs' as any]: PAD_SHADOW[session.track.kind] }}
+              onClick={() => onRecord(pad.id)}
+            >
+              {pad.label}
+            </button>
+          ))}
+        </div>
+        <div className="capture-strip" aria-label="已录入的点击">
+          {session.events.length === 0 ? (
+            <span>点几个 pad，听到感觉就收。</span>
+          ) : (
+            session.events.map((event, index) => (
+              <i key={`${event.padId}-${index}`} style={{ left: `${Math.min(96, (event.step / 32) * 100)}%` }} />
+            ))
+          )}
+        </div>
+        <div className="capture-actions">
+          <button className="preview-btn listen" onClick={onAudition} disabled={session.events.length === 0}>
+            <span className="material-symbols-outlined" aria-hidden>play_arrow</span>
+            先听听
+          </button>
+          <button className="preview-btn apply" onClick={onCommit} disabled={session.events.length === 0}>
+            <span className="material-symbols-outlined" aria-hidden>library_add_check</span>
+            捕获进 MIDI
+          </button>
+        </div>
       </div>
     </div>
   );

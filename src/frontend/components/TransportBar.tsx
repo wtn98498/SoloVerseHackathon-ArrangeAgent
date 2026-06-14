@@ -95,8 +95,8 @@ export function TransportBar() {
           <span className="material-symbols-outlined" aria-hidden>
             {ui.onboardingStep === 'agent' ? 'auto_awesome' : 'touch_app'}
           </span>
-          {ui.onboardingStep === 'drums' && '先点亮 Kick / Snare / HiHat，再捕获律动'}
-          {ui.onboardingStep === 'keys' && '再点几个 Keys 音，捕获成旋律种子'}
+          {ui.onboardingStep === 'drums' && '点捕获律动，敲几下鼓，满意后进 MIDI'}
+          {ui.onboardingStep === 'keys' && '再捕获几个 Keys 音，满意后进 MIDI'}
           {ui.onboardingStep === 'agent' && '种子已进 MIDI，去右侧和 Agent 对话或补全'}
         </div>
       )}
