@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
   // in the Vite dev server, the key is NEVER embedded in the client bundle.
   const env = loadEnv(mode, process.cwd(), '')
   const apiKey = env.DEEPSEEK_API_KEY
+  const base = env.VITE_BASE_PATH || '/'
 
   // Proxy /llm/* → DeepSeek, injecting the Authorization header server-side so
   // the browser never sees the key and there is no CORS issue.
@@ -26,6 +27,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    base,
     plugins: [react()],
     server: {
       port: 3000,
