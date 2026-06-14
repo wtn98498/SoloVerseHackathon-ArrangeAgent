@@ -4,6 +4,7 @@ import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { aliasPitch, midiOf, scaleSemitones } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
 import type { ArrangementProject, Track, TrackKind, NoteEvent, DrumHit } from '../../contracts';
+import { buildPadCaptureEvents, mergePadCaptureIntoProject } from './padCapture';
 
 /* ── Chromatic pitch range shown in the roll. Use a broad piano-style range so
    the UI does not imply a three-octave product limit. ── */
@@ -174,12 +175,17 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     setActivePads((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const handleCapture = () => {
     if (!track || activePads.size === 0) return;
-    const data = Array.from(activePads);
-    if (track.kind === 'drums') {
-      captureSeed(track.kind, [], data.map((id, i) => ({ id, drum: id as any, step: i * 4, velocity: 0.7 })));
-    } else {
-      captureSeed(track.kind, data.map((id, i) => ({ id, pitch: 'C4', step: i * 4, durationSteps: 2, velocity: 0.7 })), []);
-    }
+    const events = buildPadCaptureEvents(
+      track.kind,
+      Array.from(activePads),
+      playback.currentStep,
+      `pad-${track.kind}-${Date.now()}`
+    );
+    if (events.notes.length === 0 && events.drumHits.length === 0) return;
+
+    setProject(mergePadCaptureIntoProject(project, track.id, events));
+    captureSeed(track.kind, events.notes, events.drumHits);
+    audioEngine.auditionStep(events.notes.map((note) => note.pitch), events.drumHits.map((hit) => hit.drum));
     setActivePads(new Set());
   };
 
