@@ -1,5 +1,7 @@
 import { TrackKind } from '../contracts';
 
+export type OnboardingStep = 'idle' | 'drums' | 'keys' | 'agent';
+
 export interface PlaybackState {
   isPlaying: boolean;
   currentStep: number;
@@ -15,4 +17,5 @@ export interface UIState {
   selectedTrackId: string | null;
   selectedInstrument: TrackKind | null;
   showAgentPanel: boolean;
+  onboardingStep: OnboardingStep;
 }

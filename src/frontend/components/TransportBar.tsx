@@ -1,7 +1,7 @@
 import { useEditor } from '../contexts/EditorContext';
 
 export function TransportBar() {
-  const { project, playback, setPlayback } = useEditor();
+  const { project, playback, setPlayback, startNewSong, ui } = useEditor();
 
   const handlePlayStop = () => {
     setPlayback({
@@ -28,6 +28,16 @@ export function TransportBar() {
 
   return (
     <div className="transport-bar" role="toolbar" aria-label="播放控制">
+      <button
+        className="new-song-button"
+        onClick={startNewSong}
+        aria-label="新建曲子"
+        title="新建曲子"
+      >
+        <span className="material-symbols-outlined" aria-hidden>add_circle</span>
+        新建曲子
+      </button>
+
       {/* Loop toggle */}
       <div className="transport-controls">
         <button
@@ -79,6 +89,17 @@ export function TransportBar() {
         <span className="label-cap">POS</span>
         <span className="transport-value">{pos}</span>
       </div>
+
+      {ui.onboardingStep !== 'idle' && (
+        <div className={`onboarding-pill step-${ui.onboardingStep}`} aria-live="polite">
+          <span className="material-symbols-outlined" aria-hidden>
+            {ui.onboardingStep === 'agent' ? 'auto_awesome' : 'touch_app'}
+          </span>
+          {ui.onboardingStep === 'drums' && '先点亮 Kick / Snare / HiHat，再捕获律动'}
+          {ui.onboardingStep === 'keys' && '再点几个 Keys 音，捕获成旋律种子'}
+          {ui.onboardingStep === 'agent' && '种子已进 MIDI，去右侧和 Agent 对话或补全'}
+        </div>
+      )}
     </div>
   );
 }

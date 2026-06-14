@@ -66,7 +66,7 @@ interface CtxMenu {
 }
 
 export function PianoRoll({ project }: { project: ArrangementProject }) {
-  const { playback, ui, setProject, captureSeed } = useEditor();
+  const { playback, ui, setUi, setProject, captureSeed, setOnboardingStep } = useEditor();
   const gridRef = useRef<HTMLDivElement>(null);
   const clipboard = useRef<NoteEvent[]>([]);
   const [menu, setMenu] = useState<CtxMenu | null>(null);
@@ -187,6 +187,11 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     captureSeed(track.kind, events.notes, events.drumHits);
     audioEngine.auditionStep(events.notes.map((note) => note.pitch), events.drumHits.map((hit) => hit.drum));
     setActivePads(new Set());
+    if (ui.onboardingStep === 'drums' && track.kind === 'drums') {
+      setUi({ ...ui, selectedTrackId: 'track-keys', selectedInstrument: 'keys', onboardingStep: 'keys' });
+    } else if (ui.onboardingStep === 'keys' && track.kind === 'keys') {
+      setOnboardingStep('agent');
+    }
   };
 
   useEffect(() => {
@@ -534,8 +539,15 @@ function RollInspector({ track, activePads, togglePad, handleCapture }: {
   togglePad: (id: string) => void;
   handleCapture: () => void;
 }) {
+  const { ui } = useEditor();
   if (!track) return null;
   const theme = INSTRUMENT_THEME[track.kind];
+  const hint =
+    ui.onboardingStep === 'drums' && track.kind === 'drums'
+      ? '点 2-3 个鼓，捕获进 MIDI'
+      : ui.onboardingStep === 'keys' && track.kind === 'keys'
+        ? '点几个音，捕获成旋律'
+        : '点亮 pad，再捕获';
   return (
     <div className="roll-inspector" style={instrumentVars(theme)}>
       <div className="roll-inspector-card">
@@ -547,6 +559,7 @@ function RollInspector({ track, activePads, togglePad, handleCapture }: {
       </div>
       <div className="roll-inspector-section">
         <span className="label-cap">编配</span>
+        {ui.onboardingStep !== 'idle' && <span className="onboarding-mini-hint">{hint}</span>}
         <div className={`pad-grid ${track.kind === 'keys' ? 'pad-grid-8' : 'pad-grid-4'}`}>
           {PAD_DEFS[track.kind].map((p) => (
             <button
