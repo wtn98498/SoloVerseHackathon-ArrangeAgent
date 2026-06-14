@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { ArrangementProject, SeedPattern, TrackKind } from '../../contracts';
 import { OnboardingStep, PlaybackState, UIState } from '../types';
-import { createClip } from '../../contracts/clip';
+import { createDemoStartProject } from '../demoStart';
 
 interface EditorContextType {
   project: ArrangementProject | null;
@@ -59,7 +59,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   };
 
   const startNewSong = () => {
-    const nextProject = createBlankProject();
+    const nextProject = createDemoStartProject();
     setProject(nextProject);
     setSeedPattern(null);
     setPlayback({
@@ -99,59 +99,6 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       {children}
     </EditorContext.Provider>
   );
-}
-
-function createBlankProject(): ArrangementProject {
-  return {
-    id: `project-${Date.now()}`,
-    title: 'New Playground Loop',
-    tempo: 112,
-    bars: 8,
-    beatsPerBar: 4,
-    subdivision: 4,
-    style: 'pop',
-    mood: 'bright',
-    scale: { root: 'C', type: 'major' },
-    selectedClipId: 'clip-drums',
-    tracks: [
-      {
-        id: 'track-drums',
-        kind: 'drums',
-        name: 'Drums',
-        color: '#ff6b6b',
-        muted: false,
-        clips: [createClip({ id: 'clip-drums', kind: 'drum', name: 'Drums MIDI Clip', notes: [], drumHits: [] })],
-      },
-      {
-        id: 'track-bass',
-        kind: 'bass',
-        name: 'Bass',
-        color: '#4ecdc4',
-        muted: false,
-        clips: [createClip({ id: 'clip-bass', kind: 'midi', name: 'Bass MIDI Clip', notes: [], drumHits: [] })],
-      },
-      {
-        id: 'track-guitar',
-        kind: 'guitar',
-        name: 'Guitar',
-        color: '#ffe66d',
-        muted: false,
-        clips: [createClip({ id: 'clip-guitar', kind: 'midi', name: 'Guitar MIDI Clip', notes: [], drumHits: [] })],
-      },
-      {
-        id: 'track-keys',
-        kind: 'keys',
-        name: 'Keys',
-        color: '#a8dadc',
-        muted: false,
-        clips: [createClip({ id: 'clip-keys', kind: 'midi', name: 'Keys MIDI Clip', notes: [], drumHits: [] })],
-      },
-    ],
-    lastExplanation: {
-      summary: '新曲子已准备好，先敲鼓，再点几个音。',
-      changes: ['创建空白 8 小节四轨工程', '等待用户捕获鼓和键盘种子'],
-    },
-  };
 }
 
 export function useEditor() {

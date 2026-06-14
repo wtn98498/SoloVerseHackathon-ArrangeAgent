@@ -8,6 +8,9 @@ timeline or asking an AI to produce a black-box audio file, the user first
 plays a tiny rhythm or melody. The arrangement agent then expands that seed
 into an editable 8-bar band loop.
 
+- Public demo: https://wenwen.zone/playband/
+- Repository: https://github.com/wtn98498/SoloVerseHackathon-ArrangeAgent
+
 ![PlayBand AI demo screenshot](public/readme/playband-ai-demo.png)
 
 ## Why This Exists
@@ -25,18 +28,23 @@ PlayBand AI turns that natural language and playful input into structured music:
 - Every AI result appears as a preview first.
 - The user can audition, reject, regenerate, or apply the result.
 
+The memorable moment is simple: **a few taps become a band.**
+
 ## Demo Flow
+
+The app now opens directly on the blank demo starting point: four empty tracks,
+the drum track selected, and the AI assistant waiting for a seed.
 
 The intended 60-90 second demo path is:
 
-1. Click **New Song**.
-2. Capture a short groove with the toy-like pad interface.
-3. Confirm the captured notes into the MIDI timeline.
-4. Ask the agent to complete the arrangement.
-5. Audition the generated 8-bar loop.
-6. Ask for follow-up edits such as `faster again`, `make the chorus catchier`,
-   or `add a blues feel`.
-7. Apply the preview only when it sounds right.
+1. Open https://wenwen.zone/playband/.
+2. Click **捕获律动** on the drum track.
+3. Tap a few pads such as **Kick**, **Snare**, and **HiHat**.
+4. Click **捕获进 MIDI** to place the seed on the timeline.
+5. Click **补全编曲** in the AI assistant.
+6. Audition the generated 8-bar loop.
+7. Click **放进编曲** only when the preview feels right.
+8. Click **更有能量** or type a music request such as `faster again`.
 
 The important detail: the agent does not overwrite the song immediately. It
 creates a candidate arrangement so the user keeps creative control.
@@ -110,6 +118,7 @@ If that port is busy, Vite will print the next available local URL.
 ```bash
 npm run typecheck
 npm run build
+VITE_BASE_PATH=/playband/ npm run build
 node --experimental-specifier-resolution=node --loader ts-node/esm src/arrangement/agentIntent.test.ts
 ```
 

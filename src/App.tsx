@@ -5,22 +5,26 @@ import { TrackTimeline } from './frontend/components/TrackTimeline';
 import { PianoRoll } from './frontend/components/PianoRoll';
 import { AgentPanel } from './frontend/components/AgentPanel';
 import { audioEngine } from './frontend/audio/AudioEngine';
-import { fixtureProject } from './fixtures/project';
+import { createDemoStartProject } from './frontend/demoStart';
 import './App.css';
 
 function AppContent() {
   const [audioStatus, setAudioStatus] = useState<'idle' | 'ready' | 'blocked'>('idle');
   const { project, setProject, ui, setUi, playback, setPlayback } = useEditor();
 
-  // Render & play from the live context project; fall back to the fixture
+  // Render & play from the live context project; fall back to a blank demo
   // before the first effect runs (project is null on the initial render).
-  const activeProject = project ?? fixtureProject;
+  const activeProject = project ?? createDemoStartProject();
 
   useEffect(() => {
-    setProject(fixtureProject);
-    // Auto-select the first track so the piano roll + pad controller are
-    // immediately populated for the demo.
-    setUi({ ...ui, selectedTrackId: fixtureProject.tracks[0].id });
+    const starterProject = createDemoStartProject();
+    setProject(starterProject);
+    setUi({
+      ...ui,
+      selectedTrackId: 'track-drums',
+      selectedInstrument: 'drums',
+      onboardingStep: 'drums',
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
       audioEngine.dispose();
