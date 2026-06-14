@@ -1,66 +1,152 @@
 # PlayBand AI
 
-音乐游乐场 - AI 编曲应用。
+**Play first. Arrange later.**
 
-华清黑客松参赛作品：编曲 Agent。
+PlayBand AI is a hackathon prototype for people who have musical taste but do
+not know how to use a DAW. Instead of starting from an empty professional
+timeline or asking an AI to produce a black-box audio file, the user first
+plays a tiny rhythm or melody. The arrangement agent then expands that seed
+into an editable 8-bar band loop.
 
-PlayBand AI 面向不会 DAW、但想玩音乐的人：用户先用鼓 pad 或按键玩出一个
-seed，Agent 再把它扩成一段可听、可见的 8 小节乐队 loop。
+![PlayBand AI demo screenshot](public/readme/playband-ai-demo.png)
 
-MVP 采用 lightweight MIDI-like JSON 作为底层编曲数据。界面可以有 MIDI 卷帘味道，
-但本项目不是完整 DAW，也不做完整 MIDI 编辑器。
+## Why This Exists
 
-## 当前方向
+GarageBand, Logic, Ableton, and FL Studio are powerful, but they are intimidating
+for casual creators. A non-musician can say "make it more energetic" or "give me
+a catchy intro", but they usually cannot translate that into drums, bass,
+guitar, keyboard parts, MIDI timing, and note density.
 
-- Demo 核心：play seed -> complete arrangement -> increase/soften energy。
-- 底层：`ArrangementProject` / `Track` / `Clip` / `NoteEvent` / `DrumHit`。
-- 视觉参考：two-moons / MoaRoll 的卷帘质感，只借鉴不接入。
-- 不接入：openDAW、GridSound DAW 或其他大型 DAW 子系统。
-- 安全线：没有 `DEEPSEEK_API_KEY` 时仍然走 deterministic fallback。
+PlayBand AI turns that natural language and playful input into structured music:
 
-## 项目结构
+- The user taps or plays a small idea.
+- The app records it as lightweight MIDI-like data.
+- The agent completes it into four playable tracks.
+- Every AI result appears as a preview first.
+- The user can audition, reject, regenerate, or apply the result.
 
-### 核心文件夹所有权
+## Demo Flow
 
-- `src/contracts/` - 共享数据契约和 API 类型定义
-- `src/fixtures/` - 测试数据和演示项目
-- `src/frontend/` - 前端组件和 UI (Frontend Agent 负责)
-- `src/backend/` - 后端 API 和服务 (App Backend Agent 负责)
-- `src/arrangement/` - 编曲生成逻辑 (Arrangement Agent 负责)
+The intended 60-90 second demo path is:
 
-## 开发命令
+1. Click **New Song**.
+2. Capture a short groove with the toy-like pad interface.
+3. Confirm the captured notes into the MIDI timeline.
+4. Ask the agent to complete the arrangement.
+5. Audition the generated 8-bar loop.
+6. Ask for follow-up edits such as `faster again`, `make the chorus catchier`,
+   or `add a blues feel`.
+7. Apply the preview only when it sounds right.
+
+The important detail: the agent does not overwrite the song immediately. It
+creates a candidate arrangement so the user keeps creative control.
+
+## What Works
+
+- Four-track arrangement surface: drums, bass, guitar, and keys.
+- Piano-roll-style visualization for trust and light editing.
+- Pad capture flow with preview, undo, clear, audition, and import.
+- Agent preview cards with audition, apply, retry, and discard actions.
+- Multi-turn arrangement edits such as faster/slower, softer/more energetic,
+  catchier sections, and broader music-style requests.
+- Living artist style requests are rewritten into broader musical traits instead
+  of directly imitating a living artist.
+- Deterministic fallback generation keeps the demo working without an API key.
+
+## Agent Behavior
+
+The arrangement agent is intentionally small and demo-safe. It routes user input
+into a few reliable actions:
+
+- **Complete arrangement**: expand a seed pattern into a full 8-bar loop.
+- **Increase energy**: raise tempo/velocity and add denser musical motion.
+- **Soften arrangement**: lower intensity and create more space.
+- **Compose from language**: accept broad music prompts, ask 1-2 clarifying
+  questions when the request is too vague, and keep off-topic chat out.
+
+The app treats music-related language generously. Prompts like `make a prelude`,
+`add trap groove`, `make the melody rise`, or `make the harmony thicker` should
+stay inside the music workflow instead of being rejected as small talk.
+
+## Data Model
+
+PlayBand AI uses a lightweight MIDI-like JSON model instead of a full DAW engine.
+The central object is an `ArrangementProject` with:
+
+- `tempo`, `style`, `mood`, `bars`
+- four `Track` objects
+- `Clip` objects containing `NoteEvent` or `DrumHit` data
+- 8 bars, 4 beats per bar, 128 sixteenth-note steps
+
+This keeps the MVP small while still making the generated result visible,
+playable, and transformable.
+
+## Tech Stack
+
+- React 18
+- TypeScript
+- Vite
+- Tone.js for browser audio playback
+- Custom lightweight arrangement agent
+- DeepSeek-ready backend wrapper with local deterministic fallback
+
+## Run Locally
 
 ```bash
-# 安装依赖
 npm install
-
-# 开发模式
 npm run dev
+```
 
-# 类型检查
+Then open the local Vite URL, usually:
+
+```text
+http://127.0.0.1:3000/
+```
+
+If that port is busy, Vite will print the next available local URL.
+
+## Useful Commands
+
+```bash
 npm run typecheck
-
-# 构建生产版本
 npm run build
+node --experimental-specifier-resolution=node --loader ts-node/esm src/arrangement/agentIntent.test.ts
 ```
 
-## 环境变量
+## Optional AI Key
 
-复制 `.env.example` 到 `.env` 并配置：
+The demo path works without a model key because fallback generation is built in.
+To experiment with the DeepSeek path, create a local environment file from
+`.env.example` and set:
 
-```
+```text
 DEEPSEEK_API_KEY=your_api_key_here
 ```
 
-## 技术栈
+Do not commit real API keys.
 
-- React + TypeScript + Vite
-- Tone.js (音频引擎)
-- DeepSeek (AI 编曲)
+## Project Structure
 
-## 开发规则
+```text
+src/contracts/      Shared arrangement types and API contracts
+src/arrangement/   Agent intent routing, generators, transformers, validation
+src/backend/       Local service layer, validation, DeepSeek wrapper, fallback
+src/frontend/      React UI, editor state, Tone.js audio engine, components
+src/fixtures/      Demo project fixtures
+docs/              Product plan, contracts, agent briefs, design notes
+```
 
-- 每个 Agent 只编辑自己负责的文件夹
-- 如需修改共享契约，先更新 `src/contracts/`
-- 提交前运行 `npm run typecheck`
-- 使用中文提交信息
+## Hackathon Scope
+
+This is not trying to be a full DAW. The MVP deliberately avoids:
+
+- full MIDI editing
+- plugin hosting
+- cloud project sync
+- accounts
+- collaboration
+- complex export workflows
+- large sample libraries
+
+The goal is one memorable moment: **play a tiny idea, then watch an agent turn it
+into editable music.**

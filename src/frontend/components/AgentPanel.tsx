@@ -189,7 +189,7 @@ export function AgentPanel() {
         setCandidate({
           ...data,
           explanation: {
-            summary: `${data.explanation.summary}。参考：${reference.summary}`,
+            summary: `${intent.safetyNote ? `${intent.safetyNote} ` : ''}${data.explanation.summary}。参考：${reference.summary}`,
             changes: [...data.explanation.changes, ...reference.grooveHints.slice(0, 2)],
           },
         });
