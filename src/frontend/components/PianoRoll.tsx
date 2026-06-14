@@ -29,12 +29,15 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   const gridRef = useRef<HTMLDivElement>(null);
   const clipboard = useRef<NoteEvent[]>([]);
   const [menu, setMenu] = useState<CtxMenu | null>(null);
+  const [drawing, setDrawing] = useState<{ pitch: string; startStep: number; endStep: number } | null>(null);
+  const drawingRef = useRef<{ pitch: string; startStep: number; endStep: number } | null>(null);
 
   const track: Track | undefined =
     project.tracks.find((t) => t.id === ui.selectedTrackId) ?? project.tracks[0];
 
   const theme = track ? INSTRUMENT_THEME[track.kind] : INSTRUMENT_THEME.keys;
   const clip = track?.clips[0];
+  const isDrum = track?.kind === 'drums';
 
   // In-scale row highlighting (defaults to C major when the project has none).
   const scale = project.scale ?? { root: 'C', type: 'major' as const };
@@ -90,22 +93,42 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     audioEngine.auditionStep(pitches, drums);
   };
 
-  /* ── Click an empty cell to add a note (pitch from the row, step from x) ── */
-  const addNoteAtEvent = (e: ReactPointerEvent) => {
-    if (!track || !gridRef.current) return;
+  const snap = (step: number) => Math.min(TOTAL_STEPS - 1, Math.max(0, Math.round(step / 2) * 2));
+
+  /* ── Click-drag to draw a note: press sets pitch + start step, drag sets the
+     length, release commits. A click with no drag = a single 1/16 note. Drum
+     tracks use the drum grid (toggleDrumAt), not this. ── */
+  const beginDraw = (e: ReactPointerEvent) => {
+    if (isDrum || !gridRef.current) return;
     const rect = gridRef.current.getBoundingClientRect();
     const y = e.clientY - rect.top;
     if (y < 14) return; // ignore the top audition rail
-    const step = stepFromX(e.clientX);
     const rowIdx = pitchRows.length - 1 - Math.floor(y / ROW_H);
     if (rowIdx < 0 || rowIdx >= pitchRows.length) return;
-    const snapped = Math.min(TOTAL_STEPS - 1, Math.round(step / 2) * 2); // snap to 1/16
-    const pitch = pitchRows[rowIdx].label;
+    const step = snap(stepFromX(e.clientX));
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    drawingRef.current = { pitch: pitchRows[rowIdx].label, startStep: step, endStep: step };
+    setDrawing({ ...drawingRef.current });
+    audioEngine.auditionNote(pitchRows[rowIdx].label);
+  };
+
+  const extendDraw = (e: ReactPointerEvent) => {
+    if (!drawingRef.current) return;
+    drawingRef.current.endStep = snap(stepFromX(e.clientX));
+    setDrawing({ ...drawingRef.current });
+  };
+
+  const commitDraw = () => {
+    const d = drawingRef.current;
+    drawingRef.current = null;
+    setDrawing(null);
+    if (!d) return;
+    const start = Math.min(d.startStep, d.endStep);
+    const duration = Math.abs(d.endStep - d.startStep) + 1;
     updateClipNotes((notes) => [
       ...notes,
-      { id: `note-${Date.now()}`, pitch, step: snapped, durationSteps: 4, velocity: 0.7 },
+      { id: `note-${Date.now()}`, pitch: d.pitch, step: start, durationSteps: duration, velocity: 0.7 },
     ]);
-    audioEngine.auditionNote(pitch);
   };
 
   /* ── Note editing (copy / paste / delete) — mutates the selected clip ── */
@@ -199,8 +222,12 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           style={{ height: gridHeight }}
           onPointerDown={(e) => {
             if (e.button !== 0) return; // leave right-click to the context menu
-            addNoteAtEvent(e);
+            beginDraw(e);
           }}
+          onPointerMove={(e) => {
+            if (e.buttons === 1) extendDraw(e);
+          }}
+          onPointerUp={commitDraw}
           onContextMenu={(e) => {
             e.preventDefault();
             setMenu({ x: e.clientX, y: e.clientY, noteId: null, step: stepFromX(e.clientX) });
@@ -267,6 +294,25 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
               />
             );
           })}
+
+          {/* Note being drawn (drag preview) */}
+          {drawing && (() => {
+            const r = pitchToRow(drawing.pitch);
+            if (r < 0) return null;
+            const start = Math.min(drawing.startStep, drawing.endStep);
+            const dur = Math.abs(drawing.endStep - drawing.startStep) + 1;
+            return (
+              <div
+                className="pr-note pr-note--drawing"
+                style={{
+                  left: `${(start / TOTAL_STEPS) * 100}%`,
+                  width: `${Math.max((dur / TOTAL_STEPS) * 100, 1.2)}%`,
+                  bottom: r * ROW_H + 2,
+                  height: ROW_H - 4,
+                }}
+              />
+            );
+          })()}
 
           {/* Drum hits rendered as dots */}
           {clip?.drumHits.map((h) => {

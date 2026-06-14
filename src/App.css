@@ -1055,6 +1055,7 @@
 }
 .pr-note:hover { filter: brightness(1.1); }
 .pr-note:active { transform: scale(1.04); }
+.pr-note--drawing { opacity: 0.6; outline: 2px dashed var(--cs); outline-offset: -2px; pointer-events: none; }
 
 /* Beat-audition rail along the top of the grid */
 .pr-audit-rail {
