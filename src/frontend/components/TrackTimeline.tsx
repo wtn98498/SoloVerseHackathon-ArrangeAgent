@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
-import { ArrangementProject, Track, Clip, TrackKind } from '../../contracts';
+import { ArrangementProject, Clip } from '../../contracts';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { midiOf, aliasPitch } from '../utils/note';
@@ -12,43 +12,8 @@ interface TrackTimelineProps {
 
 interface ClipMenu { x: number; y: number; trackId: string; clipId: string; }
 
-/* ── Pad definitions for the right-click controller popup ── */
-const PAD_DEFS: Record<TrackKind, { id: string; label: string; color: string }[]> = {
-  drums: [
-    { id: 'kick', label: 'Kick', color: '#e60012' },
-    { id: 'snare', label: 'Snare', color: '#ff6a3d' },
-    { id: 'hihat', label: 'HiHat', color: '#ff9f1c' },
-    { id: 'clap', label: 'Clap', color: '#ff4d6d' },
-  ],
-  bass: [
-    { id: '1', label: '低', color: '#16c265' },
-    { id: '2', label: '中低', color: '#0fae57' },
-    { id: '3', label: '中高', color: '#0b8a3d' },
-    { id: '4', label: '高', color: '#0a5c2c' },
-  ],
-  guitar: [
-    { id: '1', label: '低', color: '#ebc300' },
-    { id: '2', label: '中低', color: '#d9ae00' },
-    { id: '3', label: '中高', color: '#a88500' },
-    { id: '4', label: '高', color: '#554500' },
-  ],
-  keys: [
-    { id: 'C', label: 'C', color: '#37b4ff' },
-    { id: 'D', label: 'D', color: '#5cc4ff' },
-    { id: 'E', label: 'E', color: '#2aa0f0' },
-    { id: 'F', label: 'F', color: '#1b8fd6' },
-    { id: 'G', label: 'G', color: '#37b4ff' },
-    { id: 'A', label: 'A', color: '#1f7fc0' },
-    { id: 'B', label: 'B', color: '#0e6aa8' },
-    { id: 'C2', label: 'C²', color: '#004b70' },
-  ],
-};
-const PAD_SHADOW: Record<TrackKind, string> = {
-  drums: '#930007', bass: '#0a5c2c', guitar: '#554500', keys: '#004b70',
-};
-
 export function TrackTimeline({ project }: TrackTimelineProps) {
-  const { playback, setPlayback, ui, setUi, setProject, captureSeed } = useEditor();
+  const { playback, setPlayback, ui, setUi, setProject } = useEditor();
   const totalSteps = project.bars * project.beatsPerBar * project.subdivision;
   const rulerRef = useRef<HTMLDivElement>(null);
   const clipClipboard = useRef<Clip | null>(null);
@@ -58,10 +23,11 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
   const loopDrag = useRef<{ startStep: number; moved: boolean } | null>(null);
 
   const [showAdd, setShowAdd] = useState(false);
-  const [padTrackId, setPadTrackId] = useState<string | null>(null);
-  const [activePads, setActivePads] = useState<Set<string>>(new Set());
+  const [pressingTrackId, setPressingTrackId] = useState<string | null>(null);
 
-  const handleTrackSelect = (trackId: string) => setUi({ ...ui, selectedTrackId: trackId });
+  const handleTrackSelect = (trackId: string) => {
+    setUi({ ...ui, selectedTrackId: trackId });
+  };
 
   const toggleMute = (trackId: string) => {
     setProject({
@@ -157,27 +123,6 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
     setMenu(null);
   };
 
-  /* ── Pad controller popup ── */
-  const openPadPopup = (track: Track) => {
-    handleTrackSelect(track.id);
-    setPadTrackId(track.id);
-    setActivePads(new Set());
-  };
-  const togglePad = (id: string) =>
-    setActivePads((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const handleCapture = () => {
-    const track = project.tracks.find((t) => t.id === padTrackId);
-    if (!track || activePads.size === 0) return;
-    const data = Array.from(activePads);
-    if (track.kind === 'drums') {
-      captureSeed(track.kind, [], data.map((id, i) => ({ id, drum: id as any, step: i * 4, velocity: 0.7 })));
-    } else {
-      captureSeed(track.kind, data.map((id, i) => ({ id, pitch: 'C4', step: i * 4, durationSteps: 2, velocity: 0.7 })), []);
-    }
-    setActivePads(new Set());
-    setPadTrackId(null);
-  };
-
   useEffect(() => {
     if (!menu) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(null); };
@@ -186,11 +131,9 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
   }, [menu]);
 
   const loopRegion = draft ?? (playback.loop ? { start: playback.loopStart, end: playback.loopEnd } : null);
-  const GUTTER = 200;
+  const GUTTER = 260;
   const laneLeft = (step: number) => `calc(${GUTTER}px + ${step}/${totalSteps} * (100% - ${GUTTER}px))`;
   const laneWidth = (start: number, end: number) => `calc(${end - start + 1}/${totalSteps} * (100% - ${GUTTER}px))`;
-
-  const padTrack = project.tracks.find((t) => t.id === padTrackId);
 
   return (
     <>
@@ -223,18 +166,22 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
         <div className="tracks-container">
           {project.tracks.map((track) => {
             const theme = INSTRUMENT_THEME[track.kind];
+            const isSelected = ui.selectedTrackId === track.id;
+            const isPressing = pressingTrackId === track.id;
             return (
               <div
                 key={track.id}
-                className={`track-row ${ui.selectedTrackId === track.id ? 'selected' : ''}`}
+                className={`track-row ${isSelected ? 'selected' : ''}`}
                 style={instrumentVars(theme)}
               >
                 {/* Instrument card = left header (aligned 1:1 with its lane) */}
                 <div
-                  className={`track-card ${track.muted ? 'muted' : ''}`}
-                  onClick={() => handleTrackSelect(track.id)}
-                  onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); openPadPopup(track); }}
-                  title="左键选中 · 右键打开控制器"
+                  className={`track-card ${track.muted ? 'muted' : ''} ${isSelected ? 'is-selected' : ''} ${isPressing ? 'is-pressing' : ''}`}
+                  onPointerDown={() => setPressingTrackId(track.id)}
+                  onPointerUp={() => { setPressingTrackId(null); handleTrackSelect(track.id); }}
+                  onPointerLeave={() => setPressingTrackId(null)}
+                  onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  title="点击选择并打开下方控制器"
                 >
                   <div className="track-card-icon"><img src={theme.icon} alt="" draggable={false} /></div>
                   <div className="track-card-meta">
@@ -248,6 +195,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
                     aria-pressed={!track.muted}
                     onClick={(e) => { e.stopPropagation(); toggleMute(track.id); }}
                     onPointerDown={(e) => e.stopPropagation()}
+                    onPointerUp={(e) => e.stopPropagation()}
                   >
                     <span className="clip-toggle-knob" />
                   </button>
@@ -258,6 +206,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
                     aria-label="删除该乐器"
                     onClick={(e) => { e.stopPropagation(); deleteTrack(track.id); }}
                     onPointerDown={(e) => e.stopPropagation()}
+                    onPointerUp={(e) => e.stopPropagation()}
                   >
                     <span className="material-symbols-outlined">delete</span>
                   </button>
@@ -285,6 +234,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
             />
           </div>
         </div>
+
       </div>
 
       {/* Clip context menu */}
@@ -299,37 +249,6 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
             <button className="ctx-item danger" role="menuitem" onClick={deleteClip}><span className="material-symbols-outlined">delete</span>删除片段</button>
           </div>
         </>
-      )}
-
-      {/* Pad controller popup (right-click a card) */}
-      {padTrack && (
-        <div className="pad-popup-overlay" onClick={() => setPadTrackId(null)} onContextMenu={(e) => { e.preventDefault(); setPadTrackId(null); }}>
-          <div className="pad-popup" style={instrumentVars(INSTRUMENT_THEME[padTrack.kind])} onClick={(e) => e.stopPropagation()}>
-            <div className="pad-popup-head">
-              <span className="material-symbols-outlined" aria-hidden>music_note</span>
-              <strong>{padTrack.name} 控制器</strong>
-              <button className="pad-popup-close" onClick={() => setPadTrackId(null)} aria-label="关闭"><span className="material-symbols-outlined">close</span></button>
-            </div>
-            <div className={`pad-grid ${padTrack.kind === 'keys' ? 'pad-grid-8' : 'pad-grid-4'}`}>
-              {PAD_DEFS[padTrack.kind].map((p) => (
-                <button
-                  key={p.id}
-                  className={`drum-pad ${activePads.has(p.id) ? 'active' : ''}`}
-                  style={{ backgroundColor: p.color, ['--cs' as any]: PAD_SHADOW[padTrack.kind] }}
-                  onClick={() => togglePad(p.id)}
-                  aria-pressed={activePads.has(p.id)}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-            <button className="capture-seed-btn" onClick={handleCapture} disabled={activePads.size === 0}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>my_location</span>
-              捕获律动
-            </button>
-            <p className="pad-popup-hint">点亮 pad，再「捕获律动」作为 AI 补全的种子。</p>
-          </div>
-        </div>
       )}
 
       <AddInstrumentModal open={showAdd} onClose={() => setShowAdd(false)} />

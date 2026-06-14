@@ -483,7 +483,7 @@
 
 .track-row {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 260px 1fr;
   border-bottom: 2px solid var(--rule-soft);
   cursor: pointer;
   transition: background var(--dur) var(--ease-out);
@@ -535,7 +535,7 @@
 /* ── Bar ruler ── */
 .bar-ruler {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 260px 1fr;
   border-bottom: 3px solid var(--rule);
   flex-shrink: 0;
   background: var(--surface-container);
@@ -1161,14 +1161,85 @@
   overflow-x: hidden;
 }
 
+.piano-left-rail {
+  flex-shrink: 0;
+  /* Match the timeline's 260px instrument-card gutter so the piano-roll playhead
+     aligns vertically with the timeline playhead (same time → same x). */
+  width: 260px;
+  display: flex;
+  align-items: stretch;
+  background: var(--surface-low);
+  border-right: 3px solid var(--rule-soft);
+}
+.roll-inspector {
+  width: 212px;
+  flex-shrink: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-right: 2px solid var(--rule-soft);
+  background: var(--surface-low);
+}
+.roll-inspector-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 3px solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--surface-lowest);
+  box-shadow: 3px 3px 0 0 var(--cs, var(--ink));
+}
+.roll-inspector-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 2px solid var(--rule-soft);
+  border-radius: var(--r-sm);
+  background: var(--surface-container);
+  overflow: hidden;
+}
+.roll-inspector-icon img { width: 100%; height: 100%; object-fit: contain; }
+.roll-inspector-meta { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.roll-inspector-meta strong {
+  font-size: var(--text-md);
+  font-weight: 800;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.roll-inspector-meta span {
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  color: var(--c);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.roll-inspector-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.roll-inspector .pad-grid { gap: 7px; }
+.roll-inspector .drum-pad {
+  min-height: 38px;
+  aspect-ratio: auto;
+  font-size: var(--text-xs);
+}
+.roll-inspector .pad-grid-8 { grid-template-columns: repeat(4, 1fr); }
+.roll-inspector .capture-seed-btn {
+  margin-top: 0;
+  padding: 10px 12px;
+  font-size: var(--text-sm);
+}
+
 /* Vertical keyboard legend */
 .piano-keys {
+  width: 48px;
   flex-shrink: 0;
-  /* Match the timeline's 200px instrument-card gutter so the piano-roll playhead
-     aligns vertically with the timeline playhead (same time → same x). */
-  width: 200px;
   background: var(--surface-container);
-  border-right: 3px solid var(--rule-soft);
   display: flex;
   flex-direction: column;
 }
@@ -1177,7 +1248,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 6px;
+  padding-right: 4px;
   border-bottom: 1px solid var(--rule-soft);
   position: relative;
   cursor: pointer;
@@ -1269,9 +1340,8 @@
 /* Drum lane labels + grid (drum tracks) */
 .drum-labels {
   flex-shrink: 0;
-  width: 200px;
+  width: 48px;
   background: var(--surface-container);
-  border-right: 3px solid var(--rule-soft);
   display: flex;
   flex-direction: column;
 }
@@ -1279,10 +1349,10 @@
   height: 34px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 8px;
+  justify-content: center;
+  padding: 0 4px;
   border-bottom: 1px solid var(--rule-soft);
-  font-size: var(--text-xs);
+  font-size: 9px;
   font-weight: 800;
   color: var(--ink);
   cursor: pointer;
@@ -1603,10 +1673,10 @@
 .track-card {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   align-self: stretch;
-  margin: 7px 10px 8px;
-  padding: 7px 8px;
+  margin: 8px 14px 10px;
+  padding: 10px 12px;
   border: 3px solid var(--rule);
   border-radius: var(--r-lg);
   background: var(--surface-lowest);
@@ -1626,7 +1696,13 @@
   transform: translate(-1px, -1px);
   box-shadow: 5px 5px 0 0 var(--ink);
 }
-.track-row.selected .track-card {
+.track-card.is-pressing {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 var(--ink);
+  background: var(--surface-lowest);
+  border-color: var(--rule);
+}
+.track-card.is-selected:not(.is-pressing) {
   border-color: var(--c, var(--primary-container));
   background: color-mix(in srgb, var(--c, var(--primary)) 10%, var(--surface-lowest));
   box-shadow: 4px 4px 0 0 var(--cs, var(--shadow-red));
@@ -1634,8 +1710,8 @@
 .track-card.muted { opacity: 0.6; }
 
 .track-card-icon {
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   flex-shrink: 0;
   border-radius: var(--r-sm);
   overflow: hidden;
@@ -1652,7 +1728,7 @@
   flex: 1;
 }
 .track-card-name {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: 800;
   color: var(--ink);
   line-height: var(--leading-tight);
@@ -1671,8 +1747,8 @@
 /* Delete button on the card */
 .track-card-delete {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border: 2px solid var(--rule);
   border-radius: var(--r-full);
   background: var(--surface-lowest);
@@ -1684,63 +1760,16 @@
   box-shadow: 1px 1px 0 0 var(--rule);
   transition: color var(--dur) var(--ease-out), background var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
 }
-.track-card-delete .material-symbols-outlined { font-size: 15px; font-weight: 700; }
+.track-card-delete .material-symbols-outlined { font-size: 18px; font-weight: 700; }
 .track-card-delete:hover { color: #fff; background: var(--primary-container); border-color: var(--shadow-red); box-shadow: 1px 1px 0 0 var(--shadow-red); }
 .track-card-delete:active { transform: translate(1px, 1px); box-shadow: none; }
 
 /* Card toggle: reuse .clip-toggle but sized for the card */
-.track-card .clip-toggle { position: static; flex-shrink: 0; }
-
-/* ── Pad controller popup (right-click a card) ── */
-.pad-popup-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  background: rgba(26, 28, 28, 0.45);
-  backdrop-filter: blur(3px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.pad-popup {
-  width: 320px;
-  max-width: 92vw;
-  background: var(--surface-lowest);
-  border: 4px solid var(--ink);
-  border-radius: var(--r-xl);
-  box-shadow: var(--chunky-lg);
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  animation: drawer-in 0.2s var(--ease-out);
-}
-.pad-popup-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-bottom: 10px;
-  border-bottom: 3px solid var(--rule-soft);
-}
-.pad-popup-head .material-symbols-outlined { color: var(--c); font-size: 22px; font-variation-settings: 'FILL' 1; }
-.pad-popup-head strong { flex: 1; font-size: var(--text-md); font-weight: 800; color: var(--ink); }
-.pad-popup-close {
-  border: 2px solid var(--rule);
-  border-radius: var(--r-full);
-  background: var(--surface-lowest);
-  color: var(--ink-tertiary);
-  cursor: pointer;
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-}
-.pad-popup-close:hover { color: var(--primary); }
-.pad-popup-close .material-symbols-outlined { font-size: 18px; }
-.pad-popup-hint {
-  font-size: var(--text-2xs);
-  font-weight: 700;
-  color: var(--ink-tertiary);
-  text-align: center;
+.track-card .clip-toggle {
+  position: static;
+  flex-shrink: 0;
+  width: 32px;
+  height: 20px;
 }
 
 /* ────────────────────────────────────────────

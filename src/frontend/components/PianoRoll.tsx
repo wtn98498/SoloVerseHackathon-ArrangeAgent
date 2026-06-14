@@ -3,7 +3,7 @@ import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { aliasPitch, midiOf, scaleSemitones } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
-import type { ArrangementProject, Track, NoteEvent, DrumHit } from '../../contracts';
+import type { ArrangementProject, Track, TrackKind, NoteEvent, DrumHit } from '../../contracts';
 
 /* ── Chromatic pitch range shown in the roll. Lower bound is fixed at C2 so the
    fixed-pixel drum lanes never overflow; the upper octave expands dynamically
@@ -25,6 +25,39 @@ interface PitchRow { label: string; isBlack: boolean; row: number; }
 
 const ROW_H = 18;
 const TOTAL_STEPS = 128;
+const PAD_DEFS: Record<TrackKind, { id: string; label: string; color: string }[]> = {
+  drums: [
+    { id: 'kick', label: 'Kick', color: '#e60012' },
+    { id: 'snare', label: 'Snare', color: '#ff6a3d' },
+    { id: 'hihat', label: 'HiHat', color: '#ff9f1c' },
+    { id: 'clap', label: 'Clap', color: '#ff4d6d' },
+  ],
+  bass: [
+    { id: '1', label: '低', color: '#16c265' },
+    { id: '2', label: '中低', color: '#0fae57' },
+    { id: '3', label: '中高', color: '#0b8a3d' },
+    { id: '4', label: '高', color: '#0a5c2c' },
+  ],
+  guitar: [
+    { id: '1', label: '低', color: '#ebc300' },
+    { id: '2', label: '中低', color: '#d9ae00' },
+    { id: '3', label: '中高', color: '#a88500' },
+    { id: '4', label: '高', color: '#554500' },
+  ],
+  keys: [
+    { id: 'C', label: 'C', color: '#37b4ff' },
+    { id: 'D', label: 'D', color: '#5cc4ff' },
+    { id: 'E', label: 'E', color: '#2aa0f0' },
+    { id: 'F', label: 'F', color: '#1b8fd6' },
+    { id: 'G', label: 'G', color: '#37b4ff' },
+    { id: 'A', label: 'A', color: '#1f7fc0' },
+    { id: 'B', label: 'B', color: '#0e6aa8' },
+    { id: 'C2', label: 'C²', color: '#004b70' },
+  ],
+};
+const PAD_SHADOW: Record<TrackKind, string> = {
+  drums: '#930007', bass: '#0a5c2c', guitar: '#554500', keys: '#004b70',
+};
 
 interface CtxMenu {
   x: number;
@@ -34,12 +67,13 @@ interface CtxMenu {
 }
 
 export function PianoRoll({ project }: { project: ArrangementProject }) {
-  const { playback, ui, setProject } = useEditor();
+  const { playback, ui, setProject, captureSeed } = useEditor();
   const gridRef = useRef<HTMLDivElement>(null);
   const clipboard = useRef<NoteEvent[]>([]);
   const [menu, setMenu] = useState<CtxMenu | null>(null);
   const [drawing, setDrawing] = useState<{ pitch: string; startStep: number; endStep: number } | null>(null);
   const drawingRef = useRef<{ pitch: string; startStep: number; endStep: number } | null>(null);
+  const [activePads, setActivePads] = useState<Set<string>>(new Set());
 
   const track: Track | undefined =
     project.tracks.find((t) => t.id === ui.selectedTrackId) ?? project.tracks[0];
@@ -139,6 +173,22 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   };
 
   const drumGridHeight = DRUM_ROWS.length * DRUM_ROW_H;
+  const togglePad = (id: string) =>
+    setActivePads((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const handleCapture = () => {
+    if (!track || activePads.size === 0) return;
+    const data = Array.from(activePads);
+    if (track.kind === 'drums') {
+      captureSeed(track.kind, [], data.map((id, i) => ({ id, drum: id as any, step: i * 4, velocity: 0.7 })));
+    } else {
+      captureSeed(track.kind, data.map((id, i) => ({ id, pitch: 'C4', step: i * 4, durationSteps: 2, velocity: 0.7 })), []);
+    }
+    setActivePads(new Set());
+  };
+
+  useEffect(() => {
+    setActivePads(new Set());
+  }, [track?.id]);
 
   /* ── Drum grid: click a cell to toggle a hit (drum tracks only) ── */
   const toggleDrumAt = (e: ReactPointerEvent) => {
@@ -241,18 +291,20 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
       <div className="piano-roll-body">
         {isDrum ? (
           <>
-            {/* Drum lane labels (kick / snare / hihat / clap) */}
-            <div className="drum-labels" style={{ height: drumGridHeight }}>
-              {DRUM_ROWS.map((d) => (
-                <div
-                  key={d.id}
-                  className="drum-label"
-                  onClick={() => audioEngine.auditionStep([], [d.id])}
-                  title={`试听 ${d.label}`}
-                >
-                  {d.label}
-                </div>
-              ))}
+            <div className="piano-left-rail" style={{ minHeight: drumGridHeight }}>
+              <RollInspector track={track} activePads={activePads} togglePad={togglePad} handleCapture={handleCapture} />
+              <div className="drum-labels" style={{ height: drumGridHeight }}>
+                {DRUM_ROWS.map((d) => (
+                  <div
+                    key={d.id}
+                    className="drum-label"
+                    onClick={() => audioEngine.auditionStep([], [d.id])}
+                    title={`试听 ${d.label}`}
+                  >
+                    {d.label}
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Drum grid — click a cell to toggle a hit */}
@@ -301,18 +353,20 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
           </>
         ) : (
           <>
-            {/* Vertical keyboard */}
-            <div className="piano-keys" style={{ height: gridHeight }}>
-              {rowsTopDown.map((p) => (
-                <div
-                  key={p.label}
-                  className={`piano-key ${p.isBlack ? 'black' : 'white'}`}
-                  onPointerDown={() => audioEngine.auditionNote(p.label)}
-                  title={`试听 ${p.label}`}
-                >
-                  <span className="piano-key-label">{p.label}</span>
-                </div>
-              ))}
+            <div className="piano-left-rail" style={{ minHeight: gridHeight }}>
+              <RollInspector track={track} activePads={activePads} togglePad={togglePad} handleCapture={handleCapture} />
+              <div className="piano-keys" style={{ height: gridHeight }}>
+                {rowsTopDown.map((p) => (
+                  <div
+                    key={p.label}
+                    className={`piano-key ${p.isBlack ? 'black' : 'white'}`}
+                    onPointerDown={() => audioEngine.auditionNote(p.label)}
+                    title={`试听 ${p.label}`}
+                  >
+                    <span className="piano-key-label">{p.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Note grid — drag to draw notes */}
@@ -468,5 +522,46 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
         </>
       )}
     </section>
+  );
+}
+
+function RollInspector({ track, activePads, togglePad, handleCapture }: {
+  track: Track | undefined;
+  activePads: Set<string>;
+  togglePad: (id: string) => void;
+  handleCapture: () => void;
+}) {
+  if (!track) return null;
+  const theme = INSTRUMENT_THEME[track.kind];
+  return (
+    <div className="roll-inspector" style={instrumentVars(theme)}>
+      <div className="roll-inspector-card">
+        <div className="roll-inspector-icon"><img src={theme.icon} alt="" draggable={false} /></div>
+        <div className="roll-inspector-meta">
+          <strong>{track.name}</strong>
+          <span>{theme.en}</span>
+        </div>
+      </div>
+      <div className="roll-inspector-section">
+        <span className="label-cap">编配</span>
+        <div className={`pad-grid ${track.kind === 'keys' ? 'pad-grid-8' : 'pad-grid-4'}`}>
+          {PAD_DEFS[track.kind].map((p) => (
+            <button
+              key={p.id}
+              className={`drum-pad ${activePads.has(p.id) ? 'active' : ''}`}
+              style={{ backgroundColor: p.color, ['--cs' as any]: PAD_SHADOW[track.kind] }}
+              onClick={() => togglePad(p.id)}
+              aria-pressed={activePads.has(p.id)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <button className="capture-seed-btn" onClick={handleCapture} disabled={activePads.size === 0}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>my_location</span>
+          捕获律动
+        </button>
+      </div>
+    </div>
   );
 }
