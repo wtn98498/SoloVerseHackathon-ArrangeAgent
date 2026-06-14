@@ -45,7 +45,10 @@ export class AudioEngine {
     // For MVP, we use simple synths instead of samples
     const kickSynth = new Tone.MembraneSynth().connect(this.master!);
     const snareSynth = new Tone.NoiseSynth().connect(this.master!);
-    const hihatSynth = new Tone.MetalSynth().connect(this.master!);
+    const hihatSynth = new Tone.NoiseSynth({
+      noise: { type: 'white' },
+      envelope: { attack: 0.001, decay: 0.05, sustain: 0 },
+    }).connect(this.master!);
     const clapSynth = new Tone.NoiseSynth().connect(this.master!);
 
     this.drumSynths.set('kick', kickSynth as any);
@@ -120,7 +123,13 @@ export class AudioEngine {
       Tone.Transport.start();
     }
 
-    this.sequencer.start(0, startStep);
+    // Tone.Sequence's start offset is seconds into the loop, so seek to the
+    // playhead (red line) — passing the raw step number made it wrap to 0 and
+    // always play from the start.
+    const offsetSec = region
+      ? (startStep - region.start) * stepDuration
+      : startStep * stepDuration;
+    this.sequencer.start(0, offsetSec);
   }
 
   private playDrumHit(drum: string, time: number) {
@@ -135,7 +144,7 @@ export class AudioEngine {
         (synth as any).triggerAttackRelease('16n', time);
         break;
       case 'hihat':
-        (synth as any).triggerAttackRelease('32n', time, 0.1);
+        (synth as any).triggerAttackRelease('32n', time, 0.5);
         break;
       case 'clap':
         (synth as any).triggerAttackRelease('16n', time, 0.2);

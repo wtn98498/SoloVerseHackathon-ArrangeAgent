@@ -1,7 +1,7 @@
 import { useRef, useMemo, useState, useEffect, type PointerEvent as ReactPointerEvent } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
-import { maxOctaveOf, aliasPitch, midiOf, scaleSemitones } from '../utils/note';
+import { aliasPitch, midiOf, scaleSemitones } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
 import type { ArrangementProject, Track, NoteEvent, DrumHit } from '../../contracts';
 
@@ -52,13 +52,9 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   const scale = project.scale ?? { root: 'C', type: 'major' as const };
   const scaleSemis = scaleSemitones(scale.root, scale.type);
 
-  // Dynamic upper octave: at least B4 (matches the old fixed range → zero
-  // regression for the C2–G4 fixture); expand by one octave above any higher
-  // note so nothing gets clipped.
-  const maxOct = Math.max(
-    4,
-    maxOctaveOf((clip?.notes ?? []).map((n) => aliasPitch(n.pitch))) + 1
-  );
+  // Full staff C2–C6 shown up front; the body scrolls vertically instead of
+  // the roll only growing when a higher note is drawn.
+  const maxOct = 6;
 
   // Built bottom→top so row 0 = lowest pitch (C2).
   const pitchRows = useMemo<PitchRow[]>(() => {
