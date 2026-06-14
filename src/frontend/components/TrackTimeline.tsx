@@ -30,6 +30,16 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
     setUi({ ...ui, selectedTrackId: trackId });
   };
 
+  // Toggle whether a region plays (mutes the track → audio engine skips it).
+  const toggleMute = (trackId: string) => {
+    setProject({
+      ...project,
+      tracks: project.tracks.map((t) =>
+        t.id !== trackId ? t : { ...t, muted: !t.muted }
+      ),
+    });
+  };
+
   // Playhead is always present (常驻); currentStep persists when paused.
   const playheadPct = (playback.currentStep / (totalSteps - 1)) * 100;
 
@@ -181,7 +191,9 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
               bars={project.bars}
               totalSteps={totalSteps}
               isSelected={ui.selectedTrackId === track.id}
+              muted={track.muted}
               onSelect={() => handleTrackSelect(track.id)}
+              onToggleMute={() => toggleMute(track.id)}
               onClipContext={(clip, x, y) => openClipMenu(track.id, clip, x, y)}
             />
           ))}
@@ -245,11 +257,13 @@ interface TrackRowProps {
   bars: number;
   totalSteps: number;
   isSelected: boolean;
+  muted: boolean;
   onSelect: () => void;
+  onToggleMute: () => void;
   onClipContext: (clip: Clip, x: number, y: number) => void;
 }
 
-function TrackRow({ track, bars, totalSteps, isSelected, onSelect, onClipContext }: TrackRowProps) {
+function TrackRow({ track, bars, totalSteps, isSelected, muted, onSelect, onToggleMute, onClipContext }: TrackRowProps) {
   const theme = INSTRUMENT_THEME[track.kind];
 
   return (
@@ -285,6 +299,8 @@ function TrackRow({ track, bars, totalSteps, isSelected, onSelect, onClipContext
             clip={clip}
             totalSteps={totalSteps}
             trackKind={track.kind}
+            muted={muted}
+            onToggleMute={onToggleMute}
             onClipContext={onClipContext}
           />
         ))}
@@ -302,11 +318,15 @@ function MIDIClip({
   clip,
   totalSteps,
   trackKind,
+  muted,
+  onToggleMute,
   onClipContext,
 }: {
   clip: Clip;
   totalSteps: number;
   trackKind: string;
+  muted: boolean;
+  onToggleMute: () => void;
   onClipContext: (clip: Clip, x: number, y: number) => void;
 }) {
   const leftPct = (clip.barStart / 8) * 100;
@@ -332,7 +352,7 @@ function MIDIClip({
 
   return (
     <div
-      className="midi-clip"
+      className={`midi-clip ${muted ? 'muted' : ''}`}
       title="右键：复制 / 粘贴 / 删除"
       onContextMenu={(e) => {
         e.preventDefault();
@@ -344,6 +364,20 @@ function MIDIClip({
         width: `${widthPct}%`,
       }}
     >
+      {/* Play / mute toggle for this region */}
+      <button
+        type="button"
+        className={`clip-toggle ${muted ? 'off' : 'on'}`}
+        title={muted ? '已静音 · 点击启用播放' : '播放中 · 点击静音'}
+        aria-pressed={!muted}
+        aria-label={muted ? '启用该片段' : '静音该片段'}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => { e.stopPropagation(); onToggleMute(); }}
+      >
+        <span className="clip-toggle-knob" />
+        <span className="clip-toggle-label">{muted ? 'OFF' : 'ON'}</span>
+      </button>
+
       {/* Note blocks for melodic instruments */}
       {trackKind !== 'drums' && noteBlocks.map(n => (
         <div

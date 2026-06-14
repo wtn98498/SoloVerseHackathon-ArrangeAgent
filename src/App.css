@@ -492,7 +492,8 @@
 .track-row:last-child { border-bottom: none; }
 .track-row:hover { background: var(--surface-container); }
 .track-row.selected { background: color-mix(in srgb, var(--c, var(--primary)) 8%, var(--surface-lowest)); }
-.track-row.muted { opacity: 0.4; }
+/* Muted: dim the track label only — the region itself grays via .midi-clip.muted */
+.track-row.muted .track-info { opacity: 0.55; }
 
 /* Track header (left of each row) */
 .track-info {
@@ -587,6 +588,56 @@
   border: 2px solid var(--c, var(--primary-container));
   box-shadow: 2px 2px 0 0 var(--cs, var(--shadow-red));
 }
+/* Muted region → gray (notes desaturated, neutral bg); toggle stays interactive */
+.midi-clip.muted {
+  background: var(--surface-container);
+  border-color: var(--surface-highest);
+  box-shadow: 2px 2px 0 0 var(--surface-highest);
+}
+.midi-clip.muted .note-block,
+.midi-clip.muted .drum-mark {
+  background: var(--ink-tertiary);
+  filter: grayscale(1);
+}
+
+/* Per-region play/mute toggle (sliding pill switch at the clip's top-left) */
+.clip-toggle {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--surface-lowest);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--ink-tertiary);
+  box-shadow: 1px 1px 0 0 var(--ink);
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+.clip-toggle.on {
+  background: var(--c, var(--primary-container));
+  color: #fff;
+}
+.clip-toggle-knob {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+  background: #fff;
+  border: 1.5px solid var(--ink);
+  transition: transform var(--dur) var(--ease-bounce);
+}
+.clip-toggle.on .clip-toggle-knob { transform: translateX(6px); }
+.clip-toggle:hover { filter: brightness(1.05); }
+.clip-toggle:active { transform: translateY(1px); box-shadow: none; }
 
 /* ── Note block — piano-roll style ── */
 .note-block {
