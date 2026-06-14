@@ -1,15 +1,131 @@
-import { ArrangementProject } from '../contracts';
+import { ArrangementProject, DrumHit, NoteEvent } from '../contracts';
 import { createClip } from '../contracts/clip';
+
+type DrumName = DrumHit['drum'];
+
+const progression = [
+  { root: 'C2', guitar: ['C3', 'E3', 'G3'], keys: ['C4', 'E4', 'G4'] },
+  { root: 'G2', guitar: ['G3', 'B3', 'D4'], keys: ['G3', 'B3', 'D4'] },
+  { root: 'A2', guitar: ['A3', 'C4', 'E4'], keys: ['A3', 'C4', 'E4'] },
+  { root: 'F2', guitar: ['F3', 'A3', 'C4'], keys: ['F3', 'A3', 'C4'] },
+];
+
+const hook = ['E5', 'G5', 'A5', 'G5', 'E5', 'D5', 'C5', 'D5'];
+
+function drum(id: number, drumName: DrumName, step: number, velocity: number): DrumHit {
+  return { id: `dh-${id}`, drum: drumName, step, velocity };
+}
+
+function note(id: string, pitch: string, step: number, durationSteps: number, velocity: number): NoteEvent {
+  return { id, pitch, step, durationSteps, velocity };
+}
+
+function buildDrumHits(): DrumHit[] {
+  let id = 1;
+  const hits: DrumHit[] = [];
+
+  for (let bar = 0; bar < 8; bar++) {
+    const base = bar * 16;
+    const isFillBar = bar === 3 || bar === 7;
+    const kicks = bar % 2 === 0 ? [0, 6, 10] : [0, 7, 11];
+    const snares = isFillBar ? [8, 14] : [8];
+
+    kicks.forEach((offset) => hits.push(drum(id++, 'kick', base + offset, offset === 0 ? 0.9 : 0.76)));
+    snares.forEach((offset) => hits.push(drum(id++, 'snare', base + offset, offset === 8 ? 0.84 : 0.68)));
+
+    for (let offset = 0; offset < 16; offset += 2) {
+      hits.push(drum(id++, 'hihat', base + offset, offset % 4 === 0 ? 0.58 : 0.42));
+    }
+
+    if (bar % 2 === 1) {
+      hits.push(drum(id++, 'clap', base + 8, 0.45));
+    }
+
+    if (isFillBar) {
+      hits.push(drum(id++, 'snare', base + 12, 0.58));
+      hits.push(drum(id++, 'kick', base + 15, 0.72));
+      hits.push(drum(id++, 'clap', base + 14, 0.5));
+    }
+  }
+
+  return hits;
+}
+
+function buildBassNotes(): NoteEvent[] {
+  const notes: NoteEvent[] = [];
+  const patterns = [
+    ['C2', 'C2', 'E2', 'G2'],
+    ['G2', 'G2', 'B2', 'D3'],
+    ['A2', 'A2', 'C3', 'E3'],
+    ['F2', 'F2', 'A2', 'C3'],
+  ];
+
+  for (let bar = 0; bar < 8; bar++) {
+    const base = bar * 16;
+    const pattern = patterns[bar % patterns.length];
+    const steps = [0, 5, 8, 12];
+    pattern.forEach((pitch, index) => {
+      notes.push(note(`bn-${bar}-${index}`, pitch, base + steps[index], index === 0 ? 5 : 3, index === 0 ? 0.78 : 0.68));
+    });
+    if (bar === 3 || bar === 7) {
+      notes.push(note(`bn-fill-${bar}-1`, 'G2', base + 14, 2, 0.66));
+      notes.push(note(`bn-fill-${bar}-2`, bar === 7 ? 'C3' : 'A2', base + 15, 1, 0.62));
+    }
+  }
+
+  return notes;
+}
+
+function buildGuitarNotes(): NoteEvent[] {
+  const notes: NoteEvent[] = [];
+  const strumSteps = [0, 4, 10];
+
+  for (let bar = 0; bar < 8; bar++) {
+    const base = bar * 16;
+    const chord = progression[bar % progression.length].guitar;
+    strumSteps.forEach((offset, strumIndex) => {
+      chord.forEach((pitch, voiceIndex) => {
+        notes.push(note(`gn-${bar}-${strumIndex}-${voiceIndex}`, pitch, base + offset, strumIndex === 2 ? 5 : 4, strumIndex === 0 ? 0.7 : 0.58));
+      });
+    });
+    if (bar % 2 === 0) {
+      notes.push(note(`gn-riff-${bar}-1`, chord[2], base + 7, 2, 0.5));
+      notes.push(note(`gn-riff-${bar}-2`, chord[1], base + 14, 2, 0.48));
+    }
+  }
+
+  return notes;
+}
+
+function buildKeyNotes(): NoteEvent[] {
+  const notes: NoteEvent[] = [];
+
+  for (let bar = 0; bar < 8; bar++) {
+    const base = bar * 16;
+    const chord = progression[bar % progression.length].keys;
+    chord.forEach((pitch, voiceIndex) => {
+      notes.push(note(`kn-pad-${bar}-${voiceIndex}`, pitch, base, 14, 0.44));
+    });
+
+    const hookStart = bar % 2 === 0 ? 6 : 4;
+    [0, 1, 2, 3].forEach((hookIndex) => {
+      const pitch = hook[(bar + hookIndex) % hook.length];
+      notes.push(note(`kn-hook-${bar}-${hookIndex}`, pitch, base + hookStart + hookIndex * 2, 2, 0.56));
+    });
+  }
+
+  return notes;
+}
 
 export const fixtureProject: ArrangementProject = {
   id: 'fixture-001',
-  title: 'Demo Loop',
-  tempo: 120,
+  title: 'Neon Playground Loop',
+  tempo: 132,
   bars: 8,
   beatsPerBar: 4,
   subdivision: 4,
   style: 'pop',
-  mood: 'bright',
+  mood: 'energetic',
   scale: { root: 'C', type: 'major' },
   tracks: [
     {
@@ -23,41 +139,8 @@ export const fixtureProject: ArrangementProject = {
         kind: 'drum',
         name: 'Drums MIDI Clip',
         notes: [],
-        drumHits: [
-          { id: 'dh-1', drum: 'kick', step: 0, velocity: 0.8 },
-          { id: 'dh-2', drum: 'snare', step: 8, velocity: 0.7 },
-          { id: 'dh-3', drum: 'hihat', step: 4, velocity: 0.5 },
-          { id: 'dh-4', drum: 'hihat', step: 12, velocity: 0.5 },
-          { id: 'dh-5', drum: 'kick', step: 16, velocity: 0.8 },
-          { id: 'dh-6', drum: 'snare', step: 24, velocity: 0.7 },
-          { id: 'dh-7', drum: 'hihat', step: 20, velocity: 0.5 },
-          { id: 'dh-8', drum: 'hihat', step: 28, velocity: 0.5 },
-          { id: 'dh-9', drum: 'kick', step: 32, velocity: 0.8 },
-          { id: 'dh-10', drum: 'snare', step: 40, velocity: 0.7 },
-          { id: 'dh-11', drum: 'hihat', step: 36, velocity: 0.5 },
-          { id: 'dh-12', drum: 'hihat', step: 44, velocity: 0.5 },
-          { id: 'dh-13', drum: 'kick', step: 48, velocity: 0.8 },
-          { id: 'dh-14', drum: 'snare', step: 56, velocity: 0.7 },
-          { id: 'dh-15', drum: 'hihat', step: 52, velocity: 0.5 },
-          { id: 'dh-16', drum: 'hihat', step: 60, velocity: 0.5 },
-          { id: 'dh-17', drum: 'kick', step: 64, velocity: 0.8 },
-          { id: 'dh-18', drum: 'snare', step: 72, velocity: 0.7 },
-          { id: 'dh-19', drum: 'hihat', step: 68, velocity: 0.5 },
-          { id: 'dh-20', drum: 'hihat', step: 76, velocity: 0.5 },
-          { id: 'dh-21', drum: 'kick', step: 80, velocity: 0.8 },
-          { id: 'dh-22', drum: 'snare', step: 88, velocity: 0.7 },
-          { id: 'dh-23', drum: 'hihat', step: 84, velocity: 0.5 },
-          { id: 'dh-24', drum: 'hihat', step: 92, velocity: 0.5 },
-          { id: 'dh-25', drum: 'kick', step: 96, velocity: 0.8 },
-          { id: 'dh-26', drum: 'snare', step: 104, velocity: 0.7 },
-          { id: 'dh-27', drum: 'hihat', step: 100, velocity: 0.5 },
-          { id: 'dh-28', drum: 'hihat', step: 108, velocity: 0.5 },
-          { id: 'dh-29', drum: 'kick', step: 112, velocity: 0.8 },
-          { id: 'dh-30', drum: 'snare', step: 120, velocity: 0.7 },
-          { id: 'dh-31', drum: 'hihat', step: 116, velocity: 0.5 },
-          { id: 'dh-32', drum: 'hihat', step: 124, velocity: 0.5 },
-        ]
-        })]
+        drumHits: buildDrumHits(),
+      })],
     },
     {
       id: 'track-bass',
@@ -69,18 +152,9 @@ export const fixtureProject: ArrangementProject = {
         id: 'clip-bass',
         kind: 'midi',
         name: 'Bass MIDI Clip',
-        notes: [
-          { id: 'bn-1', pitch: 'C2', step: 0, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-2', pitch: 'C2', step: 16, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-3', pitch: 'G2', step: 32, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-4', pitch: 'G2', step: 48, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-5', pitch: 'A2', step: 64, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-6', pitch: 'A2', step: 80, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-7', pitch: 'F2', step: 96, durationSteps: 8, velocity: 0.7 },
-          { id: 'bn-8', pitch: 'F2', step: 112, durationSteps: 8, velocity: 0.7 },
-        ],
-        drumHits: []
-        })]
+        notes: buildBassNotes(),
+        drumHits: [],
+      })],
     },
     {
       id: 'track-guitar',
@@ -92,18 +166,9 @@ export const fixtureProject: ArrangementProject = {
         id: 'clip-guitar',
         kind: 'midi',
         name: 'Guitar MIDI Clip',
-        notes: [
-          { id: 'gn-1', pitch: 'C3', step: 0, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-2', pitch: 'E3', step: 16, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-3', pitch: 'G3', step: 32, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-4', pitch: 'C3', step: 48, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-5', pitch: 'A3', step: 64, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-6', pitch: 'E3', step: 80, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-7', pitch: 'F3', step: 96, durationSteps: 16, velocity: 0.6 },
-          { id: 'gn-8', pitch: 'G3', step: 112, durationSteps: 16, velocity: 0.6 },
-        ],
-        drumHits: []
-        })]
+        notes: buildGuitarNotes(),
+        drumHits: [],
+      })],
     },
     {
       id: 'track-keys',
@@ -115,18 +180,18 @@ export const fixtureProject: ArrangementProject = {
         id: 'clip-keys',
         kind: 'midi',
         name: 'Keys MIDI Clip',
-        notes: [
-          { id: 'kn-1', pitch: 'C4', step: 0, durationSteps: 32, velocity: 0.5 },
-          { id: 'kn-2', pitch: 'E4', step: 32, durationSteps: 32, velocity: 0.5 },
-          { id: 'kn-3', pitch: 'G4', step: 64, durationSteps: 32, velocity: 0.5 },
-          { id: 'kn-4', pitch: 'C4', step: 96, durationSteps: 32, velocity: 0.5 },
-        ],
-        drumHits: []
-        })]
-    }
+        notes: buildKeyNotes(),
+        drumHits: [],
+      })],
+    },
   ],
   lastExplanation: {
-    summary: '演示项目已加载',
-    changes: ['创建了 4 个音轨', '每轨 8 小节', '共 128 步']
-  }
+    summary: '演示项目已加载：一段更完整的 8 小节 Pop/Rock 乐队 loop。',
+    changes: [
+      '鼓组加入切分、反拍 hi-hat 和第 4/8 小节 fill',
+      '贝斯跟随 C-G-Am-F 走向并加入经过音',
+      '吉他用三音和弦扫弦支撑节奏',
+      'Keys 同时提供铺底和高音 hook',
+    ],
+  },
 };
