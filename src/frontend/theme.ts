@@ -10,11 +10,18 @@ export interface InstrumentTheme {
   kind: TrackKind;
   label: string; // 中文
   en: string; // 英文
-  icon: string; // /icons/<x>.png
+  icon: string; // base-aware public asset path
   color: string; // bright container fill
   shadow: string; // dark chunky-shadow tone
   soft: string; // light tint
   onColor: string; // readable text color on top of `color`
+}
+
+export function publicAsset(path: string): string {
+  const base = import.meta.env.BASE_URL || '/';
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${cleanBase}${cleanPath}`;
 }
 
 export const INSTRUMENT_THEME: Record<TrackKind, InstrumentTheme> = {
@@ -22,7 +29,7 @@ export const INSTRUMENT_THEME: Record<TrackKind, InstrumentTheme> = {
     kind: 'drums',
     label: '鼓组',
     en: 'Drums',
-    icon: '/icons/drums.png',
+    icon: publicAsset('icons/drums.png'),
     color: '#e60012',
     shadow: '#930007',
     soft: '#ffe0e3',
@@ -32,7 +39,7 @@ export const INSTRUMENT_THEME: Record<TrackKind, InstrumentTheme> = {
     kind: 'bass',
     label: '贝斯',
     en: 'Bass',
-    icon: '/icons/bass.png',
+    icon: publicAsset('icons/bass.png'),
     color: '#16c265',
     shadow: '#0a5c2c',
     soft: '#d4f7e3',
@@ -42,7 +49,7 @@ export const INSTRUMENT_THEME: Record<TrackKind, InstrumentTheme> = {
     kind: 'guitar',
     label: '吉他',
     en: 'Guitar',
-    icon: '/icons/guitar.png',
+    icon: publicAsset('icons/guitar.png'),
     color: '#ebc300',
     shadow: '#554500',
     soft: '#fff4cc',
@@ -52,7 +59,7 @@ export const INSTRUMENT_THEME: Record<TrackKind, InstrumentTheme> = {
     kind: 'keys',
     label: '键盘',
     en: 'Keys',
-    icon: '/icons/keys.png',
+    icon: publicAsset('icons/keys.png'),
     color: '#37b4ff',
     shadow: '#004b70',
     soft: '#d6f0ff',
