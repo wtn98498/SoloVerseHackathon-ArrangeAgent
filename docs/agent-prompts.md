@@ -6,7 +6,7 @@ Recommended usage:
 
 1. Give every agent the shared preamble.
 2. Append exactly one role prompt.
-3. Tell the agent to commit only its own scoped changes.
+3. Tell the agent to commit and push only its own scoped changes.
 
 ## Shared Preamble
 
@@ -39,11 +39,17 @@ Hard coordination rules:
 - Keep the browser fallback working even if Tauri packaging is added.
 - Prefer small, testable modules over one large file.
 - Make a focused git commit after your scoped work.
+- After each successful commit, push the current branch to `origin` with
+  `git push -u origin HEAD`.
+- If push is rejected because the remote branch moved, fetch and integrate
+  safely before pushing again. Do not force-push unless the user explicitly
+  authorizes it.
 
 Delivery style:
 - Implement the smallest useful slice first.
 - Run relevant checks or tests before finishing.
-- In your final report, include changed files, verification performed, and any contract assumptions.
+- In your final report, include changed files, verification performed, commit
+  hash, push status, and any contract assumptions.
 ```
 
 ## Prompt 1: Frontend Agent

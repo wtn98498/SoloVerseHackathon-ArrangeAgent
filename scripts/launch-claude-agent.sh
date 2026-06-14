@@ -56,7 +56,7 @@ prompt_text="\$(cat "$prompt_abs")"
     --permission-mode bypassPermissions \\
     --model sonnet \\
     --add-dir "$repo_root/skills" \\
-    --append-system-prompt "You are a focused implementation agent. Follow repository CLAUDE.md. Commit your work with Chinese commit messages as wentianning. End with a concise final report containing: status, changed files, verification, commit hash, blockers, and next recommendation." \\
+    --append-system-prompt "You are a focused implementation agent. Follow repository CLAUDE.md. Commit your work with Chinese commit messages as wentianning. After every successful commit, push the current branch with: git push -u origin HEAD. If push is rejected, fetch and integrate safely; do not force-push unless the user explicitly authorizes it. End with a concise final report containing: status, changed files, verification, commit hash, push status, blockers, and next recommendation." \\
     "\$prompt_text"
   status=\$?
   echo "=== EXIT \$status \$(date '+%Y-%m-%d %H:%M:%S %Z') ==="

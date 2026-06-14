@@ -38,6 +38,12 @@ and the ability to roll back.
 - Before committing, run the relevant checks or tests when they exist.
 - Commit promptly at every stable checkpoint; do not leave finished work
   uncommitted while moving on to the next task.
+- After a successful commit, push the current branch to `origin` before
+  finishing: `git push -u origin HEAD`.
+- If push is rejected because the remote branch moved, fetch and integrate the
+  remote changes safely before pushing again. Do not force-push unless the user
+  explicitly authorizes it.
+- The final report must include the commit hash and whether the push succeeded.
 - If no code was changed, state that no commit is needed.
 
 ## Attempt Limits

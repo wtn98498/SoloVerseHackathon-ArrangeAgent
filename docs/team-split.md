@@ -26,6 +26,7 @@ Does not own: <areas that must not be changed without coordination>
 First milestone: <smallest stable checkpoint>
 Validation: <command or manual check that proves the checkpoint works>
 Commit plan: Chinese commit message after the checkpoint passes
+Push plan: Push current branch with `git push -u origin HEAD` after commit
 ```
 
 If the user did not explicitly assign a role, choose the narrowest role that
@@ -45,6 +46,10 @@ implementation files.
 Agents should keep changes inside their role boundary. Cross-role edits are
 allowed only when required by `docs/contracts.md` or when the user explicitly
 asks for coordination work.
+
+After each successful scoped commit, agents must push their current branch to
+`origin` before reporting done. If the remote has moved, fetch and integrate
+safely; do not force-push without explicit user approval.
 
 ## Agent 1: Frontend
 
