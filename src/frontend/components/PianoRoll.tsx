@@ -83,7 +83,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     if (!el) return 0;
     const rect = el.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    return Math.round(ratio * (TOTAL_STEPS - 1));
+    return Math.min(TOTAL_STEPS - 1, Math.max(0, Math.floor(ratio * TOTAL_STEPS)));
   };
 
   const playheadPct = (playback.currentStep / (TOTAL_STEPS - 1)) * 100;
@@ -102,7 +102,9 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     audioEngine.auditionStep(pitches, drums);
   };
 
-  const snap = (step: number) => Math.min(TOTAL_STEPS - 1, Math.max(0, Math.round(step / 2) * 2));
+  // Land exactly where clicked (1-step resolution, no quantize snap) so the
+  // hit/note lines up with the cell under the cursor.
+  const snap = (step: number) => Math.min(TOTAL_STEPS - 1, Math.max(0, step));
 
   /* ── Click-drag to draw a note: press sets pitch + start step, drag sets the
      length, release commits. A click with no drag = a single 1/16 note. Drum
