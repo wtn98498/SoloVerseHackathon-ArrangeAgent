@@ -188,8 +188,18 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   };
   const recordPad = (padId: string) => {
     if (!captureSession) return;
-    const elapsedSteps = Math.min(31, Math.floor((Date.now() - captureSession.startedAt) / 180));
-    const step = Math.min(TOTAL_STEPS - 1, playback.currentStep + elapsedSteps);
+    // Capture runs on a local clock that starts at step 0 the moment the modal
+    // opens — decoupled from the global transport playhead (AudioEngine drives
+    // playback on its own clock and never reads playback.currentStep). The old
+    // code added playback.currentStep, so the first tap landed mid-grid once the
+    // playhead had moved. The step interval is one 16th note at the project
+    // tempo so taps land on the beat, and the wall is the full 8-bar timeline
+    // (TOTAL_STEPS), not the old 31-step cap that stopped notes extending right.
+    const stepMs = (60000 / project.tempo) / 4;
+    const step = Math.min(
+      TOTAL_STEPS - 1,
+      Math.floor((Date.now() - captureSession.startedAt) / stepMs)
+    );
     const events = buildPadCaptureEvents(
       captureSession.track.kind,
       [padId],
@@ -627,7 +637,10 @@ function RollInspector({ track, openCapture }: {
       <div className="roll-inspector-section">
         <span className="label-cap">编配</span>
         {ui.onboardingStep !== 'idle' && <span className="onboarding-mini-hint">{hint}</span>}
-        <button className="capture-seed-btn" onClick={openCapture}>
+        <button
+          className={`capture-seed-btn ${ui.onboardingStep !== 'idle' ? 'attention' : ''}`}
+          onClick={openCapture}
+        >
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>my_location</span>
           捕获律动
         </button>
@@ -680,7 +693,7 @@ function CaptureModal({ session, onRecord, onUndo, onClear, onAudition, onCommit
               <i
                 key={`${event.padId}-${index}`}
                 style={{
-                  left: `${Math.min(94, (event.step / 32) * 100)}%`,
+                  left: `${Math.min(96, (event.step / TOTAL_STEPS) * 100)}%`,
                   top: 6 + laneIndex(event.padId) * (session.track.kind === 'keys' ? 15 : 22),
                 }}
               >

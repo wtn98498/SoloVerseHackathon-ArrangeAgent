@@ -8,6 +8,7 @@ import { sendChat, type ChatMessage } from '../llm/chat';
 import { classifyAgentIntent } from '../../arrangement/agentIntent';
 import { getArrangementReference } from '../../arrangement/reference';
 import { audioEngine } from '../audio/AudioEngine';
+import { createAgentTasteNote, type AgentTasteNote } from './agentTaste';
 
 interface AgentResponse {
   project: ArrangementProject;
@@ -17,7 +18,7 @@ interface AgentResponse {
 
 const WELCOME: ChatMessage = {
   role: 'assistant',
-  content: '你好！我是 PlayBand AI 的编曲助手。\n敲一段律动，或告诉我你想要的风格；我会先给你试听，满意后再放进编曲。',
+  content: '我会像一个小型音乐总监：先听你的 seed，再给出一版可试听、可拒绝、可继续打磨的 8 小节乐队编曲。',
 };
 
 export function AgentPanel() {
@@ -28,6 +29,7 @@ export function AgentPanel() {
   const [actionLoading, setActionLoading] = useState(false);
   const [lastSource, setLastSource] = useState<'deepseek' | 'fallback' | null>(null);
   const [preview, setPreview] = useState<AgentResponse | null>(null);
+  const [tasteNote, setTasteNote] = useState<AgentTasteNote | null>(null);
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -44,8 +46,10 @@ export function AgentPanel() {
     audioEngine.stopSequence();
     setPreviewPlaying(false);
     setPreview(data);
+    const nextTasteNote = createAgentTasteNote(data.project, data.explanation);
+    setTasteNote(nextTasteNote);
     setLastSource(data.source);
-    pushAssistant(`先给你一版试听：${data.explanation.summary}`);
+    pushAssistant(`${nextTasteNote.headline}\n${nextTasteNote.nextMove}`);
   };
 
   /* ── Music actions (still mutate the project, now also narrated in chat) ── */
@@ -114,15 +118,17 @@ export function AgentPanel() {
     setPreviewPlaying(false);
     setProject(preview.project);
     setLastSource(preview.source);
-    pushAssistant(`已放进编曲：${preview.explanation.changes.join('、')}`);
+    pushAssistant(`已放进编曲：${preview.explanation.changes.join('、')}\n现在可以继续要求我“更有能量”“更柔和”或“像开场”。`);
     setPreview(null);
+    setTasteNote(null);
   };
 
   const handleDiscardPreview = () => {
     audioEngine.stopSequence();
     setPreviewPlaying(false);
     setPreview(null);
-    pushAssistant('好的，这版先不要。');
+    setTasteNote(null);
+    pushAssistant('好的，这版先不要。保留你的原始 seed，我们可以换一个方向再来。');
   };
 
   /* ── Free-form chat with the LLM (via dev proxy) ── */
@@ -218,17 +224,23 @@ export function AgentPanel() {
       {/* Header */}
       <div className="agent-header">
         <h3>
-          <span className="material-symbols-outlined" aria-hidden>auto_awesome</span>
-          AI 助手
+          <span className="material-symbols-outlined" aria-hidden>graphic_eq</span>
+          Music Director
         </h3>
         {lastSource && (
           <span className={`source-badge ${lastSource}`}>
-            {lastSource === 'deepseek' ? 'AI' : '本地方案'}
+            {lastSource === 'deepseek' ? 'DeepSeek' : 'Demo-safe'}
           </span>
         )}
         <button className="agent-close" onClick={close} aria-label="收起助手" title="收起">
           <span className="material-symbols-outlined" aria-hidden>chevron_right</span>
         </button>
+      </div>
+
+      <div className="director-card" aria-label="音乐总监提示">
+        <div className="director-kicker">Taste Layer</div>
+        <strong>先抓一个会动的种子，我来补鼓、贝斯、吉他和键盘。</strong>
+        <p>每次生成都先变成试听版本；你点头之前，我不会覆盖当前编曲。</p>
       </div>
 
       {/* Music action buttons */}
@@ -271,7 +283,18 @@ export function AgentPanel() {
               <span>{preview.project.style} · {preview.project.mood} · {preview.project.tempo} BPM</span>
             </div>
           </div>
-          <p>{preview.explanation.summary}</p>
+          <p>{tasteNote?.headline ?? preview.explanation.summary}</p>
+          {tasteNote && (
+            <div className="taste-note">
+              <div className="taste-note-label">Listen for</div>
+              <ul>
+                {tasteNote.listenFor.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <div className="taste-next">{tasteNote.nextMove}</div>
+            </div>
+          )}
           <div className="agent-preview-actions">
             <button onClick={handlePreviewPlay} className="preview-btn listen">
               <span className="material-symbols-outlined" aria-hidden>{previewPlaying ? 'stop' : 'play_arrow'}</span>

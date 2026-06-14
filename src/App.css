@@ -445,6 +445,12 @@
 .capture-seed-btn:hover:not(:disabled) { top: -2px; box-shadow: 0 7px 0 0 var(--shadow-red); }
 .capture-seed-btn:active:not(:disabled) { top: 5px; box-shadow: 0 0 0 0 var(--shadow-red); }
 .capture-seed-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: 0 5px 0 0 var(--surface-highest); }
+/* Gentle bounce + soft glow while onboarding is nudging the user toward capture */
+.capture-seed-btn.attention { animation: cta-attention 1.4s var(--ease-out) infinite; }
+@keyframes cta-attention {
+  0%, 100% { transform: translateY(0); box-shadow: 0 5px 0 0 var(--shadow-red); }
+  50% { transform: translateY(-2px); box-shadow: 0 8px 0 0 var(--shadow-red), 0 0 0 4px color-mix(in srgb, var(--primary-container) 24%, transparent); }
+}
 
 /* ────────────────────────────────────────────
    4. CENTER STAGE — Timeline
@@ -821,6 +827,44 @@
 .source-badge.deepseek { background: var(--leaf-container); color: var(--on-leaf-container); box-shadow: 0 2px 0 0 var(--shadow-leaf); }
 .source-badge.fallback { background: var(--tertiary-fixed-dim); color: var(--on-tertiary-fixed-variant); box-shadow: 0 2px 0 0 var(--shadow-gold); }
 
+.director-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px;
+  border: 3px solid var(--ink);
+  border-radius: var(--r-md);
+  background:
+    linear-gradient(90deg, rgba(255, 230, 109, 0.22) 0 18%, transparent 18%),
+    var(--surface-low);
+  box-shadow: 4px 4px 0 0 var(--shadow-gold);
+}
+.director-kicker {
+  width: fit-content;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-full);
+  background: var(--tertiary-fixed-dim);
+  color: var(--on-tertiary-fixed-variant);
+  font-size: var(--text-2xs);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.director-card strong {
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 900;
+  line-height: 1.25;
+}
+.director-card p {
+  margin: 0;
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 /* Agent action buttons — chunky, color-coded */
 .agent-actions { display: flex; flex-direction: column; gap: 10px; }
 
@@ -900,6 +944,58 @@
   font-weight: 700;
   line-height: 1.45;
   color: var(--ink-secondary);
+}
+.taste-note {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 2px solid var(--rule);
+  border-radius: var(--r-sm);
+  background: var(--surface-low);
+}
+.taste-note-label {
+  color: var(--primary);
+  font-size: var(--text-2xs);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.taste-note ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.taste-note li {
+  position: relative;
+  padding-left: 16px;
+  color: var(--ink);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.taste-note li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  background: var(--secondary-container);
+  transform: rotate(10deg);
+}
+.taste-next {
+  padding-top: 8px;
+  border-top: 2px solid var(--rule-soft);
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.35;
 }
 .agent-preview-actions {
   display: grid;
