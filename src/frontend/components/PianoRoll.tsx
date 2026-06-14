@@ -82,7 +82,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     return Math.min(TOTAL_STEPS - 1, Math.max(0, Math.floor(ratio * TOTAL_STEPS)));
   };
 
-  const playheadPct = (playback.currentStep / (TOTAL_STEPS - 1)) * 100;
+  const playheadPct = (playback.currentStep / TOTAL_STEPS) * 100;
 
   /* ── Click a beat segment to audition its notes + drums ── */
   const STEPS_PER_AUDIT = TOTAL_STEPS / 16; // 8 steps per segment

@@ -164,6 +164,9 @@ export class AudioEngine {
       this.sequencer.dispose();
       this.sequencer = null;
     }
+    Tone.Transport.stop();
+    Tone.Transport.cancel();
+    Tone.Transport.seconds = 0;
 
     // Hard-cut: release sustaining voices and mute the master bus instantly so
     // stop is immediate (no release tail / fade-out). Bus is restored before

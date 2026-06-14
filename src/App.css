@@ -1164,9 +1164,9 @@
 /* Vertical keyboard legend */
 .piano-keys {
   flex-shrink: 0;
-  /* Match the timeline's 104px track-name gutter so the piano-roll playhead
+  /* Match the timeline's 200px instrument-card gutter so the piano-roll playhead
      aligns vertically with the timeline playhead (same time → same x). */
-  width: 104px;
+  width: 200px;
   background: var(--surface-container);
   border-right: 3px solid var(--rule-soft);
   display: flex;
@@ -1269,7 +1269,7 @@
 /* Drum lane labels + grid (drum tracks) */
 .drum-labels {
   flex-shrink: 0;
-  width: 76px;
+  width: 200px;
   background: var(--surface-container);
   border-right: 3px solid var(--rule-soft);
   display: flex;

@@ -4,6 +4,7 @@ import { useEditor } from '../contexts/EditorContext';
 import { INSTRUMENT_THEME, instrumentVars } from '../theme';
 import { midiOf, aliasPitch } from '../utils/note';
 import { AddInstrumentModal } from './AddInstrumentModal';
+import { audioEngine } from '../audio/AudioEngine';
 
 interface TrackTimelineProps {
   project: ArrangementProject;
@@ -77,16 +78,25 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
     }
   };
 
-  const playheadPct = (playback.currentStep / (totalSteps - 1)) * 100;
-
   const stepFromRulerX = (clientX: number) => {
     const el = rulerRef.current;
     if (!el) return 0;
     const rect = el.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    return Math.round(ratio * (totalSteps - 1));
+    return Math.min(totalSteps - 1, Math.max(0, Math.floor(ratio * totalSteps)));
   };
-  const scrubFromX = (clientX: number) => setPlayback({ ...playback, currentStep: stepFromRulerX(clientX) });
+  const scrubToStep = (step: number) => {
+    const nextPlayback = { ...playback, currentStep: step };
+    setPlayback(nextPlayback);
+    if (playback.isPlaying) {
+      audioEngine.playProject(
+        project,
+        step,
+        playback.loop ? { start: playback.loopStart, end: playback.loopEnd } : null
+      );
+    }
+  };
+  const scrubFromX = (clientX: number) => scrubToStep(stepFromRulerX(clientX));
 
   const onRulerPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
@@ -106,7 +116,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
     const d = loopDrag.current;
     loopDrag.current = null;
     if (!d) { setDraft(null); return; }
-    if (!d.moved) { setDraft(null); setPlayback({ ...playback, currentStep: d.startStep }); return; }
+    if (!d.moved) { setDraft(null); scrubToStep(d.startStep); return; }
     const end = stepFromRulerX(e.clientX);
     setDraft(null);
     setPlayback({ ...playback, loop: true, loopStart: Math.min(d.startStep, end), loopEnd: Math.max(d.startStep, end) });
@@ -266,7 +276,7 @@ export function TrackTimeline({ project }: TrackTimelineProps) {
             );
           })}
 
-          <div className="playhead-line" style={{ left: `calc(${GUTTER}px + ${playheadPct}% * ((100% - ${GUTTER}px) / 100%))` }}>
+          <div className="playhead-line" style={{ left: laneLeft(playback.currentStep) }}>
             <div
               className="playhead-grip"
               title="拖动定位播放指针"
