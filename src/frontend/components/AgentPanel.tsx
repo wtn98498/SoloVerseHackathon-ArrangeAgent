@@ -141,6 +141,34 @@ export function AgentPanel() {
       setMessages((m) => [...m, { role: 'assistant', content: intent.questions.join('\n') }]);
       return;
     }
+    if (intent.kind === 'transform' && project) {
+      setChatLoading(true);
+      try {
+        const baseProject = preview?.project ?? project;
+        const data: AgentResponse = await energyEndpoint({ project: baseProject, direction: intent.direction });
+        setCandidate({
+          ...data,
+          explanation: {
+            summary: intent.direction === 'increase' ? '按你的意思，让它更快更有能量。' : '按你的意思，让它更慢更柔和。',
+            changes: data.explanation.changes,
+          },
+        });
+      } catch {
+        const baseProject = preview?.project ?? project;
+        const fallbackProject = generateFallbackEnergy(baseProject, intent.direction);
+        setCandidate({
+          project: fallbackProject,
+          explanation: fallbackProject.lastExplanation ?? {
+            summary: intent.direction === 'increase' ? '已用本地方案让它更快更有能量。' : '已用本地方案让它更慢更柔和。',
+            changes: [intent.direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
+          },
+          source: 'fallback',
+        });
+      } finally {
+        setChatLoading(false);
+      }
+      return;
+    }
     if (intent.kind === 'compose' && project) {
       setChatLoading(true);
       try {

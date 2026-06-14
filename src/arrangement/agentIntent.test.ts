@@ -18,6 +18,14 @@ assert(broad.questions.length > 0 && broad.questions.length <= 2, 'clarification
 const compose = classifyAgentIntent('做一段轻松的爵士开场，适合晚上散步');
 assert(compose.kind === 'compose', 'specific music request should be composable');
 
+const faster = classifyAgentIntent('再次快一点');
+assert(faster.kind === 'transform', 'faster follow-up should transform the current arrangement');
+assert(faster.direction === 'increase', 'faster follow-up should increase energy');
+
+const slower = classifyAgentIntent('慢一点');
+assert(slower.kind === 'transform', 'slower follow-up should transform the current arrangement');
+assert(slower.direction === 'soften', 'slower follow-up should soften the arrangement');
+
 const highPitchProject = structuredClone(fixtureProject);
 const keysTrack = highPitchProject.tracks.find((track) => track.kind === 'keys');
 const keysClip = keysTrack?.clips[0];
