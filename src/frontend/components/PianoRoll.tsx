@@ -148,7 +148,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
     const rect = gridRef.current.getBoundingClientRect();
     const step = snap(stepFromX(e.clientX));
     const rowFromTop = Math.floor((e.clientY - rect.top) / DRUM_ROW_H);
-    const drum = DRUM_ROWS[DRUM_ROWS.length - 1 - rowFromTop]?.id;
+    const drum = DRUM_ROWS[rowFromTop]?.id;
     if (!drum) return;
     const existing = clip?.drumHits.find((h) => h.drum === drum && h.step === step);
     if (existing) {
