@@ -1,102 +1,133 @@
 # PlayBand AI
 
-**Play first. Arrange later.**
+**Play a tiny idea. Watch an AI music director turn it into a band.**
 
 PlayBand AI is a hackathon prototype for people who have musical taste but do
-not know how to use a DAW. Instead of starting from an empty professional
-timeline or asking an AI to produce a black-box audio file, the user first
-plays a tiny rhythm or melody. The arrangement agent then expands that seed
-into an editable 8-bar band loop.
+not know music theory or professional DAW tools. Instead of asking AI for a
+black-box song, the user taps a small rhythm, sees it become structured
+MIDI-like clips, and then collaborates with an arrangement agent over multiple
+rounds.
 
-- Public demo: https://wenwen.zone/playband/
-- Repository: https://github.com/wtn98498/SoloVerseHackathon-ArrangeAgent
+- **Live demo:** https://wenwen.zone/playband/
+- **Repository:** https://github.com/wtn98498/SoloVerseHackathon-ArrangeAgent
+- **Core promise:** Play first. Arrange later.
 
-![PlayBand AI demo screenshot](public/readme/playband-ai-demo.png)
+![PlayBand AI opening screen](public/readme/01-start.png)
 
-## Why This Exists
+## Why It Should Win
 
-GarageBand, Logic, Ableton, and FL Studio are powerful, but they are intimidating
-for casual creators. A non-musician can say "make it more energetic" or "give me
-a catchy intro", but they usually cannot translate that into drums, bass,
-guitar, keyboard parts, MIDI timing, and note density.
+Most AI music demos hide the creative process: type a prompt, wait, receive an
+audio file. That is impressive once, but it does not feel like making music.
 
-PlayBand AI turns that natural language and playful input into structured music:
+PlayBand AI keeps the human in the loop:
 
-- The user taps or plays a small idea.
-- The app records it as lightweight MIDI-like data.
-- The agent completes it into four playable tracks.
-- Every AI result appears as a preview first.
-- The user can audition, reject, regenerate, or apply the result.
+- The user starts with a physical, playful action: a few taps.
+- The app records that action as editable musical data, not just sound.
+- The agent completes the idea into drums, bass, guitar, and keys.
+- Every generation becomes a preview first, so the user can audition, reject,
+  apply, or keep talking.
 
-The memorable moment is simple: **a few taps become a band.**
+The memorable moment is simple enough for a judge to retell:
 
-## Demo Flow
+> "I tapped a beat, and the agent turned it into a band."
 
-The app now opens directly on the blank demo starting point: four empty tracks,
-the drum track selected, and the AI assistant waiting for a seed.
+## Demo Story
 
-The intended 60-90 second demo path is:
+### 1. Start From A Blank Studio
+
+The app opens like a music toy, not a professional DAW. The user can begin from
+nothing or ask for a starter groove.
+
+![Blank PlayBand studio](public/readme/02-blank-studio.png)
+
+### 2. Capture A Human Seed
+
+The user opens the capture pad and taps a few drum hits. The app shows the seed
+as timing data immediately, which makes the AI result feel grounded in the
+user's own input.
+
+![Capturing a drum seed](public/readme/03-capture-seed.png)
+
+### 3. Let The Agent Complete The Band
+
+After the seed enters the timeline, the Music Director creates a candidate
+arrangement. It explains what changed, what to listen for, and what the next
+creative move should be.
+
+![Agent-generated arrangement candidate](public/readme/05-agent-candidate.png)
+
+### 4. Keep Talking
+
+The user can continue with natural language: "make it more like a pitch intro",
+"faster", "softer", or "leave room for the melody". The agent keeps the music
+workflow alive across turns.
+
+![Multi-turn music direction](public/readme/06-multiturn-agent.png)
+
+## The 60-Second Judge Demo
 
 1. Open https://wenwen.zone/playband/.
-2. Click **捕获律动** on the drum track.
-3. Tap a few pads such as **Kick**, **Snare**, and **HiHat**.
-4. Click **捕获进 MIDI** to place the seed on the timeline.
-5. Click **补全编曲** in the AI assistant.
-6. Audition the generated 8-bar loop.
-7. Click **放进编曲** only when the preview feels right.
-8. Click **更有能量** or type a music request such as `faster again`.
+2. Choose **随便玩玩**.
+3. Click **捕获律动** and tap Kick, HiHat, Snare, Clap.
+4. Click **捕获进 MIDI**.
+5. Click **补全编曲**.
+6. Audition the candidate.
+7. Click **放进编曲**.
+8. Ask the agent: `再快一点，像路演开场一样更抓耳`.
+9. Apply that version, then ask: `再柔和一点，给主旋律留出呼吸`.
 
-The important detail: the agent does not overwrite the song immediately. It
-creates a candidate arrangement so the user keeps creative control.
+That flow shows the whole product in under a minute: playful input, structured
+music data, agent reasoning, preview-first control, and multi-turn taste.
 
-## What Works
+## What Works Now
 
 - Four-track arrangement surface: drums, bass, guitar, and keys.
-- Piano-roll-style visualization for trust and light editing.
-- Pad capture flow with preview, undo, clear, audition, and import.
+- Browser audio playback with Tone.js.
+- Pad capture flow that turns taps into MIDI-like events.
+- Piano-roll-style visualization for trust and lightweight editing.
 - Agent preview cards with audition, apply, retry, and discard actions.
-- Multi-turn arrangement edits such as faster/slower, softer/more energetic,
-  catchier sections, and broader music-style requests.
-- Living artist style requests are rewritten into broader musical traits instead
-  of directly imitating a living artist.
-- Deterministic fallback generation keeps the demo working without an API key.
+- Multi-turn music requests such as faster, softer, more energetic, or more
+  like an opening section.
+- Demo-safe deterministic fallback, so the live link still works without an API
+  key.
+- Living-artist style requests are redirected into broader musical traits
+  instead of direct imitation.
 
-## Agent Behavior
+## Agent Design
 
-The arrangement agent is intentionally small and demo-safe. It routes user input
-into a few reliable actions:
+The agent is deliberately small. It does not try to become a full producer, a
+chatbot, or a generic assistant. It routes music intent into reliable actions:
 
-- **Complete arrangement**: expand a seed pattern into a full 8-bar loop.
-- **Increase energy**: raise tempo/velocity and add denser musical motion.
-- **Soften arrangement**: lower intensity and create more space.
-- **Compose from language**: accept broad music prompts, ask 1-2 clarifying
-  questions when the request is too vague, and keep off-topic chat out.
+- **Complete arrangement:** expand a seed into an 8-bar band loop.
+- **Increase energy:** raise intensity, velocity, and rhythmic density.
+- **Soften arrangement:** create more space and reduce pressure.
+- **Respond as a music director:** explain what changed and suggest the next
+  listening decision.
 
-The app treats music-related language generously. Prompts like `make a prelude`,
-`add trap groove`, `make the melody rise`, or `make the harmony thicker` should
-stay inside the music workflow instead of being rejected as small talk.
+This makes the demo dependable. If the model path is unavailable, the local
+fallback still produces valid arrangements.
 
-## Data Model
+## Technical Shape
 
-PlayBand AI uses a lightweight MIDI-like JSON model instead of a full DAW engine.
-The central object is an `ArrangementProject` with:
+PlayBand AI uses a lightweight MIDI-like JSON model instead of a full DAW
+engine. The central object is an `ArrangementProject` with:
 
-- `tempo`, `style`, `mood`, `bars`
+- `tempo`, `style`, `mood`, and 8 bars
 - four `Track` objects
 - `Clip` objects containing `NoteEvent` or `DrumHit` data
-- 8 bars, 4 beats per bar, 128 sixteenth-note steps
+- 128 sixteenth-note steps per arrangement
 
-This keeps the MVP small while still making the generated result visible,
-playable, and transformable.
+That structure matters because the AI result is visible, playable, and
+transformable. It is not just a generated audio blob.
 
-## Tech Stack
+## Stack
 
 - React 18
 - TypeScript
 - Vite
-- Tone.js for browser audio playback
-- Custom lightweight arrangement agent
-- DeepSeek-ready backend wrapper with local deterministic fallback
+- Tone.js
+- Custom arrangement agent
+- DeepSeek-ready service boundary with local fallback generation
 
 ## Run Locally
 
@@ -108,18 +139,15 @@ npm run dev
 Then open the local Vite URL, usually:
 
 ```text
-http://127.0.0.1:3000/
+http://127.0.0.1:5173/
 ```
 
-If that port is busy, Vite will print the next available local URL.
-
-## Useful Commands
+Useful checks:
 
 ```bash
 npm run typecheck
 npm run build
 VITE_BASE_PATH=/playband/ npm run build
-node --experimental-specifier-resolution=node --loader ts-node/esm src/arrangement/agentIntent.test.ts
 ```
 
 ## Optional AI Key
@@ -134,28 +162,11 @@ DEEPSEEK_API_KEY=your_api_key_here
 
 Do not commit real API keys.
 
-## Project Structure
-
-```text
-src/contracts/      Shared arrangement types and API contracts
-src/arrangement/   Agent intent routing, generators, transformers, validation
-src/backend/       Local service layer, validation, DeepSeek wrapper, fallback
-src/frontend/      React UI, editor state, Tone.js audio engine, components
-src/fixtures/      Demo project fixtures
-docs/              Product plan, contracts, agent briefs, design notes
-```
-
 ## Hackathon Scope
 
-This is not trying to be a full DAW. The MVP deliberately avoids:
+This is not a full DAW. The MVP intentionally avoids plugin hosting, accounts,
+cloud sync, collaboration, large sample libraries, and complex export flows.
 
-- full MIDI editing
-- plugin hosting
-- cloud project sync
-- accounts
-- collaboration
-- complex export workflows
-- large sample libraries
+The goal is one unforgettable product moment:
 
-The goal is one memorable moment: **play a tiny idea, then watch an agent turn it
-into editable music.**
+**A few taps become a band, and the user stays in control.**
