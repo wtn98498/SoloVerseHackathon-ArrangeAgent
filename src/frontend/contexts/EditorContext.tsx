@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { ArrangementProject, SeedPattern, TrackKind } from '../../contracts';
 import { OnboardingStep, PlaybackState, UIState } from '../types';
-import { createDemoStartProject } from '../demoStart';
+import { createDemoStartProject, createCannedGrooveProject } from '../demoStart';
 
 interface EditorContextType {
   project: ArrangementProject | null;
@@ -14,6 +14,7 @@ interface EditorContextType {
   setSeedPattern: (seed: SeedPattern | null) => void;
   captureSeed: (trackKind: TrackKind, notes: any[], drumHits: any[]) => void;
   startNewSong: () => void;
+  startWithCannedGroove: () => void;
   setOnboardingStep: (step: OnboardingStep) => void;
 }
 
@@ -78,6 +79,40 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // "给我个开头": drop the user into a ready-made 8-bar groove instead of a
+  // blank canvas. We seed from the canned drums clip so every Agent action
+  // (complete / energy / soften) is enabled — judges never see a greyed-out
+  // primary button — and point onboarding at the Agent panel to shape it.
+  const startWithCannedGroove = () => {
+    const nextProject = createCannedGrooveProject();
+    setProject(nextProject);
+    const drumsClip = nextProject.tracks.find((t) => t.kind === 'drums')?.clips[0];
+    const seed: SeedPattern = {
+      sourceTrackKind: 'drums',
+      capturedAt: new Date().toISOString(),
+      notes: drumsClip?.notes ?? [],
+      drumHits: drumsClip?.drumHits ?? [],
+      style: nextProject.style,
+      mood: nextProject.mood,
+      tempo: nextProject.tempo
+    };
+    setSeedPattern(seed);
+    setPlayback({
+      isPlaying: false,
+      currentStep: 0,
+      tempo: nextProject.tempo,
+      loop: false,
+      loopStart: 0,
+      loopEnd: 127
+    });
+    setUi({
+      selectedTrackId: 'track-drums',
+      selectedInstrument: 'drums',
+      showAgentPanel: true,
+      onboardingStep: 'agent'
+    });
+  };
+
   const setOnboardingStep = (step: OnboardingStep) => {
     setUi((current) => ({ ...current, onboardingStep: step }));
   };
@@ -94,6 +129,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       setSeedPattern,
       captureSeed,
       startNewSong,
+      startWithCannedGroove,
       setOnboardingStep
     }}>
       {children}
