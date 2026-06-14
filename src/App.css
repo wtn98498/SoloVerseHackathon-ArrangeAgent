@@ -1442,11 +1442,19 @@
 .capture-pad:active { top: 6px; box-shadow: 0 0 0 0 var(--cs, var(--ink)); transform: scale(0.98); }
 .capture-strip {
   position: relative;
-  min-height: 42px;
+  min-height: 104px;
   border: 3px solid var(--rule);
   border-radius: var(--r-sm);
   background: var(--surface-low);
   overflow: hidden;
+  background-image:
+    linear-gradient(to right, rgba(26, 28, 28, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(26, 28, 28, 0.08) 1px, transparent 1px);
+  background-size: calc(100% / 8) 100%, 100% 25%;
+}
+.capture-strip.keys {
+  min-height: 132px;
+  background-size: calc(100% / 8) 100%, 100% 12.5%;
 }
 .capture-strip span {
   display: flex;
@@ -1459,13 +1467,54 @@
 }
 .capture-strip i {
   position: absolute;
-  top: 7px;
-  width: 12px;
-  height: 24px;
+  width: 54px;
+  min-width: 36px;
+  height: 18px;
   border: 2px solid var(--ink);
-  border-radius: var(--r-full);
+  border-radius: var(--r-sm);
   background: var(--c, var(--primary-container));
   box-shadow: 2px 2px 0 0 var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  font-style: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.capture-strip.keys i {
+  height: 13px;
+  font-size: 8px;
+}
+.capture-edit-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.capture-edit-btn {
+  min-height: 34px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-sm);
+  background: var(--surface-lowest);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 0 var(--ink);
+}
+.capture-edit-btn .material-symbols-outlined { font-size: 17px; font-weight: 800; }
+.capture-edit-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 0 var(--ink); }
+.capture-edit-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
 }
 .capture-actions {
   display: grid;

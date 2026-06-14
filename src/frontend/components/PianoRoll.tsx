@@ -202,6 +202,17 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
       events: [...captureSession.events, { padId, step }],
     });
   };
+  const undoCapture = () => {
+    if (!captureSession) return;
+    setCaptureSession({
+      ...captureSession,
+      events: captureSession.events.slice(0, -1),
+    });
+  };
+  const clearCapture = () => {
+    if (!captureSession) return;
+    setCaptureSession({ ...captureSession, events: [] });
+  };
   const buildSessionEvents = () => {
     if (!captureSession) return { notes: [], drumHits: [] };
     return captureSession.events.reduce(
@@ -580,6 +591,8 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
         <CaptureModal
           session={captureSession}
           onRecord={recordPad}
+          onUndo={undoCapture}
+          onClear={clearCapture}
           onAudition={auditionCapture}
           onCommit={commitCapture}
           onClose={() => setCaptureSession(null)}
@@ -623,15 +636,18 @@ function RollInspector({ track, openCapture }: {
   );
 }
 
-function CaptureModal({ session, onRecord, onAudition, onCommit, onClose }: {
+function CaptureModal({ session, onRecord, onUndo, onClear, onAudition, onCommit, onClose }: {
   session: CaptureSession;
   onRecord: (padId: string) => void;
+  onUndo: () => void;
+  onClear: () => void;
   onAudition: () => void;
   onCommit: () => void;
   onClose: () => void;
 }) {
   const theme = INSTRUMENT_THEME[session.track.kind];
   const pads = PAD_DEFS[session.track.kind];
+  const laneIndex = (padId: string) => Math.max(0, pads.findIndex((pad) => pad.id === padId));
   return (
     <div className="capture-modal-backdrop">
       <div className="capture-modal" style={instrumentVars(theme)} role="dialog" aria-label="捕获律动">
@@ -656,14 +672,32 @@ function CaptureModal({ session, onRecord, onAudition, onCommit, onClose }: {
             </button>
           ))}
         </div>
-        <div className="capture-strip" aria-label="已录入的点击">
+        <div className={`capture-strip ${session.track.kind === 'keys' ? 'keys' : ''}`} aria-label="已录入的 MIDI 预览">
           {session.events.length === 0 ? (
-            <span>点几个 pad，听到感觉就收。</span>
+            <span>这里会显示刚刚弹出的 MIDI 小片段。</span>
           ) : (
             session.events.map((event, index) => (
-              <i key={`${event.padId}-${index}`} style={{ left: `${Math.min(96, (event.step / 32) * 100)}%` }} />
+              <i
+                key={`${event.padId}-${index}`}
+                style={{
+                  left: `${Math.min(94, (event.step / 32) * 100)}%`,
+                  top: 6 + laneIndex(event.padId) * (session.track.kind === 'keys' ? 15 : 22),
+                }}
+              >
+                {pads.find((pad) => pad.id === event.padId)?.label ?? event.padId}
+              </i>
             ))
           )}
+        </div>
+        <div className="capture-edit-actions">
+          <button className="capture-edit-btn" onClick={onUndo} disabled={session.events.length === 0}>
+            <span className="material-symbols-outlined" aria-hidden>undo</span>
+            撤销一步
+          </button>
+          <button className="capture-edit-btn" onClick={onClear} disabled={session.events.length === 0}>
+            <span className="material-symbols-outlined" aria-hidden>backspace</span>
+            清空
+          </button>
         </div>
         <div className="capture-actions">
           <button className="preview-btn listen" onClick={onAudition} disabled={session.events.length === 0}>
