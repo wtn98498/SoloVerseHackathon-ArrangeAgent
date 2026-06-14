@@ -334,8 +334,8 @@
 }
 
 .pad-grid { display: grid; gap: 8px; }
-.pad-grid-4 { grid-template-columns: repeat(2, 1fr); }
-.pad-grid-8 { grid-template-columns: repeat(4, 1fr); }
+.pad-grid-4 { grid-template-columns: 1fr; }
+.pad-grid-8 { grid-template-columns: repeat(2, 1fr); }
 
 /* Pads — chunky tactile buttons */
 .drum-pad,
@@ -1228,7 +1228,7 @@
   aspect-ratio: auto;
   font-size: var(--text-xs);
 }
-.roll-inspector .pad-grid-8 { grid-template-columns: repeat(4, 1fr); }
+.roll-inspector .pad-grid-8 { grid-template-columns: repeat(2, 1fr); }
 .roll-inspector .capture-seed-btn {
   margin-top: 0;
   padding: 10px 12px;
@@ -1784,5 +1784,5 @@
   .main-layout { grid-template-columns: 1fr; }
   .sidebar-agent { border-left: none; border-top: 4px solid var(--rule); max-height: 42vh; }
   .transport-bar { flex-wrap: wrap; gap: 8px; }
-  .pad-grid-8 { grid-template-columns: repeat(4, 1fr); }
+  .pad-grid-8 { grid-template-columns: repeat(2, 1fr); }
 }

@@ -5,12 +5,10 @@ import { aliasPitch, midiOf, scaleSemitones } from '../utils/note';
 import { audioEngine } from '../audio/AudioEngine';
 import type { ArrangementProject, Track, TrackKind, NoteEvent, DrumHit } from '../../contracts';
 
-/* ── Chromatic pitch range shown in the roll. Lower bound is fixed at C2 so the
-   fixed-pixel drum lanes never overflow; the upper octave expands dynamically
-   when a clip contains notes above B4, so agent-generated high notes are never
-   clipped. ── */
+/* ── Chromatic pitch range shown in the roll. Use a broad piano-style range so
+   the UI does not imply a three-octave product limit. ── */
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const MIN_OCT = 2;
+const MIN_OCT = 0;
 
 /* Drum lanes for drum tracks (bottom → top). */
 const DRUM_ROWS: { id: DrumHit['drum']; label: string }[] = [
@@ -86,11 +84,10 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   const scale = project.scale ?? { root: 'C', type: 'major' as const };
   const scaleSemis = scaleSemitones(scale.root, scale.type);
 
-  // Full staff C2–C6 shown up front; the body scrolls vertically instead of
-  // the roll only growing when a higher note is drawn.
-  const maxOct = 6;
+  // Broad piano-style staff shown up front; the body scrolls vertically.
+  const maxOct = 8;
 
-  // Built bottom→top so row 0 = lowest pitch (C2).
+  // Built bottom→top so row 0 = lowest pitch.
   const pitchRows = useMemo<PitchRow[]>(() => {
     const rows: PitchRow[] = [];
     for (let oct = MIN_OCT; oct <= maxOct; oct++) {

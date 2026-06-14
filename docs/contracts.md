@@ -30,9 +30,10 @@ arrangement.
 - Piano-roll UI is a trust-building view for the selected track or clip, not
   the product core. It may support small local edits when already implemented,
   but the MVP must not grow into a full MIDI editor.
-- Piano-roll pitch range: exactly three white-key octaves, `C2` through `B4`.
-  Generated, edited, imported, and agent-produced pitched notes outside this
-  range must be rejected or repaired before the frontend receives them.
+- Piano-roll pitch display should feel like a broad piano keyboard, not a
+  three-octave toy. The frontend may show a practical `C0..B8` style range
+  with vertical scrolling. Validation should reject malformed pitch strings,
+  but should not enforce the old `C2..B4` demo boundary.
 - Backend runtime: Node/TypeScript service layer exposed through local HTTP
   routes or Tauri commands. Prefer local HTTP during early development because
   it is easier for all workstreams to test.
@@ -173,9 +174,10 @@ Timing rules:
 - `Clip.kind` is `drum` for drum-grid clips and `midi` for pitched clips.
 - `NoteEvent` and `DrumHit` are lightweight MIDI events. Agent output must
   modify these events, not merely trigger audio playback.
-- Pitched `NoteEvent.pitch` values are constrained to `C2..B4` for the MVP
-  piano roll. Do not emit `C5+`, `C1`, chromatic accidentals, or full-keyboard
-  data in the demo path.
+- Pitched `NoteEvent.pitch` values must be valid note names such as `C4`,
+  `F#3`, or `Bb5`. Agent output may use sharps/flats, but should keep each
+  instrument in a friendly musical range: bass low, guitar mid, and keys broad.
+  Do not reintroduce the old three-octave UI boundary as a data constraint.
 - `quantize` defines the intended editing grid. MVP default is `4`, meaning
   sixteenth-note steps in the current 128-step timeline.
 - `scale` is an optional `{ root, type }` hint (`type` is `"major"` | `"minor"`)
@@ -271,7 +273,7 @@ Reject or repair:
 - Unknown track kind.
 - Unknown style or mood.
 - Notes or hits outside steps `0..127`.
-- Pitched notes outside the three-octave piano-roll range `C2..B4`.
+- Malformed pitched note names that Tone.js cannot reasonably play.
 - Velocity outside `0..1`.
 - Clip start/length outside the 8-bar project.
 - Clip without `kind`, `name`, `loop`, or `quantize`.

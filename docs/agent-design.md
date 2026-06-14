@@ -130,7 +130,8 @@ lightweight model:
 
 - Make the existing piano roll look and feel closer to the best parts of
   MoaRoll without importing MoaRoll.
-- Keep note pitch range aligned with `C2..B4`.
+- Keep note pitches valid and playable while showing a broader piano-roll
+  keyboard than the old three-octave prototype.
 - Keep the four-track timeline readable.
 - Make agent actions visibly change clips.
 - Preserve browser fallback and deterministic generation.

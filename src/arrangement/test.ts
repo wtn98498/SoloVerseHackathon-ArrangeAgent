@@ -66,19 +66,19 @@ function validateProject(project: any, label: string): boolean {
   return true;
 }
 
-function assertPitchesInThreeOctaves(project: ArrangementProject, label: string): boolean {
+function assertPitchesArePlayable(project: ArrangementProject, label: string): boolean {
   const invalidPitches = project.tracks.flatMap(track => track.clips.flatMap(clip =>
     clip.notes
-      .filter(note => !/^[A-G][2-4]$/.test(note.pitch))
+      .filter(note => !/^[A-G](#|b)?[0-9]$/.test(note.pitch))
       .map(note => `${track.kind}:${note.pitch}`)
   ));
 
   if (invalidPitches.length > 0) {
-    console.error(`❌ ${label} has notes outside C2-B4: ${invalidPitches.join(', ')}`);
+    console.error(`❌ ${label} has malformed pitches: ${invalidPitches.join(', ')}`);
     return false;
   }
 
-  console.log(`✅ ${label} stays within C2-B4`);
+  console.log(`✅ ${label} uses playable pitch names`);
   return true;
 }
 
@@ -100,7 +100,7 @@ export async function runBasicTests() {
       if (!validateProject(project, `${style}-${mood} arrangement`)) {
         return false;
       }
-      if (!assertPitchesInThreeOctaves(project, `${style}-${mood} arrangement`)) {
+      if (!assertPitchesArePlayable(project, `${style}-${mood} arrangement`)) {
         return false;
       }
     }
@@ -125,7 +125,7 @@ export async function runBasicTests() {
       return false;
     }
 
-    if (!assertPitchesInThreeOctaves(completeResult.project, 'Complete arrangement')) {
+    if (!assertPitchesArePlayable(completeResult.project, 'Complete arrangement')) {
       return false;
     }
 

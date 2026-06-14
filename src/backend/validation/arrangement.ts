@@ -6,12 +6,12 @@ const VALID_MOOD_IDS: MoodId[] = ['bright', 'soft', 'energetic'];
 const VALID_DRUMS = ['kick', 'snare', 'hihat', 'clap'];
 const VALID_CLIP_KINDS: ClipKind[] = ['midi', 'drum'];
 const VALID_QUANTIZE: QuantizeGrid[] = [1, 2, 4, 8, 16];
-const VALID_PITCH_RE = /^[A-G][2-4]$/;
+const VALID_PITCH_RE = /^[A-G](#|b)?[0-9]$/;
 
 const MAX_STEP = 127; // 8 bars * 4 beats * 4 subdivisions
 const MAX_VELOCITY = 1;
 const MIN_VELOCITY = 0;
-const PIANO_ROLL_RANGE = 'C2-B4';
+const PIANO_ROLL_RANGE = 'valid piano note names C0-G9';
 
 export interface ValidationError {
   path: string;

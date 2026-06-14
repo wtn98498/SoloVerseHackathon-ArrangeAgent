@@ -299,8 +299,8 @@ function MIDIClip({ clip, totalSteps, trackKind, muted, onClipContext }: {
   );
 }
 
-const TL_MIN_MIDI = midiOf('C2') ?? 36;
-const TL_MAX_MIDI = midiOf('C5') ?? 72;
+const TL_MIN_MIDI = midiOf('C0') ?? 12;
+const TL_MAX_MIDI = midiOf('B8') ?? 119;
 function pitchToY(pitch: string): number {
   const m = midiOf(aliasPitch(pitch));
   if (m == null) return 40;

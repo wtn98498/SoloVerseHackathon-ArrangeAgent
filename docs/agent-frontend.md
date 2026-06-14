@@ -108,4 +108,5 @@ await fetch("/api/arrange/energy", {
 - Trigger complete with a hand-built seed.
 - Trigger increase and verify UI changes.
 - Disconnect API or force fallback and confirm the UI still works.
-- Verify the selected-track piano roll respects the `C2..B4` pitch boundary.
+- Verify the selected-track piano roll displays a broad keyboard range without
+  reintroducing the old three-octave boundary.
