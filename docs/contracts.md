@@ -30,10 +30,9 @@ arrangement.
 - Piano-roll UI is a trust-building view for the selected track or clip, not
   the product core. It may support small local edits when already implemented,
   but the MVP must not grow into a full MIDI editor.
-- Piano-roll pitch display should feel like a broad piano keyboard, not a
-  three-octave toy. The frontend may show a practical `C0..B8` style range
-  with vertical scrolling. Validation should reject malformed pitch strings,
-  but should not enforce the old `C2..B4` demo boundary.
+- Piano-roll pitch display should feel broader than the old three-octave toy,
+  but demo-safe validation keeps playable agent output inside `C2..C6`.
+  Sharps/flats are allowed when Tone.js can play them.
 - Backend runtime: Node/TypeScript service layer exposed through local HTTP
   routes or Tauri commands. Prefer local HTTP during early development because
   it is easier for all workstreams to test.
@@ -175,9 +174,9 @@ Timing rules:
 - `NoteEvent` and `DrumHit` are lightweight MIDI events. Agent output must
   modify these events, not merely trigger audio playback.
 - Pitched `NoteEvent.pitch` values must be valid note names such as `C4`,
-  `F#3`, or `Bb5`. Agent output may use sharps/flats, but should keep each
-  instrument in a friendly musical range: bass low, guitar mid, and keys broad.
-  Do not reintroduce the old three-octave UI boundary as a data constraint.
+  `F#3`, or `Bb5` and stay within `C2..C6`. Agent output should keep each
+  instrument in a friendly musical range: bass near octave 2, guitar around
+  octaves 3-4, and keys around octaves 3-6.
 - `quantize` defines the intended editing grid. MVP default is `4`, meaning
   sixteenth-note steps in the current 128-step timeline.
 - `scale` is an optional `{ root, type }` hint (`type` is `"major"` | `"minor"`)
@@ -187,6 +186,11 @@ Timing rules:
 ## 5. Agent Action API
 
 The frontend talks to the backend. The backend talks to the arrangement agent.
+
+The frontend must treat generated arrangements as candidates first. A generated
+candidate can be auditioned, regenerated, discarded, or explicitly applied by
+the user. Do not overwrite the current `ArrangementProject` merely because an
+agent call succeeded.
 
 ### POST /api/arrange/complete
 
@@ -273,7 +277,7 @@ Reject or repair:
 - Unknown track kind.
 - Unknown style or mood.
 - Notes or hits outside steps `0..127`.
-- Malformed pitched note names that Tone.js cannot reasonably play.
+- Malformed pitched note names or pitches outside `C2..C6`.
 - Velocity outside `0..1`.
 - Clip start/length outside the 8-bar project.
 - Clip without `kind`, `name`, `loop`, or `quantize`.
@@ -313,7 +317,26 @@ Prompting rule:
   `ArrangementProject`. Never accept free-text descriptions as the source of
   truth for musical state.
 
-## 8. Ownership Boundaries
+## 8. Web Reference Contract
+
+The arrangement agent may use web search as a narrow style-reference layer, not
+as a general chat capability.
+
+Allowed use:
+
+- Tempo, groove, instrumentation, and arrangement-role hints.
+- Contemporary style vocabulary that helps map user language to the four-track
+  PlayBand model.
+
+Required behavior:
+
+- Time out quickly and fall back to local style references.
+- Never require web search for the demo path.
+- Never copy a specific song melody or return scraped text as musical state.
+- Always convert references back into validated `ArrangementProject` JSON.
+- Project-off-topic chat must be refused briefly instead of searched.
+
+## 9. Ownership Boundaries
 
 Frontend agent owns:
 

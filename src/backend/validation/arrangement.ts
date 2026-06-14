@@ -7,11 +7,32 @@ const VALID_DRUMS = ['kick', 'snare', 'hihat', 'clap'];
 const VALID_CLIP_KINDS: ClipKind[] = ['midi', 'drum'];
 const VALID_QUANTIZE: QuantizeGrid[] = [1, 2, 4, 8, 16];
 const VALID_PITCH_RE = /^[A-G](#|b)?[0-9]$/;
+const PITCH_CLASS_TO_SEMITONE: Record<string, number> = {
+  C: 0,
+  'C#': 1,
+  Db: 1,
+  D: 2,
+  'D#': 3,
+  Eb: 3,
+  E: 4,
+  F: 5,
+  'F#': 6,
+  Gb: 6,
+  G: 7,
+  'G#': 8,
+  Ab: 8,
+  A: 9,
+  'A#': 10,
+  Bb: 10,
+  B: 11,
+};
 
 const MAX_STEP = 127; // 8 bars * 4 beats * 4 subdivisions
 const MAX_VELOCITY = 1;
 const MIN_VELOCITY = 0;
-const PIANO_ROLL_RANGE = 'valid piano note names C0-G9';
+const PIANO_ROLL_RANGE = 'C2-C6';
+const MIN_MIDI = 36; // C2
+const MAX_MIDI = 84; // C6
 
 export interface ValidationError {
   path: string;
@@ -19,7 +40,17 @@ export interface ValidationError {
 }
 
 function isValidPianoRollPitch(pitch: string): boolean {
-  return VALID_PITCH_RE.test(pitch);
+  const midi = pitchToMidi(pitch);
+  return midi !== null && midi >= MIN_MIDI && midi <= MAX_MIDI;
+}
+
+function pitchToMidi(pitch: string): number | null {
+  if (!VALID_PITCH_RE.test(pitch)) return null;
+  const match = pitch.match(/^([A-G](?:#|b)?)([0-9])$/);
+  if (!match) return null;
+  const semitone = PITCH_CLASS_TO_SEMITONE[match[1]];
+  if (semitone === undefined) return null;
+  return (Number(match[2]) + 1) * 12 + semitone;
 }
 
 export function validateSeedPattern(seed: SeedPattern): ValidationError[] {

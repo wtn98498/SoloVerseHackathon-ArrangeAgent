@@ -95,10 +95,9 @@ Keep the musical system small:
 - Clip model: one or more editable MIDI clips per track.
 - Default MVP clip: one 8-bar clip per track.
 - Drum clips use `drumHits`; pitched clips use `notes`.
-- Pitched notes must use valid note names that Tone.js can play. Keep bass
-  low, guitar around the mid range, and keys broad. Sharps/flats are allowed
-  when they fit the style; do not treat the old three-octave piano-roll display
-  as a generation boundary.
+- Pitched notes must use valid note names inside `C2..C6`. Keep bass around
+  octave 2, guitar around octaves 3-4, and keys around octaves 3-6.
+  Sharps/flats are allowed when they fit the style.
 - Drums: clear downbeat and backbeat.
 - Bass: follow root notes and simple passing notes.
 - Guitar: strums or short riffs, not complex realism.

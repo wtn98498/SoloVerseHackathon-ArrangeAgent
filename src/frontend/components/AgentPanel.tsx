@@ -5,6 +5,9 @@ import { createClip } from '../../contracts/clip';
 import { completeArrangementEndpoint, energyEndpoint } from '../../backend';
 import { INSTRUMENT_THEME } from '../theme';
 import { sendChat, type ChatMessage } from '../llm/chat';
+import { classifyAgentIntent } from '../../arrangement/agentIntent';
+import { getArrangementReference } from '../../arrangement/reference';
+import { audioEngine } from '../audio/AudioEngine';
 
 interface AgentResponse {
   project: ArrangementProject;
@@ -14,7 +17,7 @@ interface AgentResponse {
 
 const WELCOME: ChatMessage = {
   role: 'assistant',
-  content: '你好！我是你的编曲助手 👋\n左侧选乐器敲 pad，再点「补全编曲」就能生成一段 loop；也可以直接在下面问我关于风格、乐器、编曲的问题。',
+  content: '你好！我是 PlayBand AI 的编曲助手。\n敲一段律动，或告诉我你想要的风格；我会先给你试听，满意后再放进编曲。',
 };
 
 export function AgentPanel() {
@@ -24,6 +27,8 @@ export function AgentPanel() {
   const [chatLoading, setChatLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [lastSource, setLastSource] = useState<'deepseek' | 'fallback' | null>(null);
+  const [preview, setPreview] = useState<AgentResponse | null>(null);
+  const [previewPlaying, setPreviewPlaying] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   // Keep the newest message in view.
@@ -35,6 +40,14 @@ export function AgentPanel() {
   const pushAssistant = (content: string) =>
     setMessages((m) => [...m, { role: 'assistant', content }]);
 
+  const setCandidate = (data: AgentResponse) => {
+    audioEngine.stopSequence();
+    setPreviewPlaying(false);
+    setPreview(data);
+    setLastSource(data.source);
+    pushAssistant(`先给你一版试听：${data.explanation.summary}`);
+  };
+
   /* ── Music actions (still mutate the project, now also narrated in chat) ── */
   const handleComplete = async () => {
     if (!seedPattern || !project) return;
@@ -44,35 +57,72 @@ export function AgentPanel() {
         seed: seedPattern,
         currentProject: project,
       });
-      setProject(data.project);
-      setLastSource(data.source);
-      pushAssistant(`✨ ${data.explanation.summary}\n${data.explanation.changes.map((c) => '· ' + c).join('\n')}`);
+      setCandidate(data);
     } catch {
       const fallbackProject = generateFallbackComplete(seedPattern);
-      setProject(fallbackProject);
-      setLastSource('fallback');
-      pushAssistant('已使用本地备用编曲方案：基于你的输入生成了鼓、贝斯、吉他、键盘四轨。');
+      setCandidate({
+        project: fallbackProject,
+        explanation: fallbackProject.lastExplanation ?? {
+          summary: '已使用本地备用编曲方案',
+          changes: ['基于你的输入生成了鼓、贝斯、吉他、键盘四轨'],
+        },
+        source: 'fallback',
+      });
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleEnergy = async (direction: 'increase' | 'soften') => {
-    if (!project) return;
+    const baseProject = preview?.project ?? project;
+    if (!baseProject) return;
     setActionLoading(true);
     try {
-      const data: AgentResponse = await energyEndpoint({ project, direction });
-      setProject(data.project);
-      setLastSource(data.source);
-      pushAssistant(`${direction === 'increase' ? '⚡' : '🌊'} ${data.explanation.summary}（${data.explanation.changes[0]}）`);
+      const data: AgentResponse = await energyEndpoint({ project: baseProject, direction });
+      setCandidate(data);
     } catch {
-      const fallbackProject = generateFallbackEnergy(project, direction);
-      setProject(fallbackProject);
-      setLastSource('fallback');
-      pushAssistant(direction === 'increase' ? '已增加能量：速度 +10 BPM。' : '已柔和化：速度 -10 BPM。');
+      const fallbackProject = generateFallbackEnergy(baseProject, direction);
+      setCandidate({
+        project: fallbackProject,
+        explanation: fallbackProject.lastExplanation ?? {
+          summary: direction === 'increase' ? '已增加能量' : '已柔和化',
+          changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
+        },
+        source: 'fallback',
+      });
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const handlePreviewPlay = async () => {
+    if (!preview) return;
+    if (previewPlaying) {
+      audioEngine.stopSequence();
+      setPreviewPlaying(false);
+      return;
+    }
+    await audioEngine.initialize();
+    audioEngine.setTempo(preview.project.tempo);
+    audioEngine.playProject(preview.project, 0, null);
+    setPreviewPlaying(true);
+  };
+
+  const handleApplyPreview = () => {
+    if (!preview) return;
+    audioEngine.stopSequence();
+    setPreviewPlaying(false);
+    setProject(preview.project);
+    setLastSource(preview.source);
+    pushAssistant(`已放进编曲：${preview.explanation.changes.join('、')}`);
+    setPreview(null);
+  };
+
+  const handleDiscardPreview = () => {
+    audioEngine.stopSequence();
+    setPreviewPlaying(false);
+    setPreview(null);
+    pushAssistant('好的，这版先不要。');
   };
 
   /* ── Free-form chat with the LLM (via dev proxy) ── */
@@ -82,6 +132,47 @@ export function AgentPanel() {
     setDraft('');
     const next = [...messages, { role: 'user' as const, content: text }];
     setMessages(next);
+    const intent = classifyAgentIntent(text);
+    if (intent.kind === 'off_topic') {
+      setMessages((m) => [...m, { role: 'assistant', content: intent.reply }]);
+      return;
+    }
+    if (intent.kind === 'needs_clarification') {
+      setMessages((m) => [...m, { role: 'assistant', content: intent.questions.join('\n') }]);
+      return;
+    }
+    if (intent.kind === 'compose' && project) {
+      setChatLoading(true);
+      try {
+        const reference = await getArrangementReference(intent.style, intent.mood, intent.referenceQuery);
+        const seed = seedPattern ?? {
+          sourceTrackKind: 'keys' as const,
+          capturedAt: new Date().toISOString(),
+          notes: [],
+          drumHits: [],
+          style: intent.style,
+          mood: intent.mood,
+          tempo: reference.tempoHint ?? project.tempo,
+        };
+        const data: AgentResponse = await completeArrangementEndpoint({
+          seed: { ...seed, style: intent.style, mood: intent.mood, tempo: reference.tempoHint ?? seed.tempo },
+          currentProject: project,
+        });
+        setCandidate({
+          ...data,
+          explanation: {
+            summary: `${data.explanation.summary}。参考：${reference.summary}`,
+            changes: [...data.explanation.changes, ...reference.grooveHints.slice(0, 2)],
+          },
+        });
+      } catch {
+        setMessages((m) => [...m, { role: 'assistant', content: '生成时出了点问题，但动作按钮仍可用。' }]);
+      } finally {
+        setChatLoading(false);
+      }
+      return;
+    }
+
     setChatLoading(true);
     const res = await sendChat(next);
     setChatLoading(false);
@@ -142,6 +233,37 @@ export function AgentPanel() {
           更柔和
         </button>
       </div>
+
+      {preview && (
+        <div className="agent-preview-card">
+          <div className="agent-preview-head">
+            <span className="material-symbols-outlined" aria-hidden>graphic_eq</span>
+            <div>
+              <strong>试听版本</strong>
+              <span>{preview.project.style} · {preview.project.mood} · {preview.project.tempo} BPM</span>
+            </div>
+          </div>
+          <p>{preview.explanation.summary}</p>
+          <div className="agent-preview-actions">
+            <button onClick={handlePreviewPlay} className="preview-btn listen">
+              <span className="material-symbols-outlined" aria-hidden>{previewPlaying ? 'stop' : 'play_arrow'}</span>
+              {previewPlaying ? '停止' : '试听'}
+            </button>
+            <button onClick={handleApplyPreview} className="preview-btn apply">
+              <span className="material-symbols-outlined" aria-hidden>library_add_check</span>
+              放进编曲
+            </button>
+            <button onClick={handleComplete} className="preview-btn retry" disabled={actionLoading || !seedPattern}>
+              <span className="material-symbols-outlined" aria-hidden>autorenew</span>
+              再来
+            </button>
+            <button onClick={handleDiscardPreview} className="preview-btn discard">
+              <span className="material-symbols-outlined" aria-hidden>close</span>
+              不要
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Conversation */}
       <div className="chat-list" ref={listRef}>
