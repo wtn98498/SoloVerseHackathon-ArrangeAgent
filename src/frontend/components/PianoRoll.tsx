@@ -233,7 +233,7 @@ export function PianoRoll({ project }: { project: ArrangementProject }) {
   };
   const auditionCapture = () => {
     const events = buildSessionEvents();
-    audioEngine.auditionStep(events.notes.map((note) => note.pitch), events.drumHits.map((hit) => hit.drum));
+    audioEngine.auditionEvents(events.notes, events.drumHits, project.tempo);
   };
   const commitCapture = () => {
     if (!captureSession || captureSession.events.length === 0) return;

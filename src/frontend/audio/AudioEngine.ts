@@ -1,5 +1,5 @@
 import * as Tone from 'tone';
-import { ArrangementProject } from '../../contracts';
+import { ArrangementProject, DrumHit, NoteEvent } from '../../contracts';
 
 export class AudioEngine {
   private isInitialized: boolean = false;
@@ -199,6 +199,36 @@ export class AudioEngine {
     const time = Tone.now();
     pitches.forEach((p) => this.synth?.triggerAttackRelease(p, '8n', time));
     drums.forEach((d) => this.playDrumHit(d, time));
+  }
+
+  /** Play a short captured phrase from its beginning, preserving relative timing. */
+  async auditionEvents(
+    notes: NoteEvent[],
+    drumHits: DrumHit[],
+    tempo: number,
+  ) {
+    if (notes.length === 0 && drumHits.length === 0) return;
+
+    await this.initialize();
+    this.stopSequence();
+    this.setMasterGain(1);
+    Tone.Transport.bpm.value = tempo;
+
+    const firstStep = Math.min(
+      ...notes.map((note) => note.step),
+      ...drumHits.map((hit) => hit.step),
+    );
+    const stepDuration = (60 / tempo) / 4;
+    const startAt = Tone.now() + 0.04;
+
+    notes.forEach((note) => {
+      const time = startAt + (note.step - firstStep) * stepDuration;
+      this.playNote(note.pitch, note.durationSteps * stepDuration, note.velocity, time);
+    });
+    drumHits.forEach((hit) => {
+      const time = startAt + (hit.step - firstStep) * stepDuration;
+      this.playDrumHit(hit.drum, time);
+    });
   }
 
   dispose() {
