@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { ArrangementProject, AgentExplanation } from '../../contracts';
 import { createClip } from '../../contracts/clip';
 import { completeArrangementEndpoint, energyEndpoint } from '../../backend';
 import { INSTRUMENT_THEME } from '../theme';
+import { sendChat, type ChatMessage } from '../llm/chat';
 
 interface AgentResponse {
   project: ArrangementProject;
@@ -11,86 +12,87 @@ interface AgentResponse {
   source: 'deepseek' | 'fallback';
 }
 
-const STYLE_LABELS: Record<string, string> = {
-  pop: 'Pop',
-  lofi: 'Lo-fi',
-  rock: 'Rock',
+const WELCOME: ChatMessage = {
+  role: 'assistant',
+  content: '你好！我是你的编曲助手 👋\n左侧选乐器敲 pad，再点「补全编曲」就能生成一段 loop；也可以直接在下面问我关于风格、乐器、编曲的问题。',
 };
 
 export function AgentPanel() {
-  const { project, setProject, seedPattern } = useEditor();
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastResponse, setLastResponse] = useState<AgentResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { project, setProject, seedPattern, ui, setUi } = useEditor();
+  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [draft, setDraft] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [lastSource, setLastSource] = useState<'deepseek' | 'fallback' | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
+  // Keep the newest message in view.
+  useEffect(() => {
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, chatLoading]);
+
+  const pushAssistant = (content: string) =>
+    setMessages((m) => [...m, { role: 'assistant', content }]);
+
+  /* ── Music actions (still mutate the project, now also narrated in chat) ── */
   const handleComplete = async () => {
     if (!seedPattern || !project) return;
-    setIsLoading(true);
-    setError(null);
-
+    setActionLoading(true);
     try {
       const data: AgentResponse = await completeArrangementEndpoint({
         seed: seedPattern,
         currentProject: project,
       });
       setProject(data.project);
-      setLastResponse(data);
+      setLastSource(data.source);
+      pushAssistant(`✨ ${data.explanation.summary}\n${data.explanation.changes.map((c) => '· ' + c).join('\n')}`);
     } catch {
-      setError('无法连接服务器，已使用本地备用方案');
       const fallbackProject = generateFallbackComplete(seedPattern);
-      const fallbackResponse: AgentResponse = {
-        project: fallbackProject,
-        explanation: {
-          summary: '已使用本地备用编曲方案',
-          changes: ['基于你的输入生成了完整编曲', '添加了鼓点、贝斯、吉他和键盘轨道'],
-        },
-        source: 'fallback',
-      };
-      setProject(fallbackResponse.project);
-      setLastResponse(fallbackResponse);
+      setProject(fallbackProject);
+      setLastSource('fallback');
+      pushAssistant('已使用本地备用编曲方案：基于你的输入生成了鼓、贝斯、吉他、键盘四轨。');
     } finally {
-      setIsLoading(false);
+      setActionLoading(false);
     }
   };
 
   const handleEnergy = async (direction: 'increase' | 'soften') => {
     if (!project) return;
-    setIsLoading(true);
-    setError(null);
-
+    setActionLoading(true);
     try {
       const data: AgentResponse = await energyEndpoint({ project, direction });
       setProject(data.project);
-      setLastResponse(data);
+      setLastSource(data.source);
+      pushAssistant(`${direction === 'increase' ? '⚡' : '🌊'} ${data.explanation.summary}（${data.explanation.changes[0]}）`);
     } catch {
-      setError('无法连接服务器，已使用本地备用方案');
       const fallbackProject = generateFallbackEnergy(project, direction);
-      const fallbackResponse: AgentResponse = {
-        project: fallbackProject,
-        explanation: {
-          summary: direction === 'increase' ? '已增加能量' : '已柔和化',
-          changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
-        },
-        source: 'fallback',
-      };
-      setProject(fallbackResponse.project);
-      setLastResponse(fallbackResponse);
+      setProject(fallbackProject);
+      setLastSource('fallback');
+      pushAssistant(direction === 'increase' ? '已增加能量：速度 +10 BPM。' : '已柔和化：速度 -10 BPM。');
     } finally {
-      setIsLoading(false);
+      setActionLoading(false);
     }
   };
 
-  // Quick natural-language intent routing so the chat input always does something useful.
-  const handleSendDraft = () => {
-    if (!draft.trim()) return;
+  /* ── Free-form chat with the LLM (via dev proxy) ── */
+  const handleSend = async () => {
     const text = draft.trim();
+    if (!text || chatLoading) return;
     setDraft('');
-    if (/柔|soft|轻|缓/.test(text)) return handleEnergy('soften');
-    if (/能|劲|燃|energy|炸|猛|强/.test(text)) return handleEnergy('increase');
-    if (/补全|完整|complete|生成|编/.test(text)) return handleComplete();
-    return handleEnergy('increase');
+    const next = [...messages, { role: 'user' as const, content: text }];
+    setMessages(next);
+    setChatLoading(true);
+    const res = await sendChat(next);
+    setChatLoading(false);
+    if (res.ok) {
+      setMessages((m) => [...m, { role: 'assistant', content: res.reply }]);
+    } else {
+      setMessages((m) => [...m, { role: 'assistant', content: `（${res.error}，暂时离线。音乐动作按钮仍可用。）` }]);
+    }
   };
+
+  const close = () => setUi({ ...ui, showAgentPanel: false });
 
   return (
     <div className="agent-panel" role="complementary" aria-label="AI 编曲助手">
@@ -100,106 +102,82 @@ export function AgentPanel() {
           <span className="material-symbols-outlined" aria-hidden>auto_awesome</span>
           AI 助手
         </h3>
-        {lastResponse && (
-          <span className={`source-badge ${lastResponse.source}`}>
-            {lastResponse.source === 'deepseek' ? 'AI' : '本地方案'}
+        {lastSource && (
+          <span className={`source-badge ${lastSource}`}>
+            {lastSource === 'deepseek' ? 'AI' : '本地方案'}
           </span>
         )}
+        <button className="agent-close" onClick={close} aria-label="收起助手" title="收起">
+          <span className="material-symbols-outlined" aria-hidden>chevron_right</span>
+        </button>
       </div>
 
-      {/* Action buttons */}
+      {/* Music action buttons */}
       <div className="agent-actions">
         <button
           className="agent-action-button complete"
           onClick={handleComplete}
-          disabled={!seedPattern || isLoading}
+          disabled={!seedPattern || actionLoading}
           aria-label="补全编曲"
         >
           <span className="material-symbols-outlined" aria-hidden>auto_awesome</span>
-          {isLoading ? '处理中…' : '补全编曲'}
+          {actionLoading ? '处理中…' : '补全编曲'}
         </button>
-
         <button
           className="agent-action-button energy"
           onClick={() => handleEnergy('increase')}
-          disabled={!project || isLoading}
+          disabled={!project || actionLoading}
           aria-label="更有能量"
         >
           <span className="material-symbols-outlined" aria-hidden>bolt</span>
-          {isLoading ? '处理中…' : '更有能量'}
+          更有能量
         </button>
-
         <button
           className="agent-action-button soften"
           onClick={() => handleEnergy('soften')}
-          disabled={!project || isLoading}
+          disabled={!project || actionLoading}
           aria-label="更柔和"
         >
           <span className="material-symbols-outlined" aria-hidden>waves</span>
-          {isLoading ? '处理中…' : '更柔和'}
+          更柔和
         </button>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className="agent-warning" role="alert">
-          {error}
-        </div>
-      )}
-
-      {/* Explanation bubble */}
-      {lastResponse && (
-        <div className="agent-explanation">
-          <h4>
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden>smart_toy</span>
-            最近操作
-          </h4>
-          <p className="explanation-summary">{lastResponse.explanation.summary}</p>
-          <ul className="explanation-changes">
-            {lastResponse.explanation.changes.map((change, i) => (
-              <li key={i}>{change}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Status footer */}
-      <div className="agent-status">
-        <div className="status-item">
-          <span className="status-label">状态</span>
-          <span className="status-value">
-            {project ? (isLoading ? '生成中' : '就绪') : '等待输入'}
-          </span>
-        </div>
-        <div className="status-item">
-          <span className="status-label">速度</span>
-          <span className="status-value">{project?.tempo ?? 120} BPM</span>
-        </div>
-        <div className="status-item">
-          <span className="status-label">风格</span>
-          <span className="status-value">
-            {project ? (STYLE_LABELS[project.style] ?? project.style) : '–'}
-          </span>
-        </div>
+      {/* Conversation */}
+      <div className="chat-list" ref={listRef}>
+        {messages.map((m, i) => (
+          <div key={i} className={`chat-msg ${m.role}`}>
+            {m.role === 'assistant' && (
+              <span className="chat-avatar material-symbols-outlined" aria-hidden>smart_toy</span>
+            )}
+            <div className="chat-bubble">{m.content}</div>
+          </div>
+        ))}
+        {chatLoading && (
+          <div className="chat-msg assistant">
+            <span className="chat-avatar material-symbols-outlined" aria-hidden>smart_toy</span>
+            <div className="chat-bubble typing">正在思考…</div>
+          </div>
+        )}
       </div>
 
-      {/* Chat-style input */}
+      {/* Input */}
       <div className="agent-input">
         <input
           type="text"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') handleSendDraft(); }}
-          placeholder="试试 “更有能量” 或 “更柔和”…"
-          aria-label="向 AI 发送指令"
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
+          placeholder="问点什么，比如“怎么让节奏更有劲”…"
+          aria-label="向 AI 发送消息"
         />
-        <button className="send-btn" onClick={handleSendDraft} aria-label="发送">
+        <button className="send-btn" onClick={handleSend} disabled={chatLoading || !draft.trim()} aria-label="发送">
           <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden>send</span>
         </button>
       </div>
       <div className="agent-online">
         <span className="dot" />
-        在线 · Agent 就绪
+        {chatLoading ? '思考中…' : '在线 · 可聊天'}
       </div>
     </div>
   );

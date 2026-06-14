@@ -77,8 +77,8 @@ function AppContent() {
         </div>
       </header>
 
-      {/* Three-column layout */}
-      <div className="main-layout">
+      {/* Three-column layout — agent panel is a closable drawer */}
+      <div className={`main-layout ${ui.showAgentPanel ? 'agent-open' : 'agent-closed'}`}>
         {/* Left: Instruments */}
         <aside className="sidebar-instruments">
           <InstrumentSidebar />
@@ -97,10 +97,21 @@ function AppContent() {
           </div>
         </main>
 
-        {/* Right: AI Copilot */}
-        <aside className="sidebar-agent">
-          <AgentPanel />
-        </aside>
+        {/* Right: AI Copilot drawer (or a reopen tab when closed) */}
+        {ui.showAgentPanel ? (
+          <aside className="sidebar-agent">
+            <AgentPanel />
+          </aside>
+        ) : (
+          <button
+            className="agent-reopen"
+            onClick={() => setUi({ ...ui, showAgentPanel: true })}
+            aria-label="展开 AI 助手"
+            title="展开 AI 助手"
+          >
+            <span className="material-symbols-outlined" aria-hidden>auto_awesome</span>
+          </button>
+        )}
       </div>
     </div>
   );
