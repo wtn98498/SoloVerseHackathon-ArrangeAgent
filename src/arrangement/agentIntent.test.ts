@@ -18,6 +18,21 @@ assert(broad.questions.length > 0 && broad.questions.length <= 2, 'clarification
 const compose = classifyAgentIntent('做一段轻松的爵士开场，适合晚上散步');
 assert(compose.kind === 'compose', 'specific music request should be composable');
 
+const livingArtistStyle = classifyAgentIntent('创作一个周杰伦风格的爵士');
+assert(livingArtistStyle.kind === 'compose', 'living artist style request should still become a music request');
+assert(
+  !livingArtistStyle.prompt.includes('周杰伦'),
+  'living artist names should be rewritten away from direct style imitation',
+);
+assert(
+  livingArtistStyle.prompt.includes('华语流行') && livingArtistStyle.prompt.includes('爵士'),
+  'rewritten living artist request should preserve broad musical traits',
+);
+assert(
+  !livingArtistStyle.referenceQuery?.includes('周杰伦'),
+  'reference query should not ask for direct living artist style imitation',
+);
+
 const faster = classifyAgentIntent('再次快一点');
 assert(faster.kind === 'transform', 'faster follow-up should transform the current arrangement');
 assert(faster.direction === 'increase', 'faster follow-up should increase energy');
