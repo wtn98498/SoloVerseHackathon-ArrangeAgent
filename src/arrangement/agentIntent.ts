@@ -6,11 +6,16 @@ export type AgentIntent =
   | { kind: 'transform'; direction: 'increase' | 'soften'; prompt: string }
   | { kind: 'compose'; style: StyleId; mood: MoodId; prompt: string; referenceQuery?: string; safetyNote?: string };
 
-const PROJECT_TERMS = [
-  '编曲', '音乐', '旋律', '和弦', '鼓', '贝斯', '吉他', '键盘', '节奏', '律动',
-  'loop', 'midi', 'jazz', '爵士', 'rock', '摇滚', 'pop', '流行', 'lofi', '创作', '作曲', '风格',
-  '更有能量', '更柔和', '试听', '生成', '改编', '风格', '快', '慢', '速度', 'bpm',
-  '快一点', '慢一点', '再快', '再次快', '有劲', '柔和',
+const MUSIC_DOMAIN_TERMS = [
+  '编曲', '音乐', '歌', '歌曲', '作曲', '创作', '谱', '写一段', '来段', '做一段', '做个',
+  '旋律', '和弦', '和声', '调性', '音阶', '音高', '音符', '根音', '主音', '复调',
+  '鼓', '鼓组', '鼓点', '贝斯', '吉他', '键盘', '钢琴', '合成器', 'pad', 'riff', '扫弦',
+  '节奏', '律动', 'groove', '拍', '拍子', '切分', '反拍', '摇摆', 'swing', 'trap',
+  '前奏', '开头', '开场', '主歌', '副歌', '桥段', '间奏', '尾奏', 'drop', 'hook', '抓耳',
+  'loop', 'midi', 'clip', '轨', '音轨', '小节', 'bpm', '速度', '量化', '试听',
+  'jazz', '爵士', 'blues', '蓝调', 'rock', '摇滚', 'pop', '流行', 'lofi', 'r&b', 'funk', '电子',
+  '更有能量', '更柔和', '生成', '改编', '风格', '快', '慢', '快一点', '慢一点', '再快', '再次快',
+  '有劲', '柔和', '松弛', '热闹', '短视频', '背景', '氛围', '舞台感',
 ];
 
 const BROAD_COMPOSE_TERMS = ['爵士', 'jazz', '摇滚', 'rock', '流行', 'pop', 'lofi', '音乐', '编曲'];
@@ -19,7 +24,7 @@ export function classifyAgentIntent(text: string): AgentIntent {
   const prompt = text.trim();
   const lower = prompt.toLowerCase();
 
-  if (!PROJECT_TERMS.some((term) => lower.includes(term.toLowerCase()))) {
+  if (!isMusicRelated(lower)) {
     return {
       kind: 'off_topic',
       reply: '我只能帮你处理 PlayBand AI 里的编曲、风格、乐器和试听修改。我们可以从一段 loop 开始。',
@@ -69,6 +74,10 @@ export function classifyAgentIntent(text: string): AgentIntent {
     referenceQuery: buildReferenceQuery(safePrompt, style, mood),
     safetyNote: artistSafePrompt.safetyNote,
   };
+}
+
+function isMusicRelated(lower: string): boolean {
+  return MUSIC_DOMAIN_TERMS.some((term) => lower.includes(term.toLowerCase()));
 }
 
 function inferStyle(lower: string): StyleId {

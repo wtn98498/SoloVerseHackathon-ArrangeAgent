@@ -18,6 +18,20 @@ assert(broad.questions.length > 0 && broad.questions.length <= 2, 'clarification
 const compose = classifyAgentIntent('做一段轻松的爵士开场，适合晚上散步');
 assert(compose.kind === 'compose', 'specific music request should be composable');
 
+const musicDomainPrompts = [
+  '来段前奏',
+  '副歌更抓耳一点',
+  '加点蓝调味',
+  '鼓组换成 trap 律动',
+  '旋律再上扬一点',
+  '和声厚一点',
+  '做个适合短视频的开头',
+];
+for (const prompt of musicDomainPrompts) {
+  const intent = classifyAgentIntent(prompt);
+  assert(intent.kind !== 'off_topic', `${prompt} should be treated as music-related`);
+}
+
 const livingArtistStyle = classifyAgentIntent('创作一个周杰伦风格的爵士');
 assert(livingArtistStyle.kind === 'compose', 'living artist style request should still become a music request');
 assert(
