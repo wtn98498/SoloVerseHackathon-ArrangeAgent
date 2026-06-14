@@ -3,7 +3,6 @@ import { EditorProvider, useEditor } from './frontend/contexts/EditorContext';
 import { TransportBar } from './frontend/components/TransportBar';
 import { TrackTimeline } from './frontend/components/TrackTimeline';
 import { PianoRoll } from './frontend/components/PianoRoll';
-import { InstrumentSidebar } from './frontend/components/InstrumentSidebar';
 import { AgentPanel } from './frontend/components/AgentPanel';
 import { audioEngine } from './frontend/audio/AudioEngine';
 import { fixtureProject } from './fixtures/project';
@@ -77,14 +76,10 @@ function AppContent() {
         </div>
       </header>
 
-      {/* Three-column layout — agent panel is a closable drawer */}
+      {/* Two-column layout — instrument cards are now the timeline's left header;
+          agent panel is a closable drawer */}
       <div className={`main-layout ${ui.showAgentPanel ? 'agent-open' : 'agent-closed'}`}>
-        {/* Left: Instruments */}
-        <aside className="sidebar-instruments">
-          <InstrumentSidebar />
-        </aside>
-
-        {/* Center: Arrangement canvas + piano roll */}
+        {/* Center: Arrangement canvas (track headers + lanes) + piano roll */}
         <main className="center-stage">
           {audioStatus === 'blocked' && (
             <div className="audio-notice">
