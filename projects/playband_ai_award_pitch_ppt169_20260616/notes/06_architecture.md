@@ -1,1 +1,0 @@
-技术上，我们没有把项目做成脆弱的 AI 表演。前端是 React 和 TypeScript，负责可玩的编辑器、pad、候选卡片和信任视图。音乐播放用 Tone.js。核心数据是 8 小节、128 步的轻量 MIDI-like JSON，所以每次 Agent 输出都能被显示、播放和验证。即使没有模型 key，本地音乐导演 fallback 也能稳定完成 demo；之后 DeepSeek 可以接在同一套动作边界后面。

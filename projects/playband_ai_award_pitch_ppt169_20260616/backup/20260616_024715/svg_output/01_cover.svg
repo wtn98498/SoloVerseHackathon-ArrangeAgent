@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="coverScrim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#24212B" stop-opacity="0.96"/>
+      <stop offset="52%" stop-color="#24212B" stop-opacity="0.86"/>
+      <stop offset="100%" stop-color="#24212B" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="stageGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5A3D" stop-opacity="0.26"/>
+      <stop offset="48%" stop-color="#5C7CFA" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#20C997" stop-opacity="0.22"/>
+    </linearGradient>
+  </defs>
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#24212B"/>
+    <image href="../images/playband-ai-demo.png" x="372" y="48" width="862" height="456" preserveAspectRatio="xMidYMid meet"/>
+    <rect x="0" y="0" width="1280" height="720" fill="url(#coverScrim)"/>
+    <rect x="0" y="0" width="1280" height="720" fill="url(#stageGlow)"/>
+  </g>
+  <g id="toy-rails">
+    <rect x="56" y="56" width="130" height="14" rx="7" fill="#FF5A3D"/>
+    <rect x="198" y="56" width="130" height="14" rx="7" fill="#20C997"/>
+    <rect x="340" y="56" width="130" height="14" rx="7" fill="#FFD43B"/>
+    <rect x="482" y="56" width="130" height="14" rx="7" fill="#5C7CFA"/>
+  </g>
+  <g id="hero-copy">
+    <use data-icon="phosphor-duotone/music-notes" x="58" y="136" width="56" height="56" fill="#FFD43B"/>
+    <text x="56" y="250" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="88" font-weight="900" fill="#FFF7E8">PlayBand AI</text>
+    <text x="60" y="304" font-family="Arial, Microsoft YaHei, sans-serif" font-size="28" font-weight="700" fill="#FFF7E8">
+      <tspan x="60" dy="0">先玩出一点灵感，</tspan>
+      <tspan x="60" dy="40">再让 AI 音乐导演</tspan>
+      <tspan x="60" dy="40">把它编成一支乐队。</tspan>
+    </text>
+    <rect x="60" y="450" width="478" height="74" rx="8" fill="#FFF7E8" fill-opacity="0.12" stroke="#FFF7E8" stroke-opacity="0.22"/>
+    <text x="86" y="484" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#FFD43B">核心承诺</text>
+    <text x="86" y="512" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="34" font-weight="900" fill="#FFF7E8">先玩，再编曲。</text>
+  </g>
+  <g id="demo-badge">
+    <rect x="850" y="550" width="318" height="86" rx="8" fill="#FFF7E8" stroke="#E7DCC7" stroke-width="2"/>
+    <use data-icon="phosphor-duotone/play-circle" x="878" y="574" width="38" height="38" fill="#FF5A3D"/>
+    <text x="932" y="586" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">在线演示</text>
+    <text x="932" y="614" font-family="Consolas, Courier New, monospace" font-size="18" font-weight="700" fill="#24212B">wenwen.zone/playband</text>
+  </g>
+  <g id="footer">
+    <text x="60" y="646" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8" fill-opacity="0.76">队伍：欧比克莱歌剧院 · 作者：温添宁 · 参赛假名：scala</text>
+    <text x="60" y="672" font-family="Arial, Microsoft YaHei, sans-serif" font-size="13" font-weight="700" fill="#FFF7E8" fill-opacity="0.54">Solo 黑客松项目 · 为 60 秒可靠评委演示而做</text>
+    <text x="1218" y="668" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#FFF7E8" fill-opacity="0.52">01</text>
+  </g>
+</svg>

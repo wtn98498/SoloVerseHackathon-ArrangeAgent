@@ -21,7 +21,7 @@
     <text x="56" y="104" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="44" font-weight="900" fill="#24212B">AI 音乐忘了第一件事：先玩起来</text>
   </g>
   <g id="problem-copy">
-    <text font-size="24" font-weight="700" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="58" y="168">音乐小白夹在两个不舒服的入口之间。</text><g id="door-daw">
+    <text font-weight="700" font-size="24" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="58" y="168">音乐小白夹在两个不舒服的入口之间。</text><g id="door-daw">
       <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2" d="M66,224 H342 A8,8 0 0 1 350,232 V404 A8,8 0 0 1 342,412 H66 A8,8 0 0 1 58,404 V232 A8,8 0 0 1 66,224 Z" />
       
   <g transform="translate(84.0, 250.0) scale(0.1640625)" fill="#FF5A3D">
@@ -29,7 +29,7 @@
     <path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z" />
   </g>
       <text x="84" y="326" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="34" font-weight="900" fill="#24212B">专业 DAW</text>
-      <text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="84" y="360">很强，但一上来就要求</text><text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="84" y="386">懂轨道、插件、钢琴卷帘，</text><text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="84" y="412">乐趣还没开始就被劝退。</text></g>
+      <text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="84" y="360">很强，但一上来就要求</text><text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="84" y="386">懂轨道、插件、钢琴卷帘，</text><text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="84" y="412">乐趣还没开始就被劝退。</text></g>
     <g id="door-prompt">
       <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2" d="M386,224 H662 A8,8 0 0 1 670,232 V404 A8,8 0 0 1 662,412 H386 A8,8 0 0 1 378,404 V232 A8,8 0 0 1 386,224 Z" />
       
@@ -38,10 +38,10 @@
     <path d="M200,48H136V16a8,8,0,0,0-16,0V48H56A32,32,0,0,0,24,80V192a32,32,0,0,0,32,32H200a32,32,0,0,0,32-32V80A32,32,0,0,0,200,48Zm16,144a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V80A16,16,0,0,1,56,64H200a16,16,0,0,1,16,16Zm-52-56H92a28,28,0,0,0,0,56h72a28,28,0,0,0,0-56Zm-28,16v24H120V152ZM80,164a12,12,0,0,1,12-12h12v24H92A12,12,0,0,1,80,164Zm84,12H152V152h12a12,12,0,0,1,0,24ZM72,108a12,12,0,1,1,12,12A12,12,0,0,1,72,108Zm88,0a12,12,0,1,1,12,12A12,12,0,0,1,160,108Z" />
   </g>
       <text x="404" y="326" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="34" font-weight="900" fill="#24212B">一句 Prompt</text>
-      <text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="404" y="360">很简单，但跳过了人的手。</text><text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="404" y="386">歌是生成出来了，</text><text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="404" y="412">却不像“我做出来的”。</text></g>
+      <text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="404" y="360">很简单，但跳过了人的手。</text><text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="404" y="386">歌是生成出来了，</text><text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="404" y="412">却不像“我做出来的”。</text></g>
     <path fill="#24212B" d="M66,456 H662 A8,8 0 0 1 670,464 V570 A8,8 0 0 1 662,578 H66 A8,8 0 0 1 58,570 V464 A8,8 0 0 1 66,456 Z" />
     <text x="88" y="496" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#FFD43B">中间缺的那一块</text>
-    <text font-size="24" font-weight="800" fill="#FFF7E8" font-family="Arial, Microsoft YaHei, sans-serif" x="88" y="536"><tspan>人在会编曲之前，</tspan>
+    <text font-weight="800" font-size="24" font-family="Arial, Microsoft YaHei, sans-serif" fill="#FFF7E8" x="88" y="536"><tspan>人在会编曲之前，</tspan>
       <tspan fill="#20C997">早就会敲出感觉。</tspan>
     </text></g>
   <g id="product-proof">

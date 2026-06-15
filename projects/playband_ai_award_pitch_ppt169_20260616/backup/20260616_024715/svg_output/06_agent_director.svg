@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <clipPath id="agentClip">
+      <rect x="692" y="126" width="446" height="326" rx="8"/>
+    </clipPath>
+    <marker id="agentArrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#5C7CFA"/>
+    </marker>
+  </defs>
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8"/>
+    <rect x="0" y="0" width="1280" height="720" fill="#5C7CFA" fill-opacity="0.06"/>
+    <circle cx="1142" cy="102" r="96" fill="#FFD43B" fill-opacity="0.24"/>
+  </g>
+  <g id="headline">
+    <text x="58" y="86" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#5C7CFA">Agent 核心</text>
+    <text x="56" y="154" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="48" font-weight="900" fill="#24212B">它不是“生成器”，而是音乐导演</text>
+    <text x="60" y="198" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#6D6577">
+      <tspan x="60" dy="0">用户不是把创作交出去，而是在和一个会听、会补、会解释、会改的 Agent 合作。</tspan>
+    </text>
+  </g>
+  <g id="agent-loop">
+    <rect x="70" y="256" width="138" height="118" rx="8" fill="#FF5A3D"/>
+    <use data-icon="phosphor-duotone/cursor-click" x="118" y="278" width="42" height="42" fill="#FFF7E8"/>
+    <text x="139" y="344" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#FFF7E8">听见种子</text>
+    <line x1="224" y1="315" x2="288" y2="315" stroke="#5C7CFA" stroke-width="5" marker-end="url(#agentArrow)"/>
+    <rect x="306" y="256" width="138" height="118" rx="8" fill="#20C997"/>
+    <use data-icon="phosphor-duotone/music-notes" x="354" y="278" width="42" height="42" fill="#24212B"/>
+    <text x="375" y="344" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#24212B">补全乐队</text>
+    <line x1="460" y1="315" x2="524" y2="315" stroke="#5C7CFA" stroke-width="5" marker-end="url(#agentArrow)"/>
+    <rect x="542" y="256" width="138" height="118" rx="8" fill="#FFD43B"/>
+    <use data-icon="phosphor-duotone/robot" x="590" y="278" width="42" height="42" fill="#24212B"/>
+    <text x="611" y="344" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#24212B">解释变化</text>
+    <path d="M611 394 C611 444 448 474 258 442 C156 425 118 402 118 382" fill="none" stroke="#5C7CFA" stroke-width="4" stroke-dasharray="8 7" marker-end="url(#agentArrow)"/>
+    <text x="340" y="456" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#5C7CFA">继续说：更快一点 / 更柔一点 / 更像开场</text>
+  </g>
+  <g id="screenshot-proof">
+    <rect x="668" y="102" width="494" height="374" rx="10" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2"/>
+    <image href="../images/06-multiturn-agent.png" x="692" y="126" width="446" height="326" preserveAspectRatio="xMidYMid meet" clip-path="url(#agentClip)"/>
+    <rect x="716" y="398" width="322" height="42" rx="8" fill="#24212B" fill-opacity="0.90"/>
+    <text x="742" y="425" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#FFF7E8">多轮音乐指挥是真实主流程</text>
+  </g>
+  <g id="judge-facing-proof">
+    <rect x="82" y="520" width="320" height="74" rx="8" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2"/>
+    <text x="108" y="550" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是一次性结果</text>
+    <text x="108" y="578" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#6D6577">每次输出都是候选，用户可试听、拒绝或应用。</text>
+    <rect x="438" y="520" width="320" height="74" rx="8" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2"/>
+    <text x="464" y="550" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是音频黑箱</text>
+    <text x="464" y="578" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#6D6577">Agent 修改的是可见、可播放的 MIDI-like 数据。</text>
+    <rect x="794" y="520" width="320" height="74" rx="8" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2"/>
+    <text x="820" y="550" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是替代创作者</text>
+    <text x="820" y="578" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" fill="#6D6577">它保留人的 taste，把直觉扩成可继续玩的编曲。</text>
+  </g>
+  <g id="footer">
+    <text x="56" y="668" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">Agent · 听见种子、补全乐队、解释变化、接受继续指挥</text>
+    <text x="1218" y="668" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">06</text>
+  </g>
+</svg>

@@ -12,7 +12,7 @@
   </g>
   <g id="headline">
     <text x="86" y="118" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#FF5A3D">产品洞察</text>
-    <text font-size="64" font-weight="900" fill="#24212B" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" x="86" y="214">灵感种子来自人，</text><text font-size="64" font-weight="900" fill="#24212B" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" x="86" y="300">编曲扩展交给 Agent。</text><text font-size="24" font-weight="700" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="90" y="405">PlayBand AI 的关键不是“AI 替你做歌”，</text><text font-size="24" font-weight="700" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="90" y="441">而是把你的那一点手感，变成可听、可见、可继续改的音乐结构。</text></g>
+    <text font-weight="900" font-size="64" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" fill="#24212B" x="86" y="214">灵感种子来自人，</text><text font-weight="900" font-size="64" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" fill="#24212B" x="86" y="300">编曲扩展交给 Agent。</text><text font-weight="700" font-size="24" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="90" y="405">PlayBand AI 的关键不是“AI 替你做歌”，</text><text font-weight="700" font-size="24" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="90" y="441">而是把你的那一点手感，变成可听、可见、可继续改的音乐结构。</text></g>
   <g id="flow">
     <path fill="#FF5A3D" d="M165,508 H295 A39,39 0 0 1 334,547 V547 A39,39 0 0 1 295,586 H165 A39,39 0 0 1 126,547 V547 A39,39 0 0 1 165,508 Z" />
     

@@ -58,7 +58,7 @@
     <path d="M12,111l112,64a8,8,0,0,0,7.94,0l112-64a8,8,0,0,0,0-13.9l-112-64a8,8,0,0,0-7.94,0l-112,64A8,8,0,0,0,12,111ZM128,49.21,223.87,104,128,158.79,32.13,104ZM247,140A8,8,0,0,1,244,151L132,215a8,8,0,0,1-7.94,0L12,151A8,8,0,1,1,20,137.05l108,61.74,108-61.74A8,8,0,0,1,247,140Z" />
   </g>
     <text x="148" y="460" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#24212B">不是音频黑箱，而是结构化音乐数据</text>
-    <text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="148" y="492">每次生成都落在 lightweight MIDI-like JSON 里：</text><text font-size="18" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="148" y="518">可视化、可播放、可变换，用户始终握着方向盘。</text></g>
+    <text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="148" y="492">每次生成都落在 lightweight MIDI-like JSON 里：</text><text font-size="18" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="148" y="518">可视化、可播放、可变换，用户始终握着方向盘。</text></g>
   <g id="track-strip">
     <path fill="#FF5A3D" d="M92,594 H308 A8,8 0 0 1 316,602 V620 A8,8 0 0 1 308,628 H92 A8,8 0 0 1 84,620 V602 A8,8 0 0 1 92,594 Z" />
     <path fill="#20C997" d="M336,594 H552 A8,8 0 0 1 560,602 V620 A8,8 0 0 1 552,628 H336 A8,8 0 0 1 328,620 V602 A8,8 0 0 1 336,594 Z" />

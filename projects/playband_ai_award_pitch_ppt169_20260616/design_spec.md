@@ -8,7 +8,7 @@
 | ---- | ----- |
 | **Project Name** | PlayBand AI 获奖路演 |
 | **Canvas Format** | PPT 16:9 (1280x720) |
-| **Page Count** | 8 slides |
+| **Page Count** | 7 slides |
 | **Design Style** | A) General Versatile + Nintendo-inspired music toy pitch |
 | **Target Audience** | 黑客松评委、赞助方技术评审、现场观众 |
 | **Use Case** | 3 分钟获奖导向项目路演，衔接现场 live demo |
@@ -110,20 +110,20 @@ Formula rendering policy: `text-only`.
 ### Page Structure
 
 - **Header area**: 48-120px, used for page title and tiny progress dots when needed.
-- **Content area**: 500-600px, driven by screenshots, large statements, or compact architecture diagrams.
+- **Content area**: 500-600px, driven by screenshots, large statements, Agent loop diagrams, or future roadmap.
 - **Footer area**: 32-48px, optional demo link or quiet page number.
 
 ### Layout Pattern Library
 
-Use a rhythm of dark anchor pages, warm content pages, and screenshot-led product pages. Avoid a uniform card grid. Screenshots should be treated as real product evidence, not decoration.
+Use a rhythm of dark anchor pages, warm content pages, and screenshot-led product pages. Avoid a uniform card grid. Screenshots should be treated as real product evidence, not decoration. The final build section should foreground the Agent collaboration loop rather than an engineering architecture diagram.
 
 | Pattern | Use in this deck |
 | ------- | ---------------- |
 | Full-bleed + floating text | Cover, closing, demo handoff |
 | Figure-text overlap | Memorable moment and demo screenshot emphasis |
 | Asymmetric split | Problem, solution, future planning |
-| Pipeline / process | Demo journey and technical architecture |
-| Layered architecture | Technical architecture page |
+| Pipeline / process | Demo journey and future roadmap |
+| Agent loop | Music director page |
 | Image-as-canvas native overlay | Demo page and agent candidate explanation |
 | Negative-space-driven | Core insight page |
 
@@ -175,11 +175,11 @@ Use a rhythm of dark anchor pages, warm content pages, and screenshot-led produc
 | Flow | `phosphor-duotone/flow-arrow` | P05, P06 |
 | Playback | `phosphor-duotone/play-circle` | P05 |
 | Reliability | `phosphor-duotone/target` | P07 |
-| Future launch | `phosphor-duotone/rocket-launch` | P08 |
+| Future launch | `phosphor-duotone/rocket-launch` | P07 |
 | Users | `phosphor-duotone/users` | P02, P07 |
-| Code boundary | `phosphor-duotone/code` | P06 |
+| Code boundary | `phosphor-duotone/code` | P07 |
 | Audio waveform | `phosphor-duotone/waveform` | P03 |
-| Control sliders | `phosphor-duotone/sliders-horizontal` | P02 |
+| Control sliders | `phosphor-duotone/sliders-horizontal` | P02, P06 |
 
 ---
 
@@ -190,14 +190,13 @@ Catalog read: 71 templates
 | Page | Template | Path | Summary-quote (verbatim from `charts_index.json`) | Usage |
 | ---- | -------- | ---- | ------------------------------------------------- | ----- |
 | P05 | process_flow | `templates/charts/process_flow.svg` | "Pick for 3-8 sequential steps connected by simple arrows — approval workflows, customer onboarding, request handling, lifecycle stages. Skip if cyclical (use circular_stages) or stages produce named outputs (use pipeline_with_stages)." | Demo journey: tap seed → MIDI clip → agent candidate → apply → follow-up |
-| P06 | layered_architecture | `templates/charts/layered_architecture.svg` | "Pick for 3-4 horizontal architecture layers (presentation/service/data), 2-4 module cards per layer, each card = title + 1-line description (description required, even if source brief). Skip if no per-module descriptions (use icon_grid) or no horizontal layering (use module_composition)." | Technical architecture: UI, music engine, agent boundary, data model |
-| P08 | pipeline_with_stages | `templates/charts/pipeline_with_stages.svg` | "Pick for 3-5 horizontal pipeline stages, each = title + 1-line description + output artifact, connected by arrows (data pipelines, ETL, build pipelines). Skip if any stage lacks an artifact (use process_flow or numbered_steps)." | Future roadmap from reliable MVP to model integration and style packs |
+| P07 | pipeline_with_stages | `templates/charts/pipeline_with_stages.svg` | "Pick for 3-5 horizontal pipeline stages, each = title + 1-line description + output artifact, connected by arrows (data pipelines, ETL, build pipelines). Skip if any stage lacks an artifact (use process_flow or numbered_steps)." | Future roadmap from reliable MVP to model integration and style packs |
 
 **Runners-up considered**
 
 - `numbered_steps` | rejected for P05: demo path needs arrows and state transitions, not just equal numbered steps.
-- `icon_grid` | rejected for P06: architecture is layered and contract-based, not parallel feature cards.
-- `roadmap_vertical` | rejected for P08: the future plan is a product pipeline with outputs, not a date-based milestone list.
+- `icon_grid` | rejected for P06: the Agent needs a directional collaboration loop, not parallel feature cards.
+- `roadmap_vertical` | rejected for P07: the future plan is a product pipeline with outputs, not a date-based milestone list.
 
 ---
 
@@ -273,38 +272,27 @@ Image-as-canvas coverage is satisfied by P05 using #38/#45 style native overlay 
   - 4 先试听候选，再应用，然后继续说：更快一点、更柔一点、更像路演开场。
   - 在线演示：`https://wenwen.zone/playband/`
 
-### Part 3: Build
+### Part 3: Agent
 
-#### Slide 06 - Technical Architecture
+#### Slide 06 - Agent as Music Director
 
-- **Layout**: Layered architecture diagram with bright track-color rails.
-- **Title**: 为可靠演示而建，不是脆弱的 AI 表演
-- **Core message**: 即使没有模型 key，demo 也能跑；同时保留清晰的 DeepSeek-ready 接入边界。
-- **Visualization**: layered_architecture
+- **Layout**: Agent collaboration loop with product screenshot proof and three judge-facing proof blocks.
+- **Title**: 它不是“生成器”，而是音乐导演
+- **Core message**: 用户不是把创作交出去，而是在和一个会听、会补、会解释、会改的 Agent 合作。
 - **Content**:
-  - React + TypeScript 渲染编辑器、pad、候选卡片和钢琴卷帘式信任视图。
-  - Tone.js 在浏览器里播放 loop。
-  - Lightweight MIDI-like JSON 让每个 Agent 结果都可见、可听、可变换。
-  - 本地确定性音乐导演提供 fallback；DeepSeek 可以接在同一组动作后面。
-
-#### Slide 07 - Why It Stands Out
-
-- **Layout**: Three proof pillars plus one big quote-like takeaway.
-- **Title**: 为什么它有机会赢
-- **Core message**: 它把 AI 生成变成了评委能理解、能测试、能记住的协作创作循环。
-- **Content**:
-  - 好记：一句话就能复述——几下敲击变成一支乐队。
-  - 可信：生成的是结构化音乐数据，不是隐藏的音频黑箱。
-  - 稳定：本地 fallback 让路演不怕网络和 API key 出问题。
-  - 符合黑客松：范围窄、交互真、未来空间清楚。
+  - 听见种子：从用户的几下敲击开始，而不是凭空生成。
+  - 补全乐队：把种子扩展成鼓、贝斯、吉他、键盘。
+  - 解释变化：告诉用户它改了什么、为什么这样听起来更像一段歌。
+  - 继续指挥：用户可以说更快、更柔、更像开场，Agent 继续在同一个编曲上工作。
+  - 评委视角：它不是一次性结果、不是音频黑箱、不是替代创作者。
 
 ### Part 4: Future
 
-#### Slide 08 - Future & Close
+#### Slide 07 - Future & Close
 
 - **Layout**: Dark stage closing with roadmap pipeline and final line.
 - **Title**: 从音乐玩具，到创作副驾驶
-- **Core message**: MVP 证明了交互成立；下一步是在同一个安全候选循环里接入更强的音乐智能。
+- **Core message**: MVP 证明 Agent 协作循环成立；下一步是让音乐导演更懂风格、更懂人。
 - **Visualization**: pipeline_with_stages
 - **Content**:
   - 模型编曲：更细的风格理解和 taste interpretation。

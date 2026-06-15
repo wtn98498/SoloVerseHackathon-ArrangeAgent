@@ -51,13 +51,11 @@
 - P04: dense
 - P05: anchor
 - P06: dense
-- P07: breathing
-- P08: anchor
+- P07: anchor
 
 ## page_charts
 - P05: process_flow
-- P06: layered_architecture
-- P08: pipeline_with_stages
+- P07: pipeline_with_stages
 
 ## forbidden
 - Mixing icon libraries
