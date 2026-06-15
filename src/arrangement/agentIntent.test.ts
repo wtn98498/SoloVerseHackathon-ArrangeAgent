@@ -18,6 +18,16 @@ assert(broad.questions.length > 0 && broad.questions.length <= 2, 'clarification
 const compose = classifyAgentIntent('做一段轻松的爵士开场，适合晚上散步');
 assert(compose.kind === 'compose', 'specific music request should be composable');
 
+const rockIntro = classifyAgentIntent('做一段高能摇滚开场，像路演 intro');
+assert(rockIntro.kind === 'compose', 'specific high-energy rock request should re-compose instead of only transforming');
+assert(rockIntro.style === 'rock', 'rock request should use rock style');
+assert(rockIntro.mood === 'energetic', 'high-energy request should use energetic mood');
+
+const lofiBackground = classifyAgentIntent('再柔和一点，变成晚上散步的 lo-fi 背景');
+assert(lofiBackground.kind === 'compose', 'specific lo-fi background request should re-compose instead of only softening');
+assert(lofiBackground.style === 'lofi', 'lo-fi request should use lofi style');
+assert(lofiBackground.mood === 'soft', 'soft lo-fi request should use soft mood');
+
 const musicDomainPrompts = [
   '来段前奏',
   '副歌更抓耳一点',

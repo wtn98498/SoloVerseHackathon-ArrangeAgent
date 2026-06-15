@@ -19,6 +19,7 @@ const MUSIC_DOMAIN_TERMS = [
 ];
 
 const BROAD_COMPOSE_TERMS = ['爵士', 'jazz', '摇滚', 'rock', '流行', 'pop', 'lofi', '音乐', '编曲'];
+const COMPOSE_SCENE_TERMS = ['开场', '开头', '前奏', 'intro', '背景', '主歌', '副歌', 'loop', '短视频', '晚上', '散步'];
 
 export function classifyAgentIntent(text: string): AgentIntent {
   const prompt = text.trim();
@@ -35,8 +36,9 @@ export function classifyAgentIntent(text: string): AgentIntent {
   const mood = inferMood(lower);
   const artistSafePrompt = rewriteLivingArtistStyle(prompt);
   const safePrompt = artistSafePrompt.prompt;
+  const hasSpecificComposeTarget = hasExplicitStyle(lower) || COMPOSE_SCENE_TERMS.some((term) => lower.includes(term));
   const transformDirection = inferTransformDirection(lower);
-  if (transformDirection) {
+  if (transformDirection && !hasSpecificComposeTarget) {
     return {
       kind: 'transform',
       direction: transformDirection,
@@ -87,9 +89,13 @@ function inferStyle(lower: string): StyleId {
 }
 
 function inferMood(lower: string): MoodId {
-  if (lower.includes('柔和') || lower.includes('轻松') || lower.includes('松弛') || lower.includes('soft')) return 'soft';
-  if (lower.includes('热闹') || lower.includes('有劲') || lower.includes('能量') || lower.includes('energetic')) return 'energetic';
+  if (lower.includes('柔和') || lower.includes('轻松') || lower.includes('松弛') || lower.includes('晚上') || lower.includes('散步') || lower.includes('soft')) return 'soft';
+  if (lower.includes('高能') || lower.includes('热闹') || lower.includes('有劲') || lower.includes('能量') || lower.includes('开场') || lower.includes('intro') || lower.includes('energetic')) return 'energetic';
   return 'bright';
+}
+
+function hasExplicitStyle(lower: string): boolean {
+  return ['lofi', 'lo-fi', 'rock', '摇滚', 'pop', '流行', '爵士', 'jazz', '蓝调', 'blues', 'funk', 'r&b'].some((term) => lower.includes(term));
 }
 
 function rewriteLivingArtistStyle(prompt: string): { prompt: string; safetyNote?: string } {

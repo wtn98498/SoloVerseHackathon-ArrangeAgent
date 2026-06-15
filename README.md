@@ -5,8 +5,8 @@
 PlayBand AI is a hackathon prototype for people who have musical taste but do
 not know music theory or professional DAW tools. Instead of asking AI for a
 black-box song, the user taps a small rhythm, sees it become structured
-MIDI-like clips, and then collaborates with an arrangement agent over multiple
-rounds.
+MIDI-like clips, and then collaborates with a demo-safe music director over
+multiple rounds.
 
 - **Live demo:** https://wenwen.zone/playband/
 - **Repository:** https://github.com/wtn98498/SoloVerseHackathon-ArrangeAgent
@@ -48,9 +48,9 @@ user's own input.
 
 ![Capturing a drum seed](public/readme/03-capture-seed.png)
 
-### 3. Let The Agent Complete The Band
+### 3. Let The Music Director Complete The Band
 
-After the seed enters the timeline, the Music Director creates a candidate
+After the seed enters the timeline, the local Music Director creates a candidate
 arrangement. It explains what changed, what to listen for, and what the next
 creative move should be.
 
@@ -88,15 +88,16 @@ music data, agent reasoning, preview-first control, and multi-turn taste.
 - Agent preview cards with audition, apply, retry, and discard actions.
 - Multi-turn music requests such as faster, softer, more energetic, or more
   like an opening section.
-- Demo-safe deterministic fallback, so the live link still works without an API
-  key.
+- Demo-safe deterministic music generation, so the live link still works without
+  an API key.
 - Living-artist style requests are redirected into broader musical traits
   instead of direct imitation.
 
-## Agent Design
+## Music Director Design
 
-The agent is deliberately small. It does not try to become a full producer, a
-chatbot, or a generic assistant. It routes music intent into reliable actions:
+The public demo is deliberately local-first. It does not pretend that a remote
+model is always available; instead, it uses a deterministic music director that
+routes musical intent into reliable actions:
 
 - **Complete arrangement:** expand a seed into an 8-bar band loop.
 - **Increase energy:** raise intensity, velocity, and rhythmic density.
@@ -104,8 +105,9 @@ chatbot, or a generic assistant. It routes music intent into reliable actions:
 - **Respond as a music director:** explain what changed and suggest the next
   listening decision.
 
-This makes the demo dependable. If the model path is unavailable, the local
-fallback still produces valid arrangements.
+This makes the demo dependable. Different style and mood requests change the
+actual MIDI event shape: drum placement, harmonic roots, bass movement, guitar
+texture, and keyboard density.
 
 ## Technical Shape
 
@@ -126,8 +128,8 @@ transformable. It is not just a generated audio blob.
 - TypeScript
 - Vite
 - Tone.js
-- Custom arrangement agent
-- DeepSeek-ready service boundary with local fallback generation
+- Custom local arrangement engine
+- DeepSeek-ready service boundary for post-demo model integration
 
 ## Run Locally
 
@@ -152,8 +154,8 @@ VITE_BASE_PATH=/playband/ npm run build
 
 ## Optional AI Key
 
-The demo path works without a model key because fallback generation is built in.
-To experiment with the DeepSeek path, create a local environment file from
+The submitted live demo works without a model key. To experiment with the
+DeepSeek chat/proxy path locally, create a local environment file from
 `.env.example` and set:
 
 ```text
