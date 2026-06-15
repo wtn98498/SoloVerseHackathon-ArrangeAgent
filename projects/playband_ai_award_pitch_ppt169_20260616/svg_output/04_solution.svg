@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#FF5A3D"/>
+    </marker>
+    <clipPath id="captureClip">
+      <rect x="676" y="154" width="510" height="372" rx="8"/>
+    </clipPath>
+  </defs>
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8"/>
+    <rect x="0" y="0" width="1280" height="720" fill="#20C997" fill-opacity="0.06"/>
+  </g>
+  <g id="header">
+    <rect x="56" y="48" width="120" height="10" rx="5" fill="#FF5A3D"/>
+    <text x="56" y="104" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="42" font-weight="900" fill="#24212B">几下敲击，变成四轨乐队 loop</text>
+    <text x="58" y="140" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#6D6577">PlayBand AI 把人的节奏种子，扩展成鼓、贝斯、吉他、键盘的 8 小节编曲。</text>
+  </g>
+  <g id="solution-flow">
+    <g id="step-capture">
+      <rect x="58" y="198" width="160" height="160" rx="8" fill="#FF5A3D"/>
+      <use data-icon="phosphor-duotone/cursor-click" x="104" y="226" width="54" height="54" fill="#FFF7E8"/>
+      <text x="138" y="306" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#FFF7E8">捕捉</text>
+      <text x="138" y="333" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8" fill-opacity="0.82">把敲击变成事件</text>
+    </g>
+    <line x1="238" y1="278" x2="300" y2="278" stroke="#FF5A3D" stroke-width="5" marker-end="url(#arrowOrange)"/>
+    <g id="step-arrange">
+      <rect x="324" y="198" width="160" height="160" rx="8" fill="#5C7CFA"/>
+      <use data-icon="phosphor-duotone/magic-wand" x="370" y="226" width="54" height="54" fill="#FFF7E8"/>
+      <text x="404" y="306" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#FFF7E8">编曲</text>
+      <text x="404" y="333" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8" fill-opacity="0.82">补成 8 小节 loop</text>
+    </g>
+    <line x1="504" y1="278" x2="566" y2="278" stroke="#FF5A3D" stroke-width="5" marker-end="url(#arrowOrange)"/>
+    <g id="step-control">
+      <rect x="590" y="198" width="56" height="160" rx="8" fill="#20C997"/>
+      <text x="618" y="288" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B" transform="rotate(-90, 618, 288)">试听后应用</text>
+    </g>
+  </g>
+  <g id="proof-screenshot">
+    <rect x="654" y="130" width="554" height="430" rx="10" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2"/>
+    <image href="../images/03-capture-seed.png" x="676" y="154" width="510" height="372" preserveAspectRatio="xMidYMid meet" clip-path="url(#captureClip)"/>
+    <rect x="684" y="166" width="150" height="38" rx="8" fill="#24212B" fill-opacity="0.88"/>
+    <text x="759" y="191" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#FFD43B">真实 Demo 截图</text>
+  </g>
+  <g id="data-model">
+    <rect x="58" y="420" width="550" height="118" rx="8" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2"/>
+    <use data-icon="phosphor-duotone/stack-simple" x="86" y="448" width="42" height="42" fill="#20C997"/>
+    <text x="148" y="460" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#24212B">不是音频黑箱，而是结构化音乐数据</text>
+    <text x="148" y="492" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" fill="#6D6577">
+      <tspan x="148" dy="0">每次生成都落在 lightweight MIDI-like JSON 里：</tspan>
+      <tspan x="148" dy="26">可视化、可播放、可变换，用户始终握着方向盘。</tspan>
+    </text>
+  </g>
+  <g id="track-strip">
+    <rect x="84" y="594" width="232" height="34" rx="8" fill="#FF5A3D"/>
+    <rect x="328" y="594" width="232" height="34" rx="8" fill="#20C997"/>
+    <rect x="572" y="594" width="232" height="34" rx="8" fill="#FFD43B"/>
+    <rect x="816" y="594" width="232" height="34" rx="8" fill="#5C7CFA"/>
+    <text x="200" y="617" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#FFF7E8">鼓</text>
+    <text x="444" y="617" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#24212B">贝斯</text>
+    <text x="688" y="617" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#24212B">吉他</text>
+    <text x="932" y="617" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#FFF7E8">键盘</text>
+  </g>
+  <g id="footer">
+    <text x="56" y="668" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">方案 · 从玩具式输入到结构化编曲，始终 preview-first</text>
+    <text x="1218" y="668" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">04</text>
+  </g>
+</svg>

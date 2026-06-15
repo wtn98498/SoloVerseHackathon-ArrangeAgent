@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+  </g>
+  <g id="header">
+    <path fill="#5C7CFA" d="M61,48 H171 A5,5 0 0 1 176,53 V53 A5,5 0 0 1 171,58 H61 A5,5 0 0 1 56,53 V53 A5,5 0 0 1 61,48 Z" />
+    <text x="56" y="104" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="42" font-weight="900" fill="#24212B">为可靠演示而建，不是脆弱的 AI 表演</text>
+    <text x="58" y="140" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#6D6577">即使没有模型 key，demo 也能跑；同时保留清晰的 DeepSeek-ready 接入边界。</text>
+  </g>
+  <g id="architecture-layers">
+    <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2" d="M84,190 H998 A8,8 0 0 1 1006,198 V282 A8,8 0 0 1 998,290 H84 A8,8 0 0 1 76,282 V198 A8,8 0 0 1 84,190 Z" />
+    <path fill="#FF5A3D" d="M84,190 H86 A8,8 0 0 1 94,198 V282 A8,8 0 0 1 86,290 H84 A8,8 0 0 1 76,282 V198 A8,8 0 0 1 84,190 Z" />
+    
+  <g transform="translate(120.0, 218.0) scale(0.171875)" fill="#FF5A3D">
+    <path d="M208,48H48A16,16,0,0,0,32,64V176a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V64A16,16,0,0,0,208,48ZM112,152V88l48,32Z" opacity="0.2" />
+    <path d="M208,40H48A24,24,0,0,0,24,64V176a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V64A24,24,0,0,0,208,40Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V64a8,8,0,0,1,8-8H208a8,8,0,0,1,8,8Zm-48,48a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,224Zm-3.56-110.66-48-32A8,8,0,0,0,104,88v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,137.05V103l25.58,17Z" />
+  </g>
+    <text x="184" y="226" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">体验层：React + TypeScript</text>
+    <text x="184" y="260" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#6D6577">编辑器、pad、候选卡片、钢琴卷帘式信任视图，都在浏览器里可演示。</text>
+    <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2" d="M84,318 H998 A8,8 0 0 1 1006,326 V410 A8,8 0 0 1 998,418 H84 A8,8 0 0 1 76,410 V326 A8,8 0 0 1 84,318 Z" />
+    <path fill="#20C997" d="M84,318 H86 A8,8 0 0 1 94,326 V410 A8,8 0 0 1 86,418 H84 A8,8 0 0 1 76,410 V326 A8,8 0 0 1 84,318 Z" />
+    
+  <g transform="translate(120.0, 346.0) scale(0.171875)" fill="#20C997">
+    <path d="M208,96v64H48V96Z" opacity="0.2" />
+    <path d="M56,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0ZM88,24a8,8,0,0,0-8,8V224a8,8,0,0,0,16,0V32A8,8,0,0,0,88,24Zm40,32a8,8,0,0,0-8,8V192a8,8,0,0,0,16,0V64A8,8,0,0,0,128,56Zm40,32a8,8,0,0,0-8,8v64a8,8,0,0,0,16,0V96A8,8,0,0,0,168,88Zm40-16a8,8,0,0,0-8,8v96a8,8,0,0,0,16,0V80A8,8,0,0,0,208,72Z" />
+  </g>
+    <text x="184" y="354" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">音乐层：Tone.js + 8 小节轻量 MIDI JSON</text>
+    <text x="184" y="388" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#6D6577">生成结果不是一段藏起来的音频，而是 128 步事件、四条轨道、可视化可变换。</text>
+    <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="2" d="M84,446 H998 A8,8 0 0 1 1006,454 V538 A8,8 0 0 1 998,546 H84 A8,8 0 0 1 76,538 V454 A8,8 0 0 1 84,446 Z" />
+    <path fill="#5C7CFA" d="M84,446 H86 A8,8 0 0 1 94,454 V538 A8,8 0 0 1 86,546 H84 A8,8 0 0 1 76,538 V454 A8,8 0 0 1 84,446 Z" />
+    
+  <g transform="translate(120.0, 474.0) scale(0.171875)" fill="#5C7CFA">
+    <path d="M200,56H56A24,24,0,0,0,32,80V192a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V80A24,24,0,0,0,200,56ZM164,184H92a20,20,0,0,1,0-40h72a20,20,0,0,1,0,40Z" opacity="0.2" />
+    <path d="M200,48H136V16a8,8,0,0,0-16,0V48H56A32,32,0,0,0,24,80V192a32,32,0,0,0,32,32H200a32,32,0,0,0,32-32V80A32,32,0,0,0,200,48Zm16,144a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V80A16,16,0,0,1,56,64H200a16,16,0,0,1,16,16Zm-52-56H92a28,28,0,0,0,0,56h72a28,28,0,0,0,0-56Zm-28,16v24H120V152ZM80,164a12,12,0,0,1,12-12h12v24H92A12,12,0,0,1,80,164Zm84,12H152V152h12a12,12,0,0,1,0,24ZM72,108a12,12,0,1,1,12,12A12,12,0,0,1,72,108Zm88,0a12,12,0,1,1,12,12A12,12,0,0,1,160,108Z" />
+  </g>
+    <text x="184" y="482" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">Agent 层：本地音乐导演 fallback + DeepSeek 边界</text>
+    <text x="184" y="516" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#6D6577">先保证现场一定能补全、增能量、柔化；真实模型可以接在同一套动作之后。</text>
+  </g>
+  <g id="reliability-panel">
+    <path fill="#24212B" d="M1050,190 H1202 A10,10 0 0 1 1212,200 V536 A10,10 0 0 1 1202,546 H1050 A10,10 0 0 1 1040,536 V200 A10,10 0 0 1 1050,190 Z" />
+    
+  <g transform="translate(1096.0, 226.0) scale(0.2265625)" fill="#FFD43B">
+    <path d="M176,128a48,48,0,1,1-48-48A48,48,0,0,1,176,128Z" opacity="0.2" />
+    <path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z" />
+  </g>
+    <text x="1126" y="322" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="56" font-weight="900" fill="#FFF7E8">Demo</text>
+    <text x="1126" y="374" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="56" font-weight="900" fill="#20C997">Safe</text>
+    <text font-size="17" font-weight="700" fill="#FFF7E8" fill-opacity="0.72" font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle" x="1126" y="426">坏网络也能演</text><text font-size="17" font-weight="700" fill="#FFF7E8" fill-opacity="0.72" font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle" x="1126" y="454">没 key 也能跑</text><text font-size="17" font-weight="700" fill="#FFF7E8" fill-opacity="0.72" font-family="Arial, Microsoft YaHei, sans-serif" text-anchor="middle" x="1126" y="482">生成结果可检查</text></g>
+  <g id="action-strip">
+    <path fill="#FF5A3D" d="M126,590 H322 A8,8 0 0 1 330,598 V624 A8,8 0 0 1 322,632 H126 A8,8 0 0 1 118,624 V598 A8,8 0 0 1 126,590 Z" />
+    <text x="224" y="617" text-anchor="middle" font-family="Consolas, Courier New, monospace" font-size="16" font-weight="700" fill="#FFF7E8">complete()</text>
+    <path fill="#20C997" d="M358,590 H554 A8,8 0 0 1 562,598 V624 A8,8 0 0 1 554,632 H358 A8,8 0 0 1 350,624 V598 A8,8 0 0 1 358,590 Z" />
+    <text x="456" y="617" text-anchor="middle" font-family="Consolas, Courier New, monospace" font-size="16" font-weight="700" fill="#24212B">increaseEnergy()</text>
+    <path fill="#FFD43B" d="M590,590 H786 A8,8 0 0 1 794,598 V624 A8,8 0 0 1 786,632 H590 A8,8 0 0 1 582,624 V598 A8,8 0 0 1 590,590 Z" />
+    <text x="688" y="617" text-anchor="middle" font-family="Consolas, Courier New, monospace" font-size="16" font-weight="700" fill="#24212B">soften()</text>
+    <path fill="#5C7CFA" d="M822,590 H1018 A8,8 0 0 1 1026,598 V624 A8,8 0 0 1 1018,632 H822 A8,8 0 0 1 814,624 V598 A8,8 0 0 1 822,590 Z" />
+    <text x="920" y="617" text-anchor="middle" font-family="Consolas, Courier New, monospace" font-size="16" font-weight="700" fill="#FFF7E8">explainChanges()</text>
+  </g>
+  <g id="footer">
+    <text x="56" y="668" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">技术 · 产品以前端体验为主，核心对象是可播放、可视化、可验证的编曲数据</text>
+    <text x="1218" y="668" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">06</text>
+  </g>
+</svg>

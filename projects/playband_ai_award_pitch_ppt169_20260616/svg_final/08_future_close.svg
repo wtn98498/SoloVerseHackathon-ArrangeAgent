@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="closeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5A3D" stop-opacity="0.22" />
+      <stop offset="55%" stop-color="#5C7CFA" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#20C997" stop-opacity="0.24" />
+    </linearGradient>
+    <marker id="roadArrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#FFD43B" />
+    </marker>
+  </defs>
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#24212B" />
+    <rect x="0" y="0" width="1280" height="720" fill="url(#closeGlow)" />
+  </g>
+  <g id="header">
+    <text x="64" y="88" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#FFD43B">未来规划</text>
+    <text x="64" y="160" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="58" font-weight="900" fill="#FFF7E8">从音乐玩具，到创作副驾驶</text>
+    <text x="68" y="204" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="700" fill="#FFF7E8" fill-opacity="0.76">MVP 证明交互成立；下一步是在同一个安全候选循环里接入更强的音乐智能。</text>
+  </g>
+  <g id="roadmap">
+    <path fill="#FFF7E8" d="M78,282 H300 A8,8 0 0 1 308,290 V448 A8,8 0 0 1 300,456 H78 A8,8 0 0 1 70,448 V290 A8,8 0 0 1 78,282 Z" />
+    
+  <g transform="translate(96.0, 310.0) scale(0.1640625)" fill="#5C7CFA">
+    <path d="M240,124a48,48,0,0,1-32,45.27h0V176a40,40,0,0,1-80,0,40,40,0,0,1-80,0v-6.73h0a48,48,0,0,1,0-90.54V72a40,40,0,0,1,80,0,40,40,0,0,1,80,0v6.73A48,48,0,0,1,240,124Z" opacity="0.2" />
+    <path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27,8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z" />
+  </g>
+    <text x="96" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">模型编曲</text>
+    <text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="96" y="414">更细的风格理解</text><text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="96" y="438">和 taste interpretation</text><line x1="318" y1="369" x2="370" y2="369" stroke="#FFD43B" stroke-width="5" marker-end="url(#roadArrow)" />
+    <path fill="#FFF7E8" d="M394,282 H616 A8,8 0 0 1 624,290 V448 A8,8 0 0 1 616,456 H394 A8,8 0 0 1 386,448 V290 A8,8 0 0 1 394,282 Z" />
+    
+  <g transform="translate(412.0, 310.0) scale(0.1640625)" fill="#FF5A3D">
+    <path d="M208,172a28,28,0,1,1-28-28A28,28,0,0,1,208,172ZM52,176a28,28,0,1,0,28,28A28,28,0,0,0,52,176Z" opacity="0.2" />
+    <path d="M212.92,25.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,64V174.08A36,36,0,1,0,88,204V118.25l112-28v51.83A36,36,0,1,0,216,172V32A8,8,0,0,0,212.92,25.69ZM52,224a20,20,0,1,1,20-20A20,20,0,0,1,52,224ZM88,101.75V70.25l112-28v31.5ZM180,192a20,20,0,1,1,20-20A20,20,0,0,1,180,192Z" />
+  </g>
+    <text x="412" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">风格包</text>
+    <text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="412" y="414">lo-fi / rock / pop</text><text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="412" y="438">古风与民族乐器包</text><line x1="634" y1="369" x2="686" y2="369" stroke="#FFD43B" stroke-width="5" marker-end="url(#roadArrow)" />
+    <path fill="#FFF7E8" d="M710,282 H932 A8,8 0 0 1 940,290 V448 A8,8 0 0 1 932,456 H710 A8,8 0 0 1 702,448 V290 A8,8 0 0 1 710,282 Z" />
+    
+  <g transform="translate(728.0, 310.0) scale(0.1640625)" fill="#20C997">
+    <path d="M240,128l-48,40H64L16,128,64,88H192Z" opacity="0.2" />
+    <path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z" />
+  </g>
+    <text x="728" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">导出</text>
+    <text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="728" y="414">核心 loop 稳定后</text><text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="728" y="438">支持 MIDI / stems</text><line x1="950" y1="369" x2="1002" y2="369" stroke="#FFD43B" stroke-width="5" marker-end="url(#roadArrow)" />
+    <path fill="#FFF7E8" d="M1026,282 H1202 A8,8 0 0 1 1210,290 V448 A8,8 0 0 1 1202,456 H1026 A8,8 0 0 1 1018,448 V290 A8,8 0 0 1 1026,282 Z" />
+    
+  <g transform="translate(1044.0, 310.0) scale(0.1640625)" fill="#FFD43B">
+    <path d="M136,108A52,52,0,1,1,84,56,52,52,0,0,1,136,108Z" opacity="0.2" />
+    <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z" />
+  </g>
+    <text x="1044" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">社区种子</text>
+    <text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="1044" y="414">小 riff 变成</text><text font-size="17" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="1044" y="438">可 remix 起点</text></g>
+  <g id="closing-line">
+    <path fill="#FFF7E8" fill-opacity="0.12" stroke="#FFF7E8" stroke-opacity="0.24" d="M72,530 H666 A8,8 0 0 1 674,538 V614 A8,8 0 0 1 666,622 H72 A8,8 0 0 1 64,614 V538 A8,8 0 0 1 72,530 Z" />
+    <text x="96" y="588" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="48" font-weight="900" fill="#FFF7E8">先玩，再编曲。</text>
+    <text x="720" y="560" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#FFD43B">欧比克莱歌剧院</text>
+    <text x="720" y="590" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#FFF7E8">温添宁 · scala</text>
+    <text x="720" y="620" font-family="Consolas, Courier New, monospace" font-size="16" font-weight="700" fill="#FFF7E8" fill-opacity="0.72">wenwen.zone/playband</text>
+  </g>
+  <g id="footer">
+    <text x="56" y="674" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#FFF7E8" fill-opacity="0.58">收尾 · PlayBand AI 把用户留在音乐创作循环里</text>
+    <text x="1218" y="674" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#FFF7E8" fill-opacity="0.58">08</text>
+  </g>
+</svg>

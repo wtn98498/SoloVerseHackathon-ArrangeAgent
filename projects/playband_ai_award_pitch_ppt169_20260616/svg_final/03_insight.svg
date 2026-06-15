@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#20C997" />
+    </marker>
+  </defs>
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+    <rect x="0" y="0" width="1280" height="720" fill="#FFD43B" fill-opacity="0.08" />
+    <circle cx="112" cy="608" r="88" fill="#FF5A3D" fill-opacity="0.16" />
+    <circle cx="1140" cy="142" r="112" fill="#5C7CFA" fill-opacity="0.14" />
+  </g>
+  <g id="headline">
+    <text x="86" y="118" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#FF5A3D">产品洞察</text>
+    <text font-size="64" font-weight="900" fill="#24212B" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" x="86" y="214">灵感种子来自人，</text><text font-size="64" font-weight="900" fill="#24212B" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" x="86" y="300">编曲扩展交给 Agent。</text><text font-size="24" font-weight="700" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="90" y="405">PlayBand AI 的关键不是“AI 替你做歌”，</text><text font-size="24" font-weight="700" fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" x="90" y="441">而是把你的那一点手感，变成可听、可见、可继续改的音乐结构。</text></g>
+  <g id="flow">
+    <path fill="#FF5A3D" d="M165,508 H295 A39,39 0 0 1 334,547 V547 A39,39 0 0 1 295,586 H165 A39,39 0 0 1 126,547 V547 A39,39 0 0 1 165,508 Z" />
+    
+  <g transform="translate(154.0, 526.0) scale(0.15625)" fill="#FFF7E8">
+    <path d="M213.66,201,201,213.66a8,8,0,0,1-11.31,0L140,164a8,8,0,0,0-13,2.46l-19.46,44.77a8,8,0,0,1-14.85-.71L40.41,50.44a8,8,0,0,1,10-10L210.51,92.68a8,8,0,0,1,.71,14.85L166.45,127A8,8,0,0,0,164,140l49.67,49.67A8,8,0,0,1,213.66,201Z" opacity="0.2" />
+    <path d="M169.64,134.33l44.77-19.46A16,16,0,0,0,213,85.07L52.92,32.8A16,16,0,0,0,32.8,52.92L85.07,213a15.83,15.83,0,0,0,14.41,11l.79,0a15.83,15.83,0,0,0,14.6-9.59h0l19.46-44.77L184,219.31a16,16,0,0,0,22.63,0l12.68-12.68a16,16,0,0,0,0-22.63Zm-69.48,73.76.06-.05Zm95.15-.09-49.66-49.67a16,16,0,0,0-26,4.94l-19.42,44.65L48,48l159.87,52.21-44.64,19.41a16,16,0,0,0-4.94,26L208,195.31ZM88,24V16a8,8,0,0,1,16,0v8a8,8,0,0,1-16,0ZM8,96a8,8,0,0,1,8-8h8a8,8,0,0,1,0,16H16A8,8,0,0,1,8,96ZM120.85,28.42l8-16a8,8,0,0,1,14.31,7.16l-8,16a8,8,0,1,1-14.31-7.16Zm-81.69,96a8,8,0,0,1-3.58,10.74l-16,8a8,8,0,0,1-7.16-14.31l16-8A8,8,0,0,1,39.16,124.42Z" />
+  </g>
+    <text x="210" y="540" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#FFF7E8">人</text>
+    <text x="210" y="565" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#FFF7E8">品味 · 节奏 · 手感</text>
+    <line x1="356" y1="547" x2="470" y2="547" stroke="#20C997" stroke-width="5" marker-end="url(#arrowGreen)" />
+    <path fill="#5C7CFA" d="M535,508 H689 A39,39 0 0 1 728,547 V547 A39,39 0 0 1 689,586 H535 A39,39 0 0 1 496,547 V547 A39,39 0 0 1 535,508 Z" />
+    
+  <g transform="translate(524.0, 526.0) scale(0.15625)" fill="#FFF7E8">
+    <path d="M200,56H56A24,24,0,0,0,32,80V192a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V80A24,24,0,0,0,200,56ZM164,184H92a20,20,0,0,1,0-40h72a20,20,0,0,1,0,40Z" opacity="0.2" />
+    <path d="M200,48H136V16a8,8,0,0,0-16,0V48H56A32,32,0,0,0,24,80V192a32,32,0,0,0,32,32H200a32,32,0,0,0,32-32V80A32,32,0,0,0,200,48Zm16,144a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V80A16,16,0,0,1,56,64H200a16,16,0,0,1,16,16Zm-52-56H92a28,28,0,0,0,0,56h72a28,28,0,0,0,0-56Zm-28,16v24H120V152ZM80,164a12,12,0,0,1,12-12h12v24H92A12,12,0,0,1,80,164Zm84,12H152V152h12a12,12,0,0,1,0,24ZM72,108a12,12,0,1,1,12,12A12,12,0,0,1,72,108Zm88,0a12,12,0,1,1,12,12A12,12,0,0,1,160,108Z" />
+  </g>
+    <text x="580" y="540" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#FFF7E8">Agent</text>
+    <text x="580" y="565" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#FFF7E8">结构 · 配器 · 变化</text>
+    <line x1="750" y1="547" x2="864" y2="547" stroke="#20C997" stroke-width="5" marker-end="url(#arrowGreen)" />
+    <path fill="#20C997" d="M929,508 H1095 A39,39 0 0 1 1134,547 V547 A39,39 0 0 1 1095,586 H929 A39,39 0 0 1 890,547 V547 A39,39 0 0 1 929,508 Z" />
+    
+  <g transform="translate(918.0, 526.0) scale(0.15625)" fill="#24212B">
+    <path d="M208,96v64H48V96Z" opacity="0.2" />
+    <path d="M56,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0ZM88,24a8,8,0,0,0-8,8V224a8,8,0,0,0,16,0V32A8,8,0,0,0,88,24Zm40,32a8,8,0,0,0-8,8V192a8,8,0,0,0,16,0V64A8,8,0,0,0,128,56Zm40,32a8,8,0,0,0-8,8v64a8,8,0,0,0,16,0V96A8,8,0,0,0,168,88Zm40-16a8,8,0,0,0-8,8v96a8,8,0,0,0,16,0V80A8,8,0,0,0,208,72Z" />
+  </g>
+    <text x="974" y="540" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">Loop</text>
+    <text x="974" y="565" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#24212B">可听 · 可见 · 可改</text>
+  </g>
+  <g id="track-tokens">
+    <path fill="#FF5A3D" d="M850,176 H916 A8,8 0 0 1 924,184 V250 A8,8 0 0 1 916,258 H850 A8,8 0 0 1 842,250 V184 A8,8 0 0 1 850,176 Z" />
+    <text x="883" y="226" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="26" fill="#FFF7E8">鼓</text>
+    <path fill="#20C997" d="M948,220 H1014 A8,8 0 0 1 1022,228 V294 A8,8 0 0 1 1014,302 H948 A8,8 0 0 1 940,294 V228 A8,8 0 0 1 948,220 Z" />
+    <text x="981" y="270" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="26" fill="#24212B">贝斯</text>
+    <path fill="#FFD43B" d="M1046,264 H1112 A8,8 0 0 1 1120,272 V338 A8,8 0 0 1 1112,346 H1046 A8,8 0 0 1 1038,338 V272 A8,8 0 0 1 1046,264 Z" />
+    <text x="1079" y="314" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="26" fill="#24212B">吉他</text>
+    <path fill="#5C7CFA" d="M1144,308 H1210 A8,8 0 0 1 1218,316 V382 A8,8 0 0 1 1210,390 H1144 A8,8 0 0 1 1136,382 V316 A8,8 0 0 1 1144,308 Z" />
+    <text x="1177" y="358" text-anchor="middle" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="26" fill="#FFF7E8">键盘</text>
+  </g>
+  <g id="footer">
+    <text x="56" y="668" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">洞察 · AI 负责把人的小灵感放大，而不是把人从创作里拿掉</text>
+    <text x="1218" y="668" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">03</text>
+  </g>
+</svg>

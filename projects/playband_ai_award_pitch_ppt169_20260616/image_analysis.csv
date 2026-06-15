@@ -1,0 +1,7 @@
+No,Filename,Width,Height,AspectRatio,PixelAspectRatio,RatioSource,UsageCount,DisplayRatioVariants,AssetKind,SvgRenderable,PptxNativeSupported,SizeKB,Category,ImageArea_SxS,TextArea_SxS
+1,01-start.png,1440,1050,1.37,1.37,pixel,1,,bitmap,True,True,133.2,Standard landscape,823x600,317x600
+2,02-blank-studio.png,1440,1050,1.37,1.37,pixel,1,,bitmap,True,True,140.8,Standard landscape,823x600,317x600
+3,03-capture-seed.png,1440,1050,1.37,1.37,pixel,1,,bitmap,True,True,216.7,Standard landscape,823x600,317x600
+4,05-agent-candidate.png,1440,1050,1.37,1.37,pixel,1,,bitmap,True,True,176.1,Standard landscape,823x600,317x600
+5,06-multiturn-agent.png,1440,1050,1.37,1.37,pixel,1,,bitmap,True,True,170.6,Standard landscape,823x600,317x600
+6,playband-ai-demo.png,2560,1353,1.89,1.89,pixel,1,,bitmap,True,True,233.4,Wide landscape,812x429,328x600
