@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#24212B"/>
+    <rect x="64" y="54" width="1152" height="612" rx="8" fill="#FFF7E8"/>
+  </g>
+  <g id="headline">
+    <text x="96" y="126" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FF5A3D">60 秒评委演示</text>
+    <text x="96" y="206" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="56" font-weight="900" fill="#24212B">我敲了几下，它变成一支乐队。</text>
+  </g>
+  <g id="screenshot">
+    <rect x="750" y="156" width="380" height="358" rx="8" fill="#FFFFFF" stroke="#24212B" stroke-width="4"/>
+    <image href="../images/05-agent-candidate.png" x="770" y="178" width="340" height="270" preserveAspectRatio="xMidYMid meet"/>
+    <rect x="790" y="462" width="300" height="30" rx="8" fill="#20C997"/>
+    <text x="940" y="483" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="900" fill="#24212B">候选先试听，确认后应用</text>
+  </g>
+  <g id="demo-steps">
+    <rect x="112" y="318" width="132" height="88" rx="8" fill="#FF5A3D"/>
+    <text x="178" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">1 敲</text>
+    <text x="178" y="382" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">短鼓点</text>
+    <polygon points="270,350 310,362 270,374" fill="#24212B"/>
+    <rect x="332" y="318" width="132" height="88" rx="8" fill="#20C997"/>
+    <text x="398" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">2 记</text>
+    <text x="398" y="382" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">MIDI seed</text>
+    <polygon points="490,350 530,362 490,374" fill="#24212B"/>
+    <rect x="552" y="318" width="132" height="88" rx="8" fill="#FFD43B"/>
+    <text x="618" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">3 补</text>
+    <text x="618" y="382" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">四轨乐队</text>
+  </g>
+  <g id="link">
+    <rect x="116" y="520" width="520" height="58" rx="8" fill="#24212B"/>
+    <text x="144" y="556" font-family="Consolas, Courier New, monospace" font-size="19" font-weight="700" fill="#FFF7E8">https://wenwen.zone/playband/</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="628" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">07</text>
+  </g>
+</svg>

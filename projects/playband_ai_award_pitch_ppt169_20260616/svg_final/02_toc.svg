@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+    <path fill="#FFFFFF" stroke="#24212B" stroke-width="4" d="M78,72 H1202 A8,8 0 0 1 1210,80 V640 A8,8 0 0 1 1202,648 H78 A8,8 0 0 1 70,640 V80 A8,8 0 0 1 78,72 Z" />
+    <path fill="#FF5A3D" d="M98,92 H160 A8,8 0 0 1 168,100 V102 A8,8 0 0 1 160,110 H98 A8,8 0 0 1 90,102 V100 A8,8 0 0 1 98,92 Z" />
+    <path fill="#20C997" d="M192,92 H254 A8,8 0 0 1 262,100 V102 A8,8 0 0 1 254,110 H192 A8,8 0 0 1 184,102 V100 A8,8 0 0 1 192,92 Z" />
+    <path fill="#FFD43B" d="M286,92 H348 A8,8 0 0 1 356,100 V102 A8,8 0 0 1 348,110 H286 A8,8 0 0 1 278,102 V100 A8,8 0 0 1 286,92 Z" />
+    <path fill="#5C7CFA" d="M380,92 H442 A8,8 0 0 1 450,100 V102 A8,8 0 0 1 442,110 H380 A8,8 0 0 1 372,102 V100 A8,8 0 0 1 380,92 Z" />
+  </g>
+  <g id="headline">
+    <text x="100" y="178" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FF5A3D">目录</text>
+    <text x="100" y="246" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="60" font-weight="900" fill="#24212B">今天只讲一件事</text>
+    <text x="104" y="294" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#6D6577">普通人的一小段灵感，怎么被 Agent 编成歌。</text>
+  </g>
+  <g id="toc-list">
+    <path fill="#FF5A3D" d="M144,374 H340 A8,8 0 0 1 348,382 V458 A8,8 0 0 1 340,466 H144 A8,8 0 0 1 136,458 V382 A8,8 0 0 1 144,374 Z" />
+    <text x="162" y="414" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">01 背景</text>
+    <text x="162" y="444" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#FFF7E8">痛点与灵感来源</text>
+    <path fill="#20C997" d="M400,374 H596 A8,8 0 0 1 604,382 V458 A8,8 0 0 1 596,466 H400 A8,8 0 0 1 392,458 V382 A8,8 0 0 1 400,374 Z" />
+    <text x="418" y="414" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">02 产品</text>
+    <text x="418" y="444" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#24212B">先玩，再编曲</text>
+    <path fill="#FFD43B" d="M656,374 H852 A8,8 0 0 1 860,382 V458 A8,8 0 0 1 852,466 H656 A8,8 0 0 1 648,458 V382 A8,8 0 0 1 656,374 Z" />
+    <text x="674" y="414" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">03 Agent</text>
+    <text x="674" y="444" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#24212B">音乐导演闭环</text>
+    <path fill="#5C7CFA" d="M912,374 H1108 A8,8 0 0 1 1116,382 V458 A8,8 0 0 1 1108,466 H912 A8,8 0 0 1 904,458 V382 A8,8 0 0 1 912,374 Z" />
+    <text x="930" y="414" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">04 未来</text>
+    <text x="930" y="444" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#FFF7E8">风格包与导出</text>
+  </g>
+  <g id="footer">
+    <text x="100" y="610" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">排版规则：纯色块、少字、大留白，保证框内文字不溢出。</text>
+    <text x="1180" y="610" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">02</text>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+    <path fill="#24212B" d="M78,66 H1202 A8,8 0 0 1 1210,74 V646 A8,8 0 0 1 1202,654 H78 A8,8 0 0 1 70,646 V74 A8,8 0 0 1 78,66 Z" />
+    <path fill="#FF5A3D" d="M112,100 H196 A8,8 0 0 1 204,108 V112 A8,8 0 0 1 196,120 H112 A8,8 0 0 1 104,112 V108 A8,8 0 0 1 112,100 Z" />
+    <path fill="#20C997" d="M232,100 H316 A8,8 0 0 1 324,108 V112 A8,8 0 0 1 316,120 H232 A8,8 0 0 1 224,112 V108 A8,8 0 0 1 232,100 Z" />
+    <path fill="#FFD43B" d="M352,100 H436 A8,8 0 0 1 444,108 V112 A8,8 0 0 1 436,120 H352 A8,8 0 0 1 344,112 V108 A8,8 0 0 1 352,100 Z" />
+    <path fill="#5C7CFA" d="M472,100 H556 A8,8 0 0 1 564,108 V112 A8,8 0 0 1 556,120 H472 A8,8 0 0 1 464,112 V108 A8,8 0 0 1 472,100 Z" />
+  </g>
+  <g id="thanks">
+    <text x="118" y="266" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="86" font-weight="900" fill="#FFF7E8">谢谢大家</text>
+    <text x="122" y="330" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="900" fill="#FFD43B">先玩，再编曲。</text>
+    <text x="122" y="382" font-family="Arial, Microsoft YaHei, sans-serif" font-size="23" font-weight="800" fill="#FFF7E8">PlayBand AI 把普通人的音乐直觉，留在创作循环里。</text>
+  </g>
+  <g id="contact">
+    <path fill="#FFF7E8" d="M130,488 H582 A8,8 0 0 1 590,496 V554 A8,8 0 0 1 582,562 H130 A8,8 0 0 1 122,554 V496 A8,8 0 0 1 130,488 Z" />
+    <text x="150" y="518" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">欧比克莱歌剧院</text>
+    <text x="150" y="548" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#6D6577">温添宁 · scala</text>
+    <path fill="#FFF7E8" d="M658,488 H1080 A8,8 0 0 1 1088,496 V554 A8,8 0 0 1 1080,562 H658 A8,8 0 0 1 650,554 V496 A8,8 0 0 1 658,488 Z" />
+    <text x="678" y="532" font-family="Consolas, Courier New, monospace" font-size="20" font-weight="700" fill="#24212B">wenwen.zone/playband</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="618" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#FFF7E8" fill-opacity="0.72">10</text>
+  </g>
+</svg>

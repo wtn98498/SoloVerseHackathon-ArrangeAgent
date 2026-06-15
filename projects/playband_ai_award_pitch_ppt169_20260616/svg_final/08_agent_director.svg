@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+    <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="3" d="M78,70 H1202 A8,8 0 0 1 1210,78 V642 A8,8 0 0 1 1202,650 H78 A8,8 0 0 1 70,642 V78 A8,8 0 0 1 78,70 Z" />
+  </g>
+  <g id="headline">
+    <text x="104" y="146" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#5C7CFA">Agent 核心</text>
+    <text x="104" y="218" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="52" font-weight="900" fill="#24212B">它不是“生成器”，而是音乐导演</text>
+    <text x="108" y="260" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#6D6577">会听、会补、会解释，也能继续接受指挥。</text>
+  </g>
+  <g id="agent-loop">
+    <path fill="#FF5A3D" d="M126,338 H278 A8,8 0 0 1 286,346 V426 A8,8 0 0 1 278,434 H126 A8,8 0 0 1 118,426 V346 A8,8 0 0 1 126,338 Z" />
+    <text x="202" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#FFF7E8">听见种子</text>
+    <text x="202" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">从敲击开始</text>
+    <polygon points="312,374 358,386 312,398" fill="#24212B" />
+    <path fill="#20C997" d="M398,338 H550 A8,8 0 0 1 558,346 V426 A8,8 0 0 1 550,434 H398 A8,8 0 0 1 390,426 V346 A8,8 0 0 1 398,338 Z" />
+    <text x="474" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">补全乐队</text>
+    <text x="474" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">四轨 loop</text>
+    <polygon points="584,374 630,386 584,398" fill="#24212B" />
+    <path fill="#FFD43B" d="M670,338 H822 A8,8 0 0 1 830,346 V426 A8,8 0 0 1 822,434 H670 A8,8 0 0 1 662,426 V346 A8,8 0 0 1 670,338 Z" />
+    <text x="746" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">解释变化</text>
+    <text x="746" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">告诉你改了什么</text>
+    <polygon points="856,374 902,386 856,398" fill="#24212B" />
+    <path fill="#5C7CFA" d="M942,338 H1094 A8,8 0 0 1 1102,346 V426 A8,8 0 0 1 1094,434 H942 A8,8 0 0 1 934,426 V346 A8,8 0 0 1 942,338 Z" />
+    <text x="1018" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#FFF7E8">继续指挥</text>
+    <text x="1018" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">更快 / 更柔</text>
+  </g>
+  <g id="proof">
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M142,520 H412 A8,8 0 0 1 420,528 V570 A8,8 0 0 1 412,578 H142 A8,8 0 0 1 134,570 V528 A8,8 0 0 1 142,520 Z" />
+    <text x="277" y="557" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是一次性结果</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M506,520 H776 A8,8 0 0 1 784,528 V570 A8,8 0 0 1 776,578 H506 A8,8 0 0 1 498,570 V528 A8,8 0 0 1 506,520 Z" />
+    <text x="641" y="557" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是音频黑箱</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M870,520 H1140 A8,8 0 0 1 1148,528 V570 A8,8 0 0 1 1140,578 H870 A8,8 0 0 1 862,570 V528 A8,8 0 0 1 870,520 Z" />
+    <text x="1005" y="557" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是替代创作者</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="626" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">08</text>
+  </g>
+</svg>

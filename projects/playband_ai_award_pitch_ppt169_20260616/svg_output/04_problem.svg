@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8"/>
+    <rect x="72" y="72" width="1136" height="576" rx="8" fill="#FFFFFF" stroke="#24212B" stroke-width="4"/>
+    <rect x="944" y="110" width="190" height="190" rx="8" fill="#FFD43B"/>
+    <use data-icon="phosphor-duotone/sliders-horizontal" x="1008" y="168" width="64" height="64" fill="#24212B"/>
+  </g>
+  <g id="headline">
+    <text x="108" y="158" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FF5A3D">项目背景</text>
+    <text x="108" y="236" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="54" font-weight="900" fill="#24212B">AI 音乐忘了第一件事</text>
+    <text x="112" y="292" font-family="Arial, Microsoft YaHei, sans-serif" font-size="32" font-weight="900" fill="#FF5A3D">先玩起来。</text>
+  </g>
+  <g id="pain-points">
+    <rect x="126" y="388" width="430" height="118" rx="8" fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3"/>
+    <text x="158" y="430" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">专业 DAW 太重</text>
+    <text x="158" y="464" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" fill="#6D6577">乐理、轨道、插件，一打开就像考试。</text>
+    <rect x="612" y="388" width="430" height="118" rx="8" fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3"/>
+    <text x="644" y="430" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">Prompt 又太轻</text>
+    <text x="644" y="464" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" fill="#6D6577">
+      <tspan x="644" dy="0">结果很快出现，</tspan>
+      <tspan x="644" dy="24">但不像“我做出来的”。</tspan>
+    </text>
+  </g>
+  <g id="footer">
+    <text x="108" y="604" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#6D6577">中间缺一个入口：让普通人先表达手感，再被 AI 放大。</text>
+    <text x="1180" y="604" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">04</text>
+  </g>
+</svg>

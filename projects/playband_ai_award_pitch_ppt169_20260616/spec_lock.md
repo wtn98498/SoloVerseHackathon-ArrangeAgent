@@ -46,20 +46,25 @@
 
 ## page_rhythm
 - P01: anchor
-- P02: dense
-- P03: breathing
+- P02: anchor
+- P03: dense
 - P04: dense
-- P05: anchor
+- P05: breathing
 - P06: dense
 - P07: anchor
+- P08: dense
+- P09: anchor
+- P10: anchor
 
 ## page_charts
-- P05: process_flow
-- P07: pipeline_with_stages
+- P07: process_flow
+- P09: pipeline_with_stages
 
 ## forbidden
 - Mixing icon libraries
+- Gradient backgrounds
 - rgba()
+- `<linearGradient>`, `<radialGradient>`
 - `<style>`, `class`, `<foreignObject>`, `textPath`, `@font-face`, `<animate*>`, `<script>`, `<iframe>`, `<symbol>`+`<use>`
 - `<g opacity>` (set opacity on each child element individually)
 - HTML named entities in text; XML reserved chars must be escaped as `&amp; &lt; &gt; &quot; &apos;`

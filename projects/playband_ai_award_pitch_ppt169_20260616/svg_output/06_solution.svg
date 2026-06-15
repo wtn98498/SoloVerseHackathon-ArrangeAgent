@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8"/>
+    <rect x="64" y="64" width="1152" height="592" rx="8" fill="#FFFFFF" stroke="#24212B" stroke-width="4"/>
+  </g>
+  <g id="headline">
+    <text x="100" y="140" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#20C997">解决方案</text>
+    <text x="100" y="210" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="54" font-weight="900" fill="#24212B">几下敲击，变成四轨乐队 loop</text>
+  </g>
+  <g id="flow">
+    <rect x="120" y="318" width="220" height="136" rx="8" fill="#FF5A3D"/>
+    <text x="230" y="374" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#FFF7E8">敲一下</text>
+    <text x="230" y="410" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#FFF7E8">大 pad 捕捉手感</text>
+    <polygon points="372,364 430,386 372,408" fill="#24212B"/>
+    <rect x="462" y="318" width="220" height="136" rx="8" fill="#20C997"/>
+    <text x="572" y="374" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">补全</text>
+    <text x="572" y="410" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#24212B">生成 8 小节四轨</text>
+    <polygon points="714,364 772,386 714,408" fill="#24212B"/>
+    <rect x="804" y="318" width="220" height="136" rx="8" fill="#FFD43B"/>
+    <text x="914" y="374" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">试听</text>
+    <text x="914" y="410" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#24212B">满意后再应用</text>
+  </g>
+  <g id="track-strip">
+    <rect x="160" y="540" width="180" height="42" rx="8" fill="#FF5A3D"/>
+    <text x="250" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">鼓</text>
+    <rect x="380" y="540" width="180" height="42" rx="8" fill="#20C997"/>
+    <text x="470" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">贝斯</text>
+    <rect x="600" y="540" width="180" height="42" rx="8" fill="#FFD43B"/>
+    <text x="690" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">吉他</text>
+    <rect x="820" y="540" width="180" height="42" rx="8" fill="#5C7CFA"/>
+    <text x="910" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">键盘</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="626" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">06</text>
+  </g>
+</svg>

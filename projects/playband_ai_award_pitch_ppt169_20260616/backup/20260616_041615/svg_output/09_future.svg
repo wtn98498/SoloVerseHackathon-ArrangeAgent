@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#24212B"/>
+    <rect x="64" y="60" width="1152" height="600" rx="8" fill="#FFF7E8"/>
+  </g>
+  <g id="headline">
+    <text x="100" y="142" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#5C7CFA">未来规划</text>
+    <text x="100" y="216" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="54" font-weight="900" fill="#24212B">从音乐玩具，到创作副驾驶</text>
+  </g>
+  <g id="roadmap">
+    <rect x="112" y="328" width="218" height="132" rx="8" fill="#5C7CFA"/>
+    <text x="142" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#FFF7E8">模型编曲</text>
+    <text x="142" y="416" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#FFF7E8">更懂风格和 taste</text>
+    <polygon points="354,382 400,394 354,406" fill="#24212B"/>
+    <rect x="430" y="328" width="218" height="132" rx="8" fill="#FF5A3D"/>
+    <text x="460" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#FFF7E8">风格包</text>
+    <text x="460" y="416" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="700" fill="#FFF7E8">lo-fi / rock / 古风</text>
+    <polygon points="672,382 718,394 672,406" fill="#24212B"/>
+    <rect x="748" y="328" width="218" height="132" rx="8" fill="#20C997"/>
+    <text x="778" y="380" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">导出</text>
+    <text x="778" y="416" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="800" fill="#24212B">MIDI / stems</text>
+  </g>
+  <g id="community">
+    <rect x="220" y="536" width="840" height="58" rx="8" fill="#24212B"/>
+    <text x="640" y="573" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#FFF7E8">更远一点：小 riff 变成可以 remix 的社区种子。</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="626" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">09</text>
+  </g>
+</svg>

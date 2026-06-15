@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8"/>
+    <rect x="78" y="82" width="1124" height="556" rx="8" fill="#FFFFFF" stroke="#E7DCC7" stroke-width="3"/>
+  </g>
+  <g id="headline">
+    <text x="112" y="158" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#5C7CFA">产品洞察</text>
+    <text x="112" y="244" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="58" font-weight="900" fill="#24212B">灵感来自人，编曲交给 Agent</text>
+  </g>
+  <g id="roles">
+    <rect x="124" y="352" width="292" height="126" rx="8" fill="#FF5A3D"/>
+    <text x="154" y="398" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#FFF7E8">人负责</text>
+    <text x="154" y="436" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#FFF7E8">品味、节奏感、玩一下</text>
+    <rect x="494" y="352" width="292" height="126" rx="8" fill="#20C997"/>
+    <text x="524" y="398" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">Agent 负责</text>
+    <text x="524" y="436" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="800" fill="#24212B">结构、配器、变化</text>
+    <rect x="864" y="352" width="292" height="126" rx="8" fill="#FFD43B"/>
+    <text x="894" y="398" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">界面负责</text>
+    <text x="894" y="436" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="800" fill="#24212B">看得见、听得到、能改</text>
+  </g>
+  <g id="takeaway">
+    <rect x="254" y="548" width="772" height="58" rx="8" fill="#24212B"/>
+    <text x="640" y="585" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#FFF7E8">这不是黑箱音频，而是可继续创作的音乐结构。</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="664" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">05</text>
+  </g>
+</svg>

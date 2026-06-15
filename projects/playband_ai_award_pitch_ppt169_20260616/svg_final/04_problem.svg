@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+    <path fill="#FFFFFF" stroke="#24212B" stroke-width="4" d="M80,72 H1200 A8,8 0 0 1 1208,80 V640 A8,8 0 0 1 1200,648 H80 A8,8 0 0 1 72,640 V80 A8,8 0 0 1 80,72 Z" />
+    <path fill="#FFD43B" d="M952,110 H1126 A8,8 0 0 1 1134,118 V292 A8,8 0 0 1 1126,300 H952 A8,8 0 0 1 944,292 V118 A8,8 0 0 1 952,110 Z" />
+    
+  <g transform="translate(1008.0, 168.0) scale(0.25)" fill="#24212B">
+    <path d="M128,80a24,24,0,1,1-24-24A24,24,0,0,1,128,80Zm40,72a24,24,0,1,0,24,24A24,24,0,0,0,168,152Z" opacity="0.2" />
+    <path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z" />
+  </g>
+  </g>
+  <g id="headline">
+    <text x="108" y="158" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FF5A3D">项目背景</text>
+    <text x="108" y="236" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="54" font-weight="900" fill="#24212B">AI 音乐忘了第一件事</text>
+    <text x="112" y="292" font-family="Arial, Microsoft YaHei, sans-serif" font-size="32" font-weight="900" fill="#FF5A3D">先玩起来。</text>
+  </g>
+  <g id="pain-points">
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M134,388 H548 A8,8 0 0 1 556,396 V498 A8,8 0 0 1 548,506 H134 A8,8 0 0 1 126,498 V396 A8,8 0 0 1 134,388 Z" />
+    <text x="158" y="430" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">专业 DAW 太重</text>
+    <text x="158" y="464" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" fill="#6D6577">乐理、轨道、插件，一打开就像考试。</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M620,388 H1034 A8,8 0 0 1 1042,396 V498 A8,8 0 0 1 1034,506 H620 A8,8 0 0 1 612,498 V396 A8,8 0 0 1 620,388 Z" />
+    <text x="644" y="430" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">Prompt 又太轻</text>
+    <text fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" x="644" y="464">结果很快出现，</text><text fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" x="644" y="488">但不像“我做出来的”。</text></g>
+  <g id="footer">
+    <text x="108" y="604" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#6D6577">中间缺一个入口：让普通人先表达手感，再被 AI 放大。</text>
+    <text x="1180" y="604" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">04</text>
+  </g>
+</svg>

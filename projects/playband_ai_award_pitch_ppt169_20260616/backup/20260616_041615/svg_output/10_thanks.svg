@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8"/>
+    <rect x="70" y="66" width="1140" height="588" rx="8" fill="#24212B"/>
+    <rect x="104" y="100" width="100" height="20" rx="8" fill="#FF5A3D"/>
+    <rect x="224" y="100" width="100" height="20" rx="8" fill="#20C997"/>
+    <rect x="344" y="100" width="100" height="20" rx="8" fill="#FFD43B"/>
+    <rect x="464" y="100" width="100" height="20" rx="8" fill="#5C7CFA"/>
+  </g>
+  <g id="thanks">
+    <text x="118" y="266" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="86" font-weight="900" fill="#FFF7E8">谢谢大家</text>
+    <text x="122" y="330" font-family="Arial, Microsoft YaHei, sans-serif" font-size="30" font-weight="900" fill="#FFD43B">先玩，再编曲。</text>
+    <text x="122" y="382" font-family="Arial, Microsoft YaHei, sans-serif" font-size="23" font-weight="800" fill="#FFF7E8">PlayBand AI 把普通人的音乐直觉，留在创作循环里。</text>
+  </g>
+  <g id="contact">
+    <rect x="122" y="488" width="468" height="74" rx="8" fill="#FFF7E8"/>
+    <text x="150" y="518" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">欧比克莱歌剧院</text>
+    <text x="150" y="548" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#6D6577">温添宁 · scala</text>
+    <rect x="650" y="488" width="438" height="74" rx="8" fill="#FFF7E8"/>
+    <text x="678" y="532" font-family="Consolas, Courier New, monospace" font-size="20" font-weight="700" fill="#24212B">wenwen.zone/playband</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="618" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#FFF7E8" fill-opacity="0.72">10</text>
+  </g>
+</svg>

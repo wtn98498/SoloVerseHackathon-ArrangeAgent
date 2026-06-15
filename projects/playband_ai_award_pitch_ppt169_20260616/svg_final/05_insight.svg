@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFF7E8" />
+    <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="3" d="M86,82 H1194 A8,8 0 0 1 1202,90 V630 A8,8 0 0 1 1194,638 H86 A8,8 0 0 1 78,630 V90 A8,8 0 0 1 86,82 Z" />
+  </g>
+  <g id="headline">
+    <text x="112" y="158" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#5C7CFA">产品洞察</text>
+    <text x="112" y="244" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="58" font-weight="900" fill="#24212B">灵感来自人，编曲交给 Agent</text>
+  </g>
+  <g id="roles">
+    <path fill="#FF5A3D" d="M132,352 H408 A8,8 0 0 1 416,360 V470 A8,8 0 0 1 408,478 H132 A8,8 0 0 1 124,470 V360 A8,8 0 0 1 132,352 Z" />
+    <text x="154" y="398" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#FFF7E8">人负责</text>
+    <text x="154" y="436" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#FFF7E8">品味、节奏感、玩一下</text>
+    <path fill="#20C997" d="M502,352 H778 A8,8 0 0 1 786,360 V470 A8,8 0 0 1 778,478 H502 A8,8 0 0 1 494,470 V360 A8,8 0 0 1 502,352 Z" />
+    <text x="524" y="398" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">Agent 负责</text>
+    <text x="524" y="436" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="800" fill="#24212B">结构、配器、变化</text>
+    <path fill="#FFD43B" d="M872,352 H1148 A8,8 0 0 1 1156,360 V470 A8,8 0 0 1 1148,478 H872 A8,8 0 0 1 864,470 V360 A8,8 0 0 1 872,352 Z" />
+    <text x="894" y="398" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">界面负责</text>
+    <text x="894" y="436" font-family="Arial, Microsoft YaHei, sans-serif" font-size="19" font-weight="800" fill="#24212B">看得见、听得到、能改</text>
+  </g>
+  <g id="takeaway">
+    <path fill="#24212B" d="M262,548 H1018 A8,8 0 0 1 1026,556 V598 A8,8 0 0 1 1018,606 H262 A8,8 0 0 1 254,598 V556 A8,8 0 0 1 262,548 Z" />
+    <text x="640" y="585" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="#FFF7E8">这不是黑箱音频，而是可继续创作的音乐结构。</text>
+  </g>
+  <g id="footer">
+    <text x="1180" y="664" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">05</text>
+  </g>
+</svg>
