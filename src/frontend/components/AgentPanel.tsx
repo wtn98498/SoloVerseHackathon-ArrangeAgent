@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useEditor } from '../contexts/EditorContext';
 import { ArrangementProject, AgentExplanation } from '../../contracts';
-import { createClip } from '../../contracts/clip';
 import { completeArrangementEndpoint, energyEndpoint } from '../../backend';
-import { INSTRUMENT_THEME } from '../theme';
 import { sendChat, type ChatMessage } from '../llm/chat';
 import { classifyAgentIntent } from '../../arrangement/agentIntent';
 import { getArrangementReference } from '../../arrangement/reference';
@@ -62,16 +60,11 @@ export function AgentPanel() {
         currentProject: project,
       });
       setCandidate(data);
-    } catch {
-      const fallbackProject = generateFallbackComplete(seedPattern);
-      setCandidate({
-        project: fallbackProject,
-        explanation: fallbackProject.lastExplanation ?? {
-          summary: '已使用本地备用编曲方案',
-          changes: ['基于你的输入生成了鼓、贝斯、吉他、键盘四轨'],
-        },
-        source: 'fallback',
-      });
+    } catch (error) {
+      setPreview(null);
+      setTasteNote(null);
+      setLastSource(null);
+      pushAssistant(`AI 编曲失败：${error instanceof Error ? error.message : 'DeepSeek 没有返回可用结果'}。请检查 DEEPSEEK_API_KEY 和网络；我不会用本地方案冒充 AI。`);
     } finally {
       setActionLoading(false);
     }
@@ -84,16 +77,11 @@ export function AgentPanel() {
     try {
       const data: AgentResponse = await energyEndpoint({ project: baseProject, direction });
       setCandidate(data);
-    } catch {
-      const fallbackProject = generateFallbackEnergy(baseProject, direction);
-      setCandidate({
-        project: fallbackProject,
-        explanation: fallbackProject.lastExplanation ?? {
-          summary: direction === 'increase' ? '已增加能量' : '已柔和化',
-          changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
-        },
-        source: 'fallback',
-      });
+    } catch (error) {
+      setPreview(null);
+      setTasteNote(null);
+      setLastSource(null);
+      pushAssistant(`AI 改编失败：${error instanceof Error ? error.message : 'DeepSeek 没有返回可用结果'}。这次不会降级到本地生成。`);
     } finally {
       setActionLoading(false);
     }
@@ -159,17 +147,11 @@ export function AgentPanel() {
             changes: data.explanation.changes,
           },
         });
-      } catch {
-        const baseProject = preview?.project ?? project;
-        const fallbackProject = generateFallbackEnergy(baseProject, intent.direction);
-        setCandidate({
-          project: fallbackProject,
-          explanation: fallbackProject.lastExplanation ?? {
-            summary: intent.direction === 'increase' ? '已用本地方案让它更快更有能量。' : '已用本地方案让它更慢更柔和。',
-            changes: [intent.direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
-          },
-          source: 'fallback',
-        });
+      } catch (error) {
+        setPreview(null);
+        setTasteNote(null);
+        setLastSource(null);
+        setMessages((m) => [...m, { role: 'assistant', content: `AI 改编失败：${error instanceof Error ? error.message : 'DeepSeek 没有返回可用结果'}。这次不会降级到本地生成。` }]);
       } finally {
         setChatLoading(false);
       }
@@ -199,8 +181,11 @@ export function AgentPanel() {
             changes: [...data.explanation.changes, ...reference.grooveHints.slice(0, 2)],
           },
         });
-      } catch {
-        setMessages((m) => [...m, { role: 'assistant', content: '生成时出了点问题，但动作按钮仍可用。' }]);
+      } catch (error) {
+        setPreview(null);
+        setTasteNote(null);
+        setLastSource(null);
+        setMessages((m) => [...m, { role: 'assistant', content: `AI 编曲失败：${error instanceof Error ? error.message : 'DeepSeek 没有返回可用结果'}。我不会用本地方案冒充 AI。` }]);
       } finally {
         setChatLoading(false);
       }
@@ -354,121 +339,4 @@ export function AgentPanel() {
       </div>
     </div>
   );
-}
-
-/* ── Fallback generators for demo safety ── */
-function generateFallbackComplete(seed: any): ArrangementProject {
-  return {
-    id: `project-${Date.now()}`,
-    title: '新生成的编曲',
-    tempo: seed.tempo,
-    bars: 8,
-    beatsPerBar: 4,
-    subdivision: 4,
-    style: seed.style,
-    mood: seed.mood,
-    tracks: [
-      {
-        id: 'track-drums',
-        kind: 'drums',
-        name: 'Drums',
-        color: INSTRUMENT_THEME.drums.color,
-        muted: false,
-        clips: [createClip({
-          id: 'clip-drums',
-          kind: 'drum',
-          name: 'Drums MIDI Clip',
-          barStart: 0,
-          barLength: 8,
-          notes: [],
-          drumHits: Array.from({ length: 16 }, (_, i) => ({
-            id: `dh-${i}`,
-            drum: ['kick', 'snare', 'hihat', 'clap'][i % 4] as any,
-            step: i * 8,
-            velocity: 0.7,
-          })),
-        })],
-      },
-      {
-        id: 'track-bass',
-        kind: 'bass',
-        name: 'Bass',
-        color: INSTRUMENT_THEME.bass.color,
-        muted: false,
-        clips: [createClip({
-          id: 'clip-bass',
-          kind: 'midi',
-          name: 'Bass MIDI Clip',
-          barStart: 0,
-          barLength: 8,
-          notes: [
-            { id: 'bn-1', pitch: 'C2', step: 0, durationSteps: 16, velocity: 0.7 },
-            { id: 'bn-2', pitch: 'G2', step: 32, durationSteps: 16, velocity: 0.7 },
-            { id: 'bn-3', pitch: 'A2', step: 64, durationSteps: 16, velocity: 0.7 },
-            { id: 'bn-4', pitch: 'F2', step: 96, durationSteps: 16, velocity: 0.7 },
-          ],
-          drumHits: [],
-        })],
-      },
-      {
-        id: 'track-guitar',
-        kind: 'guitar',
-        name: 'Guitar',
-        color: INSTRUMENT_THEME.guitar.color,
-        muted: false,
-        clips: [createClip({
-          id: 'clip-guitar',
-          kind: 'midi',
-          name: 'Guitar MIDI Clip',
-          barStart: 0,
-          barLength: 8,
-          notes: [
-            { id: 'gn-1', pitch: 'C3', step: 0, durationSteps: 32, velocity: 0.6 },
-            { id: 'gn-2', pitch: 'E3', step: 32, durationSteps: 32, velocity: 0.6 },
-            { id: 'gn-3', pitch: 'G3', step: 64, durationSteps: 32, velocity: 0.6 },
-            { id: 'gn-4', pitch: 'C3', step: 96, durationSteps: 32, velocity: 0.6 },
-          ],
-          drumHits: [],
-        })],
-      },
-      {
-        id: 'track-keys',
-        kind: 'keys',
-        name: 'Keys',
-        color: INSTRUMENT_THEME.keys.color,
-        muted: false,
-        clips: [createClip({
-          id: 'clip-keys',
-          kind: 'midi',
-          name: 'Keys MIDI Clip',
-          barStart: 0,
-          barLength: 8,
-          notes: [
-            { id: 'kn-1', pitch: 'C4', step: 0, durationSteps: 64, velocity: 0.5 },
-            { id: 'kn-2', pitch: 'G4', step: 64, durationSteps: 64, velocity: 0.5 },
-          ],
-          drumHits: [],
-        })],
-      },
-    ],
-    lastExplanation: {
-      summary: '已使用本地备用编曲方案',
-      changes: ['基于你的输入生成了完整编曲', '添加了鼓点、贝斯、吉他和键盘轨道'],
-    },
-  };
-}
-
-function generateFallbackEnergy(
-  project: ArrangementProject,
-  direction: 'increase' | 'soften'
-): ArrangementProject {
-  const delta = direction === 'increase' ? 10 : -10;
-  return {
-    ...project,
-    tempo: Math.max(60, Math.min(200, project.tempo + delta)),
-    lastExplanation: {
-      summary: direction === 'increase' ? '已增加能量' : '已柔和化',
-      changes: [direction === 'increase' ? '提高了速度和音量' : '降低了速度和音量'],
-    },
-  };
 }

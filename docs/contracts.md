@@ -287,8 +287,12 @@ Reject or repair:
 - Missing drum, bass, guitar, or keys track after arrangement completion.
 - Empty arrangement after `complete`.
 
-If validation fails, backend must return a deterministic fallback arrangement
-instead of surfacing a broken response.
+For the submitted live demo, fallback is useful for general resilience. For the
+current recording path, the arrangement actions run in AI-only mode: if DeepSeek
+is unavailable, returns malformed JSON, or produces an invalid plan, the backend
+must surface a failure to the frontend instead of silently returning a fallback
+candidate. This keeps the recorded demo honest: a candidate shown in the Agent
+panel must have passed through the DeepSeek path.
 
 ## 7. DeepSeek Contract
 
@@ -312,7 +316,8 @@ Prompting rule:
 - Ask the model for JSON only.
 - Validate the JSON with the shared schema.
 - Never let raw model text mutate frontend state.
-- Always preserve a local fallback path.
+- Preserve local deterministic generation as an internal renderer and recovery
+  tool, but do not silently downgrade the user-facing AI-only recording flow.
 - Model output must be interpreted as MIDI edits or a complete
   `ArrangementProject`. Never accept free-text descriptions as the source of
   truth for musical state.
