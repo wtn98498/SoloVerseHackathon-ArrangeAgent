@@ -20,7 +20,7 @@
     <text x="158" y="464" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" fill="#6D6577">乐理、轨道、插件，一打开就像考试。</text>
     <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M620,388 H1034 A8,8 0 0 1 1042,396 V498 A8,8 0 0 1 1034,506 H620 A8,8 0 0 1 612,498 V396 A8,8 0 0 1 620,388 Z" />
     <text x="644" y="430" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#24212B">Prompt 又太轻</text>
-    <text fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" x="644" y="464">结果很快出现，</text><text fill="#6D6577" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" x="644" y="488">但不像“我做出来的”。</text></g>
+    <text font-size="17" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="644" y="464">结果很快出现，</text><text font-size="17" font-family="Arial, Microsoft YaHei, sans-serif" fill="#6D6577" x="644" y="488">但不像“我做出来的”。</text></g>
   <g id="footer">
     <text x="108" y="604" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#6D6577">中间缺一个入口：让普通人先表达手感，再被 AI 放大。</text>
     <text x="1180" y="604" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">04</text>

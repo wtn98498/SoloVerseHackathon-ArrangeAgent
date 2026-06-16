@@ -4,31 +4,54 @@
     <path fill="#FFFFFF" stroke="#24212B" stroke-width="4" d="M72,64 H1208 A8,8 0 0 1 1216,72 V648 A8,8 0 0 1 1208,656 H72 A8,8 0 0 1 64,648 V72 A8,8 0 0 1 72,64 Z" />
   </g>
   <g id="headline">
-    <text x="100" y="140" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#20C997">解决方案</text>
-    <text x="100" y="210" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="54" font-weight="900" fill="#24212B">几下敲击，变成四轨乐队 loop</text>
+    <text x="100" y="132" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#20C997">技术架构</text>
+    <text x="100" y="194" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="50" font-weight="900" fill="#24212B">从手感，到可编辑的音乐结构</text>
+    <text x="104" y="232" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#6D6577">浏览器优先：React 负责创作界面，Tone.js 负责播放，Agent 服务负责生成候选。</text>
   </g>
-  <g id="flow">
-    <path fill="#FF5A3D" d="M128,318 H332 A8,8 0 0 1 340,326 V446 A8,8 0 0 1 332,454 H128 A8,8 0 0 1 120,446 V326 A8,8 0 0 1 128,318 Z" />
-    <text x="230" y="374" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#FFF7E8">敲一下</text>
-    <text x="230" y="410" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#FFF7E8">大 pad 捕捉手感</text>
-    <polygon points="372,364 430,386 372,408" fill="#24212B" />
-    <path fill="#20C997" d="M470,318 H674 A8,8 0 0 1 682,326 V446 A8,8 0 0 1 674,454 H470 A8,8 0 0 1 462,446 V326 A8,8 0 0 1 470,318 Z" />
-    <text x="572" y="374" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">补全</text>
-    <text x="572" y="410" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#24212B">生成 8 小节四轨</text>
-    <polygon points="714,364 772,386 714,408" fill="#24212B" />
-    <path fill="#FFD43B" d="M812,318 H1016 A8,8 0 0 1 1024,326 V446 A8,8 0 0 1 1016,454 H812 A8,8 0 0 1 804,446 V326 A8,8 0 0 1 812,318 Z" />
-    <text x="914" y="374" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="24" font-weight="900" fill="#24212B">试听</text>
-    <text x="914" y="410" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="800" fill="#24212B">满意后再应用</text>
+  <g id="architecture-flow">
+    <path fill="#FF5A3D" d="M112,296 H270 A8,8 0 0 1 278,304 V392 A8,8 0 0 1 270,400 H112 A8,8 0 0 1 104,392 V304 A8,8 0 0 1 112,296 Z" />
+    <text x="191" y="336" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#FFF7E8">Toy UI</text>
+    <text x="191" y="364" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">pad / 风格 / 情绪</text>
+    <polygon points="300,336 344,348 300,360" fill="#24212B" />
+    <path fill="#FFF7E8" stroke="#24212B" stroke-width="3" d="M374,296 H532 A8,8 0 0 1 540,304 V392 A8,8 0 0 1 532,400 H374 A8,8 0 0 1 366,392 V304 A8,8 0 0 1 374,296 Z" />
+    <text x="453" y="336" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">SeedPattern</text>
+    <text x="453" y="364" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#6D6577">轻量 MIDI-like JSON</text>
+    <polygon points="562,336 606,348 562,360" fill="#24212B" />
+    <path fill="#5C7CFA" d="M636,296 H794 A8,8 0 0 1 802,304 V392 A8,8 0 0 1 794,400 H636 A8,8 0 0 1 628,392 V304 A8,8 0 0 1 636,296 Z" />
+    <text x="715" y="336" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#FFF7E8">Agent API</text>
+    <text x="715" y="364" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">complete / energy</text>
+    <polygon points="824,336 868,348 824,360" fill="#24212B" />
+    <path fill="#20C997" d="M898,296 H1056 A8,8 0 0 1 1064,304 V392 A8,8 0 0 1 1056,400 H898 A8,8 0 0 1 890,392 V304 A8,8 0 0 1 898,296 Z" />
+    <text x="977" y="336" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">Candidate</text>
+    <text x="977" y="364" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">试听后再应用</text>
+  </g>
+  <g id="architecture-layers">
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M126,462 H332 A8,8 0 0 1 340,470 V548 A8,8 0 0 1 332,556 H126 A8,8 0 0 1 118,548 V470 A8,8 0 0 1 126,462 Z" />
+    <text x="142" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="900" fill="#24212B">前端层</text>
+    <text x="142" y="522" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">四轨时间线、候选卡片</text>
+    <text x="142" y="546" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">播放指针、轻量编辑</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M386,462 H592 A8,8 0 0 1 600,470 V548 A8,8 0 0 1 592,556 H386 A8,8 0 0 1 378,548 V470 A8,8 0 0 1 386,462 Z" />
+    <text x="402" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="900" fill="#24212B">数据层</text>
+    <text x="402" y="522" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">8 小节 / 128 step</text>
+    <text x="402" y="546" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">NoteEvent + DrumHit</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M646,462 H852 A8,8 0 0 1 860,470 V548 A8,8 0 0 1 852,556 H646 A8,8 0 0 1 638,548 V470 A8,8 0 0 1 646,462 Z" />
+    <text x="662" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="900" fill="#24212B">编曲层</text>
+    <text x="662" y="522" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">本地确定性生成</text>
+    <text x="662" y="546" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">预留 DeepSeek 接口</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M906,462 H1112 A8,8 0 0 1 1120,470 V548 A8,8 0 0 1 1112,556 H906 A8,8 0 0 1 898,548 V470 A8,8 0 0 1 906,462 Z" />
+    <text x="922" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="900" fill="#24212B">音频层</text>
+    <text x="922" y="522" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">Tone.js 调度播放</text>
+    <text x="922" y="546" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#6D6577">生成结果可听可见</text>
   </g>
   <g id="track-strip">
-    <path fill="#FF5A3D" d="M168,540 H332 A8,8 0 0 1 340,548 V574 A8,8 0 0 1 332,582 H168 A8,8 0 0 1 160,574 V548 A8,8 0 0 1 168,540 Z" />
-    <text x="250" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">鼓</text>
-    <path fill="#20C997" d="M388,540 H552 A8,8 0 0 1 560,548 V574 A8,8 0 0 1 552,582 H388 A8,8 0 0 1 380,574 V548 A8,8 0 0 1 388,540 Z" />
-    <text x="470" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">贝斯</text>
-    <path fill="#FFD43B" d="M608,540 H772 A8,8 0 0 1 780,548 V574 A8,8 0 0 1 772,582 H608 A8,8 0 0 1 600,574 V548 A8,8 0 0 1 608,540 Z" />
-    <text x="690" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">吉他</text>
-    <path fill="#5C7CFA" d="M828,540 H992 A8,8 0 0 1 1000,548 V574 A8,8 0 0 1 992,582 H828 A8,8 0 0 1 820,574 V548 A8,8 0 0 1 828,540 Z" />
-    <text x="910" y="568" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">键盘</text>
+    <path fill="#FF5A3D" d="M192,590 H326 A8,8 0 0 1 334,598 V616 A8,8 0 0 1 326,624 H192 A8,8 0 0 1 184,616 V598 A8,8 0 0 1 192,590 Z" />
+    <text x="259" y="613" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="900" fill="#FFF7E8">鼓</text>
+    <path fill="#20C997" d="M382,590 H516 A8,8 0 0 1 524,598 V616 A8,8 0 0 1 516,624 H382 A8,8 0 0 1 374,616 V598 A8,8 0 0 1 382,590 Z" />
+    <text x="449" y="613" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="900" fill="#24212B">贝斯</text>
+    <path fill="#FFD43B" d="M572,590 H706 A8,8 0 0 1 714,598 V616 A8,8 0 0 1 706,624 H572 A8,8 0 0 1 564,616 V598 A8,8 0 0 1 572,590 Z" />
+    <text x="639" y="613" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="900" fill="#24212B">吉他</text>
+    <path fill="#5C7CFA" d="M762,590 H896 A8,8 0 0 1 904,598 V616 A8,8 0 0 1 896,624 H762 A8,8 0 0 1 754,616 V598 A8,8 0 0 1 762,590 Z" />
+    <text x="829" y="613" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="900" fill="#FFF7E8">键盘</text>
   </g>
   <g id="footer">
     <text x="1180" y="626" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">06</text>

@@ -221,14 +221,16 @@ The SVG pages implement these as simplified flat toy flows rather than copying t
   - Agent 负责：结构、配器、变化。
   - 界面负责：看得见、听得到、能改。
 
-#### Slide 06 - Solution
+#### Slide 06 - Technical Architecture
 
-- **Title**: 几下敲击，变成四轨乐队 loop
-- **Core message**: 用户敲一段 seed，Agent 补成 8 小节四轨 loop，候选试听后再应用。
+- **Title**: 从手感，到可编辑的音乐结构
+- **Core message**: PlayBand AI 不是直接生成音频，而是把用户输入转成结构化编曲工程，再由 Agent 生成候选。
 - **Content**:
-  - 敲一下：大 pad 捕捉手感。
-  - 补全：生成 8 小节四轨。
-  - 试听：满意后再应用。
+  - Toy UI：React 捕捉 pad、风格、情绪和播放状态。
+  - SeedPattern：轻量 MIDI-like JSON，保留用户敲击手感。
+  - Agent API：complete arrangement / energy transform 返回候选。
+  - ArrangementProject：8 小节、128 step、鼓贝吉键四轨结构。
+  - Tone.js：按结构化工程调度播放，保证看得见也听得到。
 
 #### Slide 07 - Demo
 
@@ -241,13 +243,14 @@ The SVG pages implement these as simplified flat toy flows rather than copying t
 
 #### Slide 08 - Agent Director
 
-- **Title**: 它不是“生成器”，而是音乐导演
-- **Core message**: 会听、会补、会解释，也能继续接受指挥。
+- **Title**: 不是黑箱音频，而是结构化编曲
+- **Core message**: Agent 输出可验证的 ArrangementProject：能看、能听、能继续改。
 - **Content**:
-  - 听见种子：从敲击开始。
-  - 补全乐队：四轨 loop。
-  - 解释变化：告诉你改了什么。
-  - 继续指挥：更快 / 更柔。
+  - 保留 seed：用户刚敲出的节奏感不会被抹掉。
+  - 推导骨架：根据 style、mood、tempo 选择和弦、密度和能量。
+  - 写四轨：drums、bass、guitar、keys 分别生成可编辑事件。
+  - 校验候选：检查 step、pitch、velocity，失败仍可本地继续。
+  - 诚实边界：当前提交版为本地确定性编曲引擎；DeepSeek 预留在同一 API 合约后。
 
 ### Part 4: Future And Thanks
 

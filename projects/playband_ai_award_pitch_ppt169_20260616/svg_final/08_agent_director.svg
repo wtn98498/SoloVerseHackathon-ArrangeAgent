@@ -4,34 +4,48 @@
     <path fill="#FFFFFF" stroke="#E7DCC7" stroke-width="3" d="M78,70 H1202 A8,8 0 0 1 1210,78 V642 A8,8 0 0 1 1202,650 H78 A8,8 0 0 1 70,642 V78 A8,8 0 0 1 78,70 Z" />
   </g>
   <g id="headline">
-    <text x="104" y="146" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#5C7CFA">Agent 核心</text>
-    <text x="104" y="218" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="52" font-weight="900" fill="#24212B">它不是“生成器”，而是音乐导演</text>
-    <text x="108" y="260" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#6D6577">会听、会补、会解释，也能继续接受指挥。</text>
+    <text x="104" y="132" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#5C7CFA">Agent 编曲原理</text>
+    <text x="104" y="196" font-family="Impact, Arial Black, SimHei, Microsoft YaHei, sans-serif" font-size="50" font-weight="900" fill="#24212B">不是黑箱音频，而是结构化编曲</text>
+    <text x="108" y="232" font-family="Arial, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#6D6577">Agent 输出可验证的 ArrangementProject：能看、能听、能继续改。</text>
   </g>
-  <g id="agent-loop">
-    <path fill="#FF5A3D" d="M126,338 H278 A8,8 0 0 1 286,346 V426 A8,8 0 0 1 278,434 H126 A8,8 0 0 1 118,426 V346 A8,8 0 0 1 126,338 Z" />
-    <text x="202" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#FFF7E8">听见种子</text>
-    <text x="202" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">从敲击开始</text>
-    <polygon points="312,374 358,386 312,398" fill="#24212B" />
-    <path fill="#20C997" d="M398,338 H550 A8,8 0 0 1 558,346 V426 A8,8 0 0 1 550,434 H398 A8,8 0 0 1 390,426 V346 A8,8 0 0 1 398,338 Z" />
-    <text x="474" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">补全乐队</text>
-    <text x="474" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">四轨 loop</text>
-    <polygon points="584,374 630,386 584,398" fill="#24212B" />
-    <path fill="#FFD43B" d="M670,338 H822 A8,8 0 0 1 830,346 V426 A8,8 0 0 1 822,434 H670 A8,8 0 0 1 662,426 V346 A8,8 0 0 1 670,338 Z" />
-    <text x="746" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#24212B">解释变化</text>
-    <text x="746" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="800" fill="#24212B">告诉你改了什么</text>
-    <polygon points="856,374 902,386 856,398" fill="#24212B" />
-    <path fill="#5C7CFA" d="M942,338 H1094 A8,8 0 0 1 1102,346 V426 A8,8 0 0 1 1094,434 H942 A8,8 0 0 1 934,426 V346 A8,8 0 0 1 942,338 Z" />
-    <text x="1018" y="378" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="21" font-weight="900" fill="#FFF7E8">继续指挥</text>
-    <text x="1018" y="408" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#FFF7E8">更快 / 更柔</text>
+  <g id="principle-loop">
+    <path fill="#FF5A3D" d="M116,294 H272 A8,8 0 0 1 280,302 V376 A8,8 0 0 1 272,384 H116 A8,8 0 0 1 108,376 V302 A8,8 0 0 1 116,294 Z" />
+    <text x="194" y="328" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">1 保留 seed</text>
+    <text x="194" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#FFF7E8">用户敲击不丢失</text>
+    <polygon points="300,326 340,339 300,352" fill="#24212B" />
+    <path fill="#FFD43B" d="M368,294 H524 A8,8 0 0 1 532,302 V376 A8,8 0 0 1 524,384 H368 A8,8 0 0 1 360,376 V302 A8,8 0 0 1 368,294 Z" />
+    <text x="446" y="328" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">2 推导骨架</text>
+    <text x="446" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="800" fill="#24212B">风格 / 情绪 / 速度</text>
+    <polygon points="552,326 592,339 552,352" fill="#24212B" />
+    <path fill="#20C997" d="M620,294 H776 A8,8 0 0 1 784,302 V376 A8,8 0 0 1 776,384 H620 A8,8 0 0 1 612,376 V302 A8,8 0 0 1 620,294 Z" />
+    <text x="698" y="328" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">3 写四轨</text>
+    <text x="698" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="800" fill="#24212B">鼓贝吉键分工</text>
+    <polygon points="804,326 844,339 804,352" fill="#24212B" />
+    <path fill="#5C7CFA" d="M872,294 H1028 A8,8 0 0 1 1036,302 V376 A8,8 0 0 1 1028,384 H872 A8,8 0 0 1 864,376 V302 A8,8 0 0 1 872,294 Z" />
+    <text x="950" y="328" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#FFF7E8">4 生成候选</text>
+    <text x="950" y="354" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#FFF7E8">试听 / 接受 / 重来</text>
   </g>
-  <g id="proof">
-    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M142,520 H412 A8,8 0 0 1 420,528 V570 A8,8 0 0 1 412,578 H142 A8,8 0 0 1 134,570 V528 A8,8 0 0 1 142,520 Z" />
-    <text x="277" y="557" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是一次性结果</text>
-    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M506,520 H776 A8,8 0 0 1 784,528 V570 A8,8 0 0 1 776,578 H506 A8,8 0 0 1 498,570 V528 A8,8 0 0 1 506,520 Z" />
-    <text x="641" y="557" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是音频黑箱</text>
-    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M870,520 H1140 A8,8 0 0 1 1148,528 V570 A8,8 0 0 1 1140,578 H870 A8,8 0 0 1 862,570 V528 A8,8 0 0 1 870,520 Z" />
-    <text x="1005" y="557" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" font-weight="900" fill="#24212B">不是替代创作者</text>
+  <g id="tool-grid">
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M124,438 H338 A8,8 0 0 1 346,446 V522 A8,8 0 0 1 338,530 H124 A8,8 0 0 1 116,522 V446 A8,8 0 0 1 124,438 Z" />
+    <text x="142" y="468" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#24212B">Drums</text>
+    <text x="142" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">保留 kick / snare 手感</text>
+    <text x="142" y="516" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">补 hi-hat 与 backbeat</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M394,438 H608 A8,8 0 0 1 616,446 V522 A8,8 0 0 1 608,530 H394 A8,8 0 0 1 386,522 V446 A8,8 0 0 1 394,438 Z" />
+    <text x="412" y="468" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#24212B">Bass</text>
+    <text x="412" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">跟随和弦根音</text>
+    <text x="412" y="516" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">加入简单 passing note</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M664,438 H878 A8,8 0 0 1 886,446 V522 A8,8 0 0 1 878,530 H664 A8,8 0 0 1 656,522 V446 A8,8 0 0 1 664,438 Z" />
+    <text x="682" y="468" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#24212B">Guitar / Keys</text>
+    <text x="682" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">和弦铺底 + 短 riff</text>
+    <text x="682" y="516" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">让 loop 听起来完整</text>
+    <path fill="#FFF7E8" stroke="#E7DCC7" stroke-width="3" d="M934,438 H1148 A8,8 0 0 1 1156,446 V522 A8,8 0 0 1 1148,530 H934 A8,8 0 0 1 926,522 V446 A8,8 0 0 1 934,438 Z" />
+    <text x="952" y="468" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="900" fill="#24212B">Validate</text>
+    <text x="952" y="494" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">step / pitch / velocity 校验</text>
+    <text x="952" y="516" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6D6577">失败也能本地继续</text>
+  </g>
+  <g id="truth-bar">
+    <path fill="#24212B" d="M138,574 H1142 A8,8 0 0 1 1150,582 V610 A8,8 0 0 1 1142,618 H138 A8,8 0 0 1 130,610 V582 A8,8 0 0 1 138,574 Z" />
+    <text x="640" y="603" text-anchor="middle" font-family="Arial, Microsoft YaHei, sans-serif" font-size="17" font-weight="900" fill="#FFF7E8">当前提交版：本地确定性编曲引擎跑通闭环；DeepSeek 作为同一 API 合约下的下一步接入。</text>
   </g>
   <g id="footer">
     <text x="1180" y="626" text-anchor="end" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" fill="#6D6577">08</text>
