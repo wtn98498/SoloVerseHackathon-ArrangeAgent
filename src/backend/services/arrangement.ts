@@ -3,6 +3,7 @@ import { createClip } from '../../contracts/clip';
 import { CompleteArrangeRequest, CompleteArrangeResponse, EnergyArrangeRequest, EnergyArrangeResponse } from '../../contracts/api';
 import { validateSeedPattern, validateArrangementProject } from '../validation/arrangement';
 import { generateFallbackArrangement, generateEnergyTransformation } from '../arrangement/fallback';
+import { completeArrangementWithDeepSeek, energyWithDeepSeek } from './deepseekArrangement';
 
 export async function completeArrangementEndpoint(request: CompleteArrangeRequest): Promise<CompleteArrangeResponse> {
   // Validate request
@@ -11,8 +12,21 @@ export async function completeArrangementEndpoint(request: CompleteArrangeReques
     console.warn('Seed validation errors:', validationErrors);
   }
 
-  // Try to use arrangement service (will be DeepSeek-backed in future)
-  // For now, always use fallback
+  try {
+    const { project, explanation } = await completeArrangementWithDeepSeek(request.seed, request.currentProject);
+    const deepSeekErrors = validateArrangementProject(project);
+    if (deepSeekErrors.length === 0) {
+      return {
+        project,
+        explanation,
+        source: 'deepseek'
+      };
+    }
+    console.warn('DeepSeek arrangement validation errors:', deepSeekErrors);
+  } catch (error) {
+    console.warn('DeepSeek arrangement failed, using fallback:', error);
+  }
+
   const { project, explanation } = generateFallbackArrangement(request.seed);
 
   // Validate response
@@ -37,7 +51,21 @@ export async function energyEndpoint(request: EnergyArrangeRequest): Promise<Ene
     console.warn('Project validation errors:', validationErrors);
   }
 
-  // Apply transformation
+  try {
+    const { project, explanation } = await energyWithDeepSeek(request.project, request.direction);
+    const deepSeekErrors = validateArrangementProject(project);
+    if (deepSeekErrors.length === 0) {
+      return {
+        project,
+        explanation,
+        source: 'deepseek'
+      };
+    }
+    console.warn('DeepSeek energy validation errors:', deepSeekErrors);
+  } catch (error) {
+    console.warn('DeepSeek energy failed, using fallback:', error);
+  }
+
   const { project, explanation } = generateEnergyTransformation(request.project, request.direction);
 
   // Validate response
